@@ -31,4 +31,6 @@ are deleted with the pod, but are preserved across container restarts
 kubectl apply -f filename
 
 kubectl expose deployment blue-app --type=NodePort
+
+minikube service serviceName
 ```
