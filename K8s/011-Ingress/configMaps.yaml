@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: green-web-cm
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Welcome to GREEN App!</title>
+        <style>
+          body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+            background-color: GREEN;
+          }
+        </style>
+      </head>
+      <body>
+        <h1 style="text-align: center">Welcome to GREEN App!</h1>
+      </body>
+    </html>
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blue-web-cm
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Welcome to BLUE App!</title>
+        <style>
+          body {
+            width: 35em;
+            margin: 0 auto;
+            font-family: Tahoma, Verdana, Arial, sans-serif;
+            background-color: BLUE;
+          }
+        </style>
+      </head>
+      <body>
+        <h1 style="text-align: center">Welcome to BLUE App!</h1>
+      </body>
+    </html>
+
+

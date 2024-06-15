@@ -79,7 +79,7 @@ kubectl create configmap green-web-cm --from-file=index.html
 
 kubectl get cm
 
-kubectl describe green-web-cm
+kubectl describe cm green-web-cm
 
 kubectl apply -f web-green.yaml
 

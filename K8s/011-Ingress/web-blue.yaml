@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: blue-web
+  name: blue-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: blue-web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: blue-web
+    spec:
+      volumes:
+      - name: web-config
+        configMap:
+          name: blue-web-cm
+      containers:
+      - image: nginx
+        name: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: web-config
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: blue-web
+spec:
+  selector:
+    app: blue-web
+  ports:
+  - port: 80
+    targetPort: 80
+  type: NodePort

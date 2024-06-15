@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: green-web
+  name: green-web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: green-web
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: green-web
+    spec:
+      volumes:
+      - name: web-config
+        configMap:
+          name: green-web-cm
+      containers:
+      - image: nginx
+        name: nginx
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: web-config
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: green-web
+spec:
+  selector:
+    app: green-web
+  ports:
+  - port: 80
+    targetPort: 80
+  type: NodePort
