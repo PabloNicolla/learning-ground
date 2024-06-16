@@ -1,0 +1,44 @@
+version: "3.8" # Specify the Compose file format version
+
+services:
+  web:
+    image: nginx:latest # Use the latest Nginx image from Docker Hub
+    ports:
+      - "80:80" # Map port 80 on the host to port 80 in the container
+    volumes:
+      - web-data:/usr/share/nginx/html # Mount a named volume for persistent storage
+    environment:
+      - NGINX_HOST=localhost # Set environment variables for the container
+    networks:
+      - webnet # Connect the service to a custom network
+
+  app:
+    build: ./app # Build the image from a Dockerfile in the 'app' directory
+    ports:
+      - "5000:5000" # Map port 5000 on the host to port 5000 in the container
+    volumes:
+      - ./app:/usr/src/app # Mount a bind volume for the app source code
+    environment:
+      - FLASK_ENV=development # Set environment variables for the container
+    depends_on:
+      - db # Ensure the 'db' service is started before 'app'
+    networks:
+      - webnet # Connect the service to a custom network
+
+  db:
+    image: postgres:13 # Use the official PostgreSQL image, version 13
+    volumes:
+      - db-data:/var/lib/postgresql/data # Mount a named volume for persistent storage
+    environment:
+      - POSTGRES_DB=mydatabase # Set environment variables for the container
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+    networks:
+      - webnet # Connect the service to a custom network
+
+volumes:
+  web-data: # Define a named volume for the web service
+  db-data: # Define a named volume for the database service
+
+networks:
+  webnet: # Define a custom network for inter-service communication

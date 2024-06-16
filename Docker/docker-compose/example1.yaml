@@ -1,0 +1,61 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    # volumes:
+    #   - redis-data:/data
+
+  nodejs-backend1: # Rename your original nodejs-backend to nodejs-backend1
+    build:
+      context: ./nodejs-backend
+    volumes:
+      - ./nodejs-backend:/usr/src/app
+    ports:
+      - "8081:8080" # Change the external port to avoid conflict
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  nodejs-backend2:
+    build:
+      context: ./nodejs-backend # Assuming the second backend is identical
+    volumes:
+      - ./nodejs-backend:/usr/src/app
+    ports:
+      - "8082:8080" # Assign a different external port
+    depends_on:
+      - redis
+    networks:
+      - app-network
+
+  cpp-image-processing:
+    build:
+      context: ./cpp-image-processing
+    # volumes:
+    #   - ./cpp-image-processing:/usr/src/app
+    ports:
+      - "18080:18080" # Map port 8101 on your host to port 8080 in the container
+    networks:
+      - app-network
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - nodejs-backend1
+      - nodejs-backend2
+      - cpp-image-processing
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
