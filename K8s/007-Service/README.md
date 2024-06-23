@@ -21,6 +21,9 @@ minikube service service-name --url
 
 # OR
 
+> [!NOTE]
+> Use minikube tunnel for high compatibility
+
 kubectl port-forward svc/service-name 8080:80
 
 # OR (Minikube + Docker drive)

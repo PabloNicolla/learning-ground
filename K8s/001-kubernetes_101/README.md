@@ -76,7 +76,7 @@ kubectl get services
 ```
 
 > [!IMPORTANT]
-> **Note for Docker Desktop users:** Due to Docker Desktop networking limitations, by default you’re unable to access pods directly from the host.
+> Note for **Docker Desktop users:** Due to Docker Desktop networking limitations, by default you’re unable to access pods directly from the host.
 > Run `minikube service kubernetes-bootcamp`, this will create a SSH tunnel from the pod to your host and open a window in your default browser that’s connected to the service. Skip all commands until [next milestone](#using-labels)
 
 ```
