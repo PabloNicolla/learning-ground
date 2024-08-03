@@ -98,5 +98,8 @@ docker-compose down --volumes
 docker-compose build --no-cache > build_output.txt 2>&1
 
 # enter container
-docker-compose exec <web> bash
+docker-compose exec <service> bash
+
+# list network
+docker network ls
 ```
