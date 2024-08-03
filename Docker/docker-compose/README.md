@@ -96,4 +96,8 @@ docker-compose down --volumes
 ```bash
 # Dump build logs into file
 docker-compose build --no-cache > build_output.txt 2>&1
+
+# enter container
+docker-compose exec web bash
+
 ```
