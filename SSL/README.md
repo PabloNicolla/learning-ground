@@ -34,6 +34,8 @@ openssl pkcs12 -export -out certificate.pfx -inkey privatekey.key -in certificat
 
 [how-to-install-ssl-certificates](https://www.namecheap.com/support/knowledgebase/article.aspx/795/69/how-to-install-ssl-certificates/)
 
+[dnschecker.org](https://dnschecker.org/#A/)
+
 ## Verify the Private Key and Certificate Match
 
 ```
