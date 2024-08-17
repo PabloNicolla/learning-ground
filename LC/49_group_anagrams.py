@@ -9,6 +9,7 @@ class Solution:
             count = [0] * 26
 
             for c in str:
+                # ord gets the unicode code point
                 count[ord(c) - ord('a')] += 1
             result[tuple(count)].append(str)
 
