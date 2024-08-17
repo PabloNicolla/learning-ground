@@ -18,6 +18,7 @@ function decode(str: string): string[] {
   return decodedWords;
 }
 
+// npm install -g ts-node
 // ts-node filename.ts
 
 export {};
