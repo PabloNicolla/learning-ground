@@ -1,3 +1,8 @@
 {
-  "cSpell.words": ["Burstable", "Keycloak"]
+  "cSpell.words": ["Burstable", "Keycloak"],
+  "files.associations": {
+    "xlocale": "cpp",
+    "vector": "cpp",
+    "unordered_map": "cpp"
+  }
 }
