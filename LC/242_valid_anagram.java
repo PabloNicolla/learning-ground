@@ -1,3 +1,5 @@
+import java.util.HashMap;
+
 class Solution {
   public static boolean isAnagram(String s, String t) {
     // char[] s_arr = s.toCharArray();

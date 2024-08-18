@@ -12,7 +12,7 @@ A geographical area that contains multiple, isolated locations known as Availabi
 - Independent power, cooling, and networking to provide high availability and fault tolerance.
 - Connected through low-latency, high-bandwidth networks.
 
-## IAM
+## Identity and Access Management (IAM)
 
 ### Users & Groups
 
@@ -297,10 +297,239 @@ Control over the EC2 placement strategy
   - Permanently deletes the instance.
   - Attached storage is deleted unless specified otherwise.
 
-## EC2 Instance Storage
+## Elastic Block Store (EBS) [EC2 Instance Storage]
 
+- Network-Attached Storage: EBS is a network drive that can be attached or detached from running EC2 instances.
+- Persistent Storage: Data on EBS volumes persists even after the associated instance is terminated.
+- Single Instance Attachment: EBS volumes can only be mounted to one instance at a time.
+- Multiple Volumes: An EC2 instance can have multiple EBS volumes attached.
+- Availability Zone (AZ) Bound: EBS volumes can only be attached to instances within the same availability zone.
+- Latency Considerations: Some latency is expected since the storage is network-attached, not physically attached.
 
-#
+### EBS Volume Attributes
+
+- Size: Measured in GBs.
+- IOPS: Input/output operations per second.
+- Root Volume Deletion: The root EBS volume is deleted by default when the instance is terminated.
+- Additional Volumes: Other EBS volumes are not deleted by default and require manual deletion or configuration.
+- Customization: Volume attributes can be modified through the AWS CLI or AWS Console.
+
+### EBS Snapshots
+
+- Cross-AZ Movement: Snapshots allow you to move volumes across availability zones.
+- Best Practice: It is recommended to take snapshots of detached EBS volumes to ensure data consistency.
+
+#### Archive Tier Snapshots
+
+- Cost Efficiency: Archive tier is up to 75% cheaper than standard storage.
+- Restoration Time: Restoring from the archive tier can take between 24 and 72 hours.
+
+#### Recycle Bin for EBS Snapshots
+
+- Accidental Deletion Protection: A policy can be set up to retain deleted snapshots, protecting against accidental deletion.
+- Retention Period: The retention period can range from 1 day to 1 year.
+
+#### Fast Snapshot Restore (FSR)
+
+- Improved Performance: Paying extra enables faster initialization of snapshots, reducing the time to restore them.
+
+### Amazon Machine Image (AMI)
+
+- Definition: An AMI is a pre-configured virtual machine image that includes the operating system, application server, and applications used to launch an EC2 instance.
+- Faster boot
+- Region bound but can be copied across regions
+
+- Components: An AMI includes the following components:
+  - Root Volume Template: Specifies the OS and application environment.
+  - Launch Permissions: Controls which AWS accounts can use the AMI to launch instances.
+  - Block Device Mapping: Specifies the storage volumes to attach to an instance when it's launched.
+
+#### Types of AMIs
+
+- Public AMIs:
+  - Provided by AWS or third parties.
+  - Available to all AWS customers.
+
+- Private AMIs:
+  - Created by you or shared with specific AWS accounts.
+  - Used for custom configurations or sensitive applications.
+
+- Marketplace AMIs:
+  - Provided by third-party vendors in the AWS Marketplace.
+  - Usually pre-configured with commercial software.
+
+#### Creating an AMI
+
+- From an EC2 Instance: You can create an AMI from an existing EC2 instance by capturing the instance's configuration, including installed software and settings.
+- From a Snapshot: You can create an AMI from EBS snapshots, providing more control over the AMI's content.
+- Manual Configuration: Specify configurations manually for custom requirements.
+
+### EC2 Instance Store
+
+- EBS volumes have limited performance because they are attached over the network
+- **EC2 Instance Store** have disk attached directly to it
+  - Higher performance (I/O)
+  - Deleted when EC2 instance is stopped
+  - Not good for long storage
+
+### EBS volume types
+
+| Volume Type | Use Case                                      | Size            | Max IOPS       | Max Throughput | Durability (SLA) | Cost     |
+| ----------- | --------------------------------------------- | --------------- | -------------- | -------------- | ---------------- | -------- |
+| gp3/2       | General-purpose workloads                     | 1 GiB - 16TiB   | 16,000         | 1,000 MB/s     | Standard         | Moderate |
+| io2         | High-performance, mission-critical workloads  | 4 GiB - 64TiB   | 256,000        | 4,000 MB/s     | 99.999%          | High     |
+| io1         | High-performance, latency-sensitive workloads | 4 GiB - 16TiB   | 64,000 (Nitro) | 1,000 MB/s     | 99.9%            | High     |
+| st1         | Big data, large sequential workloads          | 125 GiB - 16TiB | 500 IOPS       | 500 MB/s       | Standard         | Low      |
+| sc1         | Infrequently accessed data                    | 125 GiB - 16TiB | 250 IOPS       | 250 MB/s       | Standard         | Lowest   |
+
+#### SSD-Backed Volumes
+
+> [!IMPORTANT]
+> **CAN BE USER AS EC2 ROOT VOLUME**
+
+- General Purpose SSD (gp2)
+  - Size and IOPs are linked.
+- General Purpose SSD (gp3)
+  - Offers the ability to independently scale IOPS and throughput without increasing the storage size.
+- Provisioned IOPS SSD (io2)
+- Provisioned IOPS SSD (io1)
+  - IOPS: 64,000 (EC2 Nitro), 32,000 (Others)
+
+#### HDD-Backed Volumes
+
+> [!IMPORTANT]
+> **CANNOT BE USER AS EC2 ROOT VOLUME**
+
+- Throughput Optimized HDD (st1)
+- Cold HDD (sc1)
+
+### EBS Multiple Attach
+
+- io1 and io2 family can be attache to multiple EC2 instances in the same AZ (**AZ bound**)
+- Instances have full read & write performance
+- Up to 16 EC2 instances at a time
+
+#### Use cases
+
+- High-Performance Computing (HPC): Applications that require shared access to large datasets.
+- Clustered Databases: Databases like Oracle RAC that need shared storage across multiple instances.
+- File Systems: Clustered or parallel file systems that distribute I/O across multiple instances.
+
+#### Limitations and Considerations
+
+- Data Consistency:
+  - Applications must manage data consistency
+  - Not all file systems support concurrent access. (File system must be cluster-aware)
+- Performance Overhead: Sharing a volume across instances can introduce performance overhead
+- There are no additional charges for using Multi-Attach, but the underlying io1 or io2 volumes may incur higher costs due to their provisioned IOPS.
+
+### EBS Encryption
+
+AWS EBS encryption provides data-at-rest encryption for EBS volumes and snapshots.
+
+- Encryption uses AWS Key Management Service (KMS) to manage encryption keys.
+- It can be enabled by default for all new EBS volumes and snapshots in a region.
+- Encryption occurs on the servers hosting EC2 instances, ensuring encrypted data in-transit between EC2 instances and EBS storage.
+- There's no direct way to encrypt an existing unencrypted volume.
+  - You need to create a snapshot,
+  - encrypt it,
+  - and then create a new volume from the encrypted snapshot.
+- Encrypted volumes automatically encrypt all data moving between the volume and the instance, snapshots of the volume, and volumes created from those snapshots.
+- There's no significant performance impact when using encrypted volumes.
+
+### Amazon Elastic File System (EFS)
+
+- A scalable, fully-managed, cloud-native file storage service that provides a file system for use with AWS Cloud services and on-premises resources.
+- Allows multiple EC2 instances to access the same file system concurrently, making it ideal for applications that require shared file storage.
+- Works across AZs
+- Use cases: content management, web serving, data sharing, Wordpress
+
+#### Key Features
+
+- AWS manages all aspects of the file system, including scaling, patching, and backups.
+- Automatically scales up or down
+- Compatible with Linux based AMI
+- Pay-per-use
+
+#### Performance Modes
+
+- General Purpose (default):
+  - Best for latency-sensitive use cases like web serving, content management, and home directories.
+  - Low-latency file operations with up to thousands of concurrent client connections.
+- Max I/O:
+  - Designed for workloads requiring high levels of throughput, such as big data and analytics, media processing, and genomics analysis.
+  - Optimized for higher aggregate throughput but with slightly higher latencies.
+
+#### Throughput Modes
+
+- Bursting Throughput (default)
+  - Throughput scales with file system size
+  - Suitable for most general-purpose workloads
+- Provisioned Throughput
+  - Allows you to specify throughput independent of storage size
+  - Useful for applications requiring higher throughput than the Bursting mode provides
+- Elastic Throughput
+  - Automatically scales throughput up or down based on workload
+  - Eliminates the need to provision throughput in advance
+  - Ideal for unpredictable workloads
+
+#### Storage Classes
+
+- Standard:
+  - The default storage class, designed for frequently accessed files.
+- Infrequent Access (IA):
+  - Lower cost for files that are accessed less frequently, with slightly higher access latency.
+  - Automatically moves files to IA if they haven’t been accessed for 30 days.
+- Archive:
+  - Rarely accessed data (few times a year), 50% cheaper.
+
+User lifetime policies to automatically move files between storage tiers
+
+#### Backup and Recovery
+
+- EFS Backup: Integrated with AWS Backup for automated backups and compliance.
+- Durability: EFS is designed for 99.999999999% (11 9's) of durability and 99.99% availability.
+
+#### Integration
+
+- AWS Services: Seamlessly integrates with other AWS services like EC2, Lambda, ECS, and EKS.
+- On-Premises Access: EFS can be accessed from on-premises data centers using AWS Direct Connect or VPN.
+
+#### Cost
+
+- Pay-as-you-go pricing based on the storage and throughput you use.
+- Cost savings are possible by using the Infrequent Access storage class for less frequently accessed data.
+
+#### Availability
+
+- Standard: Multi-AZ: good for production
+- One Zone: One AZ: good for dev
+
+### EFS vs EBS
+
+| Feature               | Amazon EBS                             | Amazon EFS                            |
+| --------------------- | -------------------------------------- | ------------------------------------- |
+| **Storage Type**      | Block Storage                          | File Storage                          |
+| **Usage**             | Single EC2 instance                    | Multiple EC2 instances                |
+| **Performance Modes** | gp3, io2, io1, st1, sc1                | General Purpose, Max I/O              |
+| **Scalability**       | Fixed size, must be manually resized   | Automatically scales with data        |
+| **Access**            | Attached to one EC2 instance at a time | Accessible by multiple EC2 instances  |
+| **File System**       | Must be formatted with a file system   | POSIX-compliant, NFS-based            |
+| **Backup**            | Snapshots                              | AWS Backup integration                |
+| **Cost Model**        | Pay per provisioned size and IOPS      | Pay per used storage                  |
+| **Latency**           | Low latency                            | Slightly higher latency than EBS      |
+| **Use Cases**         | Databases, boot volumes, applications  | Shared file storage, web serving, CMS |
+| **Durability**        | 99.999% to 99.999999999% (11 9's)      | 99.999999999% (11 9's)                |
+| **Availability**      | 99.9% - 99.99% SLA                     | 99.99% SLA                            |
+| **Encryption**        | Data at rest and in transit            | Data at rest and in transit           |
+| **Access Control**    | IAM Policies, Security Groups          | IAM Policies, POSIX Permissions       |
+| **Cross-AZ Support**  | Snapshots can be copied across AZs     | Accessible within the same region     |
+| **Setup Complexity**  | Requires manual setup for scaling      | Automatically managed by AWS          |
+
+## High Availability (HA) and Scalability: (ELB) & (ASG)
+
+Elastic Load Balancer (ELB)
+
 #
 #
 #
