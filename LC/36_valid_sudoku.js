@@ -15,11 +15,7 @@ function isValidSudoku(board) {
       var cell = board[i][j];
       if (cell === ".") continue;
       var subgridIndex = Math.floor(i / 3) * 3 + Math.floor(j / 3);
-      if (
-        rows[i].has(cell) ||
-        cols[j].has(cell) ||
-        subgrids[subgridIndex].has(cell)
-      ) {
+      if (rows[i].has(cell) || cols[j].has(cell) || subgrids[subgridIndex].has(cell)) {
         return false;
       }
       rows[i].add(cell);
