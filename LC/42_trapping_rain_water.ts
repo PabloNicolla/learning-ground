@@ -22,4 +22,11 @@ function trap(height: number[]): number {
 
   return volume;
 }
+
+// npm install -g ts-node
+// ts-node filename.ts
+
+// npm install -g typescript
+// tsc yourfile.ts
+
 export {};
