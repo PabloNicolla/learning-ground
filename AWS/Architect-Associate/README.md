@@ -528,7 +528,169 @@ User lifetime policies to automatically move files between storage tiers
 
 ## High Availability (HA) and Scalability: (ELB) & (ASG)
 
-Elastic Load Balancer (ELB)
+### Elastic Load Balancer (ELB)
+
+ELS forward traffic to multiple EC2 instances downstream
+
+- Spread load
+- Expose single access point (DNS)
+- handle downstream failures
+- regular health checks
+- single SSL termination (HTTPS) for all downstream instances
+- High availability
+- Static DNS name
+
+#### ELB Types
+
+- Classic Load Balancer (CLB) - (V1 OLD GENERATION) (DEPRECIATED)
+  - HTTP, HTTPS, TCP, SSL (SECURE TLS)
+- Application Load Balancer (ALB) - (V2)
+  - HTTP, HTTPS, WebSocket
+- Network Load Balancer (NLB) - (V2)
+  - TCP, TLS (SECURE TCP), UDP
+- Gateway Load Balancer (GWLB) - (V2)
+  - Layer 3 (Network layer) - IP Protocol
+
+### ALP vs NLB vs GWLB
+
+[Network Layers](../../Network/README.md)
+
+| Feature / Criteria                 | Application Load Balancer (ALB)                               | Network Load Balancer (NLB)                          | Gateway Load Balancer (GWLB)                                    |
+| ---------------------------------- | ------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------- |
+| Layer                              | Layer 7 (Application Layer)                                   | Layer 4 (Transport Layer)                            | Layer 3 (Network Layer)                                         |
+| Use Case                           | HTTP/HTTPS traffic, microservices, containerized applications | TCP/UDP traffic, low-latency requirements, static IP | Deploying, scaling, and managing third-party virtual appliances |
+| Protocol Support                   | HTTP, HTTPS, WebSockets, (HTTP/2)                             | TCP, UDP, TLS                                        | IP Protocols (e.g., ICMP, IP-in-IP)                             |
+| Load Balancing Algorithm           | Round Robin, Least Outstanding Requests                       | Flow Hashing                                         | Hash-based load balancing                                       |
+| Sticky Sessions (Session Affinity) | Supported                                                     | Supported                                            | Not Applicable                                                  |
+| SSL Termination                    | Supported (SSL offloading)                                    | Supported (SSL passthrough)                          | Not Applicable                                                  |
+| Target Types                       | EC2 instances, IP addresses, Lambda functions, containers     | EC2 instances, IP addresses                          | Virtual appliances                                              |
+| Health Checks                      | HTTP/HTTPS-based, customizable                                | TCP/HTTP-based, fast & basic                         | ICMP-based                                                      |
+| Logging and Monitoring             | Access Logs, CloudWatch metrics                               | Flow Logs, CloudWatch metrics                        | Flow Logs, CloudWatch metrics                                   |
+| Pricing                            | Based on LCU (Load Balancer Capacity Units), data processed   | Based on LCU, data processed                         | Based on LCU, data processed                                    |
+| Integration with AWS Services      | Deep integration with ECS, EKS, Lambda                        | Integration with VPC, CloudFormation                 | Integration with Firewall Manager, Transit Gateway              |
+| Security Features                  | WAF (Web Application Firewall) integration                    | Security Groups, NACLs                               | Stateless or stateful network protection                        |
+| Static IP Support                  | Not supported (uses DNS name)                                 | Supported                                            | Supported                                                       |
+| Cross-Zone Load Balancing          | Supported                                                     | Supported                                            | Supported                                                       |
+| Client IP Preservation             | Default behavior                                              | Preserved by default                                 | Preserved by default                                            |
+| Multi-Protocol Support             | No                                                            | Yes (TCP, UDP, TLS)                                  | No                                                              |
+| WebSocket Support                  | Supported                                                     | Not supported                                        | Not applicable                                                  |
+| Advanced Routing                   | Path-based, host-based, query string, HTTP header             | Not supported                                        | Not applicable                                                  |
+
+### Application Load Balancer (ALP)
+
+- fixed hostname XXX.region.elb.amazonaws.com
+- application (downstream instances) do not see the client IP directly
+  - Client IP is inserted in the header X-Forwarded-For
+  - Port (X-Forwarded-Port)
+  - Proto (X-Forwarded-Proto)
+
+### Network Load Balancer (NLB)
+
+- Latency 100ms vs ~400ms for ALB
+- Handle million of requests per second
+- One static IP per AZ (in addition to the static DNS)
+
+#### NLB Use Cases Examples
+
+1. NLB -> [EC2 instances AWS ID]
+2. NLB -> [EC2 instance public IP, sever anywhere in the world public IP]
+3. NLB -> [Application Load Balancer]
+
+### Gateway Load Balancer (GWLB)
+
+1. User --(traffic)--> GWLB
+2. GWLB --(traffic)--> Target Group (3rd party security virtual appliances)
+3. Target Group (3rd party security virtual appliances) --(traffic)--> GWLB
+4. GWLB --(traffic)--> Application
+
+GENEVE protocol on port 6081
+
+- Transparent Network Gateway - sing entry/exit for all traffic
+- Load Balancer
+
+#### GWLB Use Cases Examples
+
+1. NLB -> [EC2 instances AWS ID]
+2. NLB -> [EC2 instance public IP, sever anywhere in the world public IP]
+
+### Sticky Sessions Cookies Names
+
+Avoid cookie names that starts with `AWS`
+
+- Application based Cookies
+  - Custom Cookie
+    - Generated by the target
+  - Application Cookie
+    - Generated by the LB
+- Duration based Cookies
+  - Generated by the LB
+
+### Cross-Zone Load Balancing
+
+- Enabled
+  - it distributes load evenly between all downstream even if they are in different AZs
+- Disabled
+  - distributes incoming load between instances in the same AZ
+
+- Default
+  - ALB enabled
+  - NLB & GWLB disabled
+
+- Charges
+  - ALB no charges for inter AZ data
+  - NLB & GWLB pay for inter AZ data
+
+### SSL - Server Name Indication (SNI)
+
+SSL allows in-flight data encryption.
+
+- Multiple SSL certificates for one web server
+- Client tells server to find the desired SSL based on the request hostname
+
+SSL Cert 1 -> `www.example1.com`
+SSL Cert 2 -> `www.example2.com`
+
+### Connection draining ELB
+
+Ensures that the load balancer stops sending new requests to instances that are de-registering or unhealthy
+while allowing existing connections to complete.
+
+- CLB -> Connection draining.
+- For ALB & NLB -> connection draining is referred to as deregistration delay.
+
+- Between 1 to 3600 seconds
+- Can be disabled
+
+### Auto Scaling Group (ASG)
+
+- Scale out/in automatically depending on the configuration and events such as CloudWatch Alarms
+- Scale between max and min capacity configured
+- Free, you pay for the resources being used
+
+When configured with a Load Balancer the new instances are automatically added to the LB downstream/redirect group.
+
+- AMI improves the ASG efficiency
+- ASG has a cooldown period after scaling up/down (can be changed)
+
+#### ASG Scaling Policies
+
+- Dynamic Scaling:
+  - Target Tracking Scaling:
+    - E.G AVG CPU must start around 40%
+  - Simple / Step Scaling:
+    - E.G CloudWatch Alarm (CPU > 70%) add 2 units
+    - E.G CloudWatch Alarm (CPU < 30%) remove 1 unit
+- Scheduled Scaling:
+  - Scale based on schedules
+- Predictive Scaling:
+  - Scaled Based on ML forecast load
+
+##### Good Metrics for ASG
+
+- CPU
+- Request Count
+- Network Load
+- CloudWatch Metrics
 
 #
 #
@@ -539,38 +701,3 @@ Elastic Load Balancer (ELB)
 #
 #
 #
-#
-#
-#
-#
-#
-
-Elastic Load Balancer (ELB)
-
-    Purpose: Distributes incoming application or network traffic across multiple targets, such as EC2 instances, containers, or IP addresses.
-    Types:
-        Application Load Balancer (ALB): Operates at the application layer (Layer 7), ideal for HTTP/HTTPS traffic and microservices.
-        Network Load Balancer (NLB): Operates at the transport layer (Layer 4), suited for ultra-high-performance applications.
-        Gateway Load Balancer (GWLB): Simplifies deployment, scaling, and management of third-party virtual appliances.
-    Key Features:
-        Automatic scaling based on incoming traffic.
-        Health checks to ensure only healthy instances receive traffic.
-        Integration with Auto Scaling for dynamic scaling.
-
-Elastic Fabric Adapter (EFA)
-
-    Purpose: A network device that you can attach to an EC2 instance to accelerate High-Performance Computing (HPC) and machine learning applications.
-    Use Cases:
-        Applications that require high throughput and low latency, such as HPC or tightly coupled parallel computing.
-    Key Features:
-        Bypasses the operating system kernel to provide higher bandwidth and lower latency.
-        Supports standard IP networking for compatibility with existing applications.
-
-Elastic Network Adapter (ENA)
-
-    Purpose: Provides high-performance networking for EC2 instances, with support for enhanced networking features.
-    Use Cases:
-        Applications requiring high throughput, low latency, and reliable connectivity.
-    Key Features:
-        Supports up to 100 Gbps of network bandwidth on supported instance types.
-        Reduces network jitter and latency.
