@@ -40,8 +40,6 @@ function minWindow(s: string, t: string): string {
   return minWindow ? s.substring(minWindow[0], minWindow[1] + 1) : "";
 }
 
-console.log(minWindow("ADOBECODEBANC", "ABC"));
-
 // npm install -g ts-node
 // ts-node filename.ts
 
