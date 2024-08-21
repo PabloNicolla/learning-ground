@@ -39,6 +39,7 @@
     - [Amazon Machine Image (AMI)](#amazon-machine-image-ami)
       - [Types of AMIs](#types-of-amis)
       - [Creating an AMI](#creating-an-ami)
+      - [Golden AMI](#golden-ami)
     - [EC2 Instance Store](#ec2-instance-store)
     - [EBS volume types](#ebs-volume-types)
       - [SSD-Backed Volumes](#ssd-backed-volumes)
@@ -108,13 +109,13 @@
     - [Security and Compliance](#security-and-compliance)
     - [Integration with Other AWS Services](#integration-with-other-aws-services)
     - [Global Infrastructure](#global-infrastructure)
+  - [Elastic Beanstalk](#elastic-beanstalk)
+  - [S3](#s3)
 - [](#)
 - [](#-1)
 - [](#-2)
 - [](#-3)
 - [](#-4)
-- [](#-5)
-- [](#-6)
 
 
 ## Aws Infrastructure Intro
@@ -480,6 +481,11 @@ Control over the EC2 placement strategy
 - From an EC2 Instance: You can create an AMI from an existing EC2 instance by capturing the instance's configuration, including installed software and settings.
 - From a Snapshot: You can create an AMI from EBS snapshots, providing more control over the AMI's content.
 - Manual Configuration: Specify configurations manually for custom requirements.
+
+#### Golden AMI
+
+- AMI is a general-purpose machine image used to launch instances with specific software and configurations.
+- Golden AMI is a specialized, pre-hardened, and standardized AMI used within an organization to ensure consistency, security, and compliance across all instances. It's essentially an organization's "approved" AMI, maintained with best practices in mind.
 
 ### EC2 Instance Store
 
@@ -1128,8 +1134,49 @@ Translate human friendly hostname into machine IP addresses
 - Highly Available: Route 53 is designed with global redundancy and low-latency query resolution using a global network of DNS servers.
 - Scalable: Automatically scales to handle large volumes of DNS queries without user intervention.
 
-#
-#
+## Elastic Beanstalk
+
+AWS Elastic Beanstalk is fully managed service that makes it easy to deploy, manage, and scale web applications and services. It abstracts much of the underlying infrastructure management, allowing developers to focus on writing code.
+
+Key Features:
+
+1. Supported Platforms:
+   - Elastic Beanstalk supports multiple platforms, including Java, .NET, Node.js, Python, Ruby, PHP, Go, and Docker.
+2. Deployment:
+   - Automatically handles the deployment process, including provisioning the necessary resources like EC2 instances, load balancers, and databases.
+   - Supports rolling, blue/green, and canary deployment strategies.
+3. Scaling:
+   - Auto Scaling: Automatically scales your application up or down based on demand using Amazon EC2 Auto Scaling.
+   - Load Balancing: Integrates with Elastic Load Balancing (ELB) to distribute traffic across instances.
+4. Monitoring & Logging:
+   - Integrated Monitoring: Provides monitoring via Amazon CloudWatch, with metrics like CPU utilization and latency.
+   - Centralized Logging: Aggregates logs from instances, viewable in the AWS Management Console.
+5. Configuration Management:
+   - Environment Configuration: Easily manage environment configurations through the AWS Management Console, CLI, or configuration files (.ebextensions).
+   - Custom Resources: Customize instances using Amazon EC2 key pairs, IAM roles, and other AWS resources.
+6. Environment Management:
+   - Multiple Environments: Supports multiple environments (e.g., development, testing, production), making it easy to manage different stages of the application lifecycle.
+   - Environment Snapshots: Take snapshots of environments to save configurations and quickly restore them.
+7. Elasticity & Availability:
+   - Auto-Healing: Detects and replaces unhealthy instances automatically.
+   - High Availability: Deploys applications across multiple Availability Zones (AZs) for high availability.
+8. Security:
+   - IAM Integration: Manages permissions with AWS Identity and Access Management (IAM).
+   - VPC Support: Deploy applications within an Amazon VPC for network security control.
+9. Cost:
+   - Free, you only pay for the resources deployed
+10. Environment Tiers:
+    - Web Server Environment: ALB -> ASG
+    - Worker Environment: SQS Queue -> ASG
+
+Summary:
+
+Elastic Beanstalk simplifies the deployment and management of web applications by handling infrastructure provisioning, scaling, monitoring, and updates. It supports multiple languages and platforms, making it a versatile choice for developers looking for a managed environment without losing control over configuration and customization.
+
+## S3
+
+
+
 #
 #
 #
