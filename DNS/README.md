@@ -36,7 +36,7 @@ DNS is a fundamental component of the internet that translates human-readable do
    - TLD Name Server: Directs the query to the authoritative name server for the specific domain.
    - Authoritative Name Server: Provides the definitive answer for the domain, returning the IP address or other requested record.
 4. Caching:
-   - DNS resolvers and clients often cache DNS responses to reduce latency and load on DNS servers. Cached records are stored for a time-to-live (TTL) period, after which they must be refreshed.
+   - DNS resolvers and clients often cache DNS responses to reduce latency and load on DNS servers. Cached records are stored for a time-to-live (**TTL**) period, after which they must be refreshed.
 5. DNS Query Types:
    - Recursive Query: The resolver queries other servers on behalf of the client and returns the final answer.
    - Iterative Query: The DNS server provides the best answer it has and may direct the client to another server for more information.

@@ -99,6 +99,15 @@
     - [Common Ports](#common-ports)
     - [Databases Ports](#databases-ports)
   - [Domain Name System (DNS)](#domain-name-system-dns)
+  - [Amazon Route 53](#amazon-route-53)
+    - [Domain Registration](#domain-registration)
+    - [DNS Routing](#dns-routing)
+    - [Health Checks and Monitoring](#health-checks-and-monitoring)
+    - [Traffic Flow Management](#traffic-flow-management)
+    - [Domain Name Management](#domain-name-management)
+    - [Security and Compliance](#security-and-compliance)
+    - [Integration with Other AWS Services](#integration-with-other-aws-services)
+    - [Global Infrastructure](#global-infrastructure)
 - [](#)
 - [](#-1)
 - [](#-2)
@@ -106,7 +115,6 @@
 - [](#-4)
 - [](#-5)
 - [](#-6)
-- [](#-7)
 
 
 ## Aws Infrastructure Intro
@@ -1046,7 +1054,80 @@ Translate human friendly hostname into machine IP addresses
 
 [DNS](../../DNS/README.md)
 
-#
+## Amazon Route 53
+
+### Domain Registration
+
+- Route 53 allows you to register domain names directly through AWS. It supports a wide range of top-level domains (TLDs) like .com, .org, .net, etc.
+- It manages domain settings, such as DNS configuration, domain transfer, and renewal.
+
+### DNS Routing
+
+- Authoritative DNS: Route 53 provides authoritative DNS services, which means it responds to DNS queries for your domain with the correct IP address or other DNS records.
+- Routing Policies: Route 53 offers various routing policies to determine how DNS queries are resolved:
+  - Simple Routing: Directs traffic to a single resource without any special routing logic. (can return multi-value, but it does not have health checks)
+  - Weighted Routing: Distributes traffic across multiple resources based on assigned weights. (0 to exclude or all 0 to ignore weight)
+  - Latency-Based Routing: Routes traffic to the resource that provides the lowest latency for the end-user.
+  - Failover Routing: Automatically routes traffic to a standby resource if the primary one becomes unavailable.
+  - Geolocation Routing: Routes traffic based on the geographic location of the requestor. (must have a default record set)
+  - Geo-Proximity Routing: Routes traffic based on the geographic location of resources and users, with optional biasing to favor/hide certain locations.
+  - IP-Based Routing: Routing is based on the client's IP address
+  - Multi-Value Answer Routing: Returns multiple IP addresses for a query, increasing availability.
+    - More secure than Simple Routing since health checks can eliminate unhealthy endpoints from the answer
+    - Client chooses the IP randomly
+
+### Health Checks and Monitoring
+
+- **HTTP Health Checks only works for public resources**
+- Route 53 can monitor the health of your resources through health checks, ensuring that DNS queries are only routed to healthy endpoints.
+- Endpoint Health Checks: Regularly checks the status of your web servers, email servers, and other resources.
+- DNS Failover: Automatically reroutes traffic to a healthy resource if a primary resource fails.
+
+- Health Checks can work with the following DNS Routing Policies:
+  - Weighted Routing
+  - Latency-Based Routing
+  - Failover Routing
+  - Geolocation Routing
+  - Multi-Value Answer Routing
+
+- Health check can monitor:
+  - endpoints (e.g. /health), (2xx, 3xx), (can parse first 5120 bytes of response text)
+  - other health checks (Parent combines all Child's health checks into one)
+  - CloudWatch Alarms (Useful to monitor private resources)
+
+### Traffic Flow Management
+
+- Traffic Flow: An easy-to-use visual editor that allows you to create complex routing configurations combining multiple routing policies. It enables you to manage traffic across multiple AWS regions and optimize performance for global users.
+
+### Domain Name Management
+
+- Hosted Zones: A hosted zone is a container for DNS records for a specific domain. Route 53 supports:
+  - public hosted zones (for routing traffic on the internet).
+  - private hosted zones (for routing within an Amazon VPC). (similar to K8s services)
+- DNS Record Types: Route 53 supports all standard DNS record types, including A, AAAA, CNAME, MX, NS, PTR, SOA, SPF, SRV, and TXT records.
+- CNAME VS Route 53 ALIAS
+  - CNAME allows a hostname (**Except Root Domain, (Top node)/(Zone Apex)**) to point to any other hostname
+  - ALIAS works similar to CNAME except:
+    - it allows to use the Root Domain
+    - it is can only point to some AWS resources (It does not work with EC2 DNS name)
+- You can use 3rd party domains with Route 53. (Create a Public Hosted Zone as update 3rd party Registrar NS(Name Servers))
+
+### Security and Compliance
+
+- DNSSEC (Domain Name System Security Extensions): Route 53 supports DNSSEC for domain signing, providing authenticity and integrity for DNS records.
+- IAM Policies: Integrates with AWS Identity and Access Management (IAM) to control access to Route 53 resources.
+- Audit Logging: Provides logging of DNS query requests via AWS CloudTrail for monitoring and auditing purposes.
+
+### Integration with Other AWS Services
+
+- Seamless Integration: Route 53 integrates closely with other AWS services like S3, CloudFront, Elastic Load Balancing, and more, facilitating smooth DNS configuration for AWS-hosted applications.
+- Private DNS for Amazon VPC: You can create private DNS namespaces within your VPC, allowing Route 53 to resolve DNS queries for resources within the VPC.
+
+### Global Infrastructure
+
+- Highly Available: Route 53 is designed with global redundancy and low-latency query resolution using a global network of DNS servers.
+- Scalable: Automatically scales to handle large volumes of DNS queries without user intervention.
+
 #
 #
 #
