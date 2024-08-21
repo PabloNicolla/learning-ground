@@ -409,7 +409,7 @@ Control over the EC2 placement strategy
 - Instances have full read & write performance
 - Up to 16 EC2 instances at a time
 
-#### Use cases
+#### EBS Use cases
 
 - High-Performance Computing (HPC): Applications that require shared access to large datasets.
 - Clustered Databases: Databases like Oracle RAC that need shared storage across multiple instances.
@@ -691,6 +691,245 @@ When configured with a Load Balancer the new instances are automatically added t
 - Request Count
 - Network Load
 - CloudWatch Metrics
+
+## RDS & AURORA & ElastiCache
+
+### Amazon RDS (Relational Database Service)
+
+- Managed Service: Automates tasks like hardware provisioning, database setup, patching, backups, and scaling.
+- Scalability: Allows you to scale your database compute and storage with just a few clicks or API calls.
+- Security: Offers encryption at rest and in transit, VPC integration, and IAM-based access control.
+- Automatic Backups: Provides automatic backups, database snapshots, and point-in-time recovery.
+- Monitoring: Integrated with Amazon CloudWatch for monitoring database performance and setting up alarms.
+- Database engines: Amazon Aurora, MySQL, PostgreSQL, MariaDB, Oracle, Microsoft SQL Server, and IBM DB2
+- No SSH access
+
+#### RDS Read Replicas
+
+- Purpose: Used for horizontal scaling of read operations. They help to offload read traffic from the primary database, improving performance for read-heavy workloads.
+- Replication: **Asynchronously** replicates data from the primary database to one or more read replicas.
+- Usage: Primarily for read operations, reporting, and analytics. Write operations must still go through the primary database.
+- **Cross-Region Replication**: You can create read replicas in different AWS regions, providing read access across regions and improving latency for global applications.
+- Promotion: In the event of an issue with the primary database, a read replica can be manually promoted to a standalone database, but this is not automatic.
+- Cost:
+  - Read replicas incur additional charges for compute and storage.
+  - Same Region is free
+  - Different Region replica incur extra fees
+- Read Replica can be set to Multi-AZ
+- Up to 15 replicas
+
+#### Multi-AZ Deployments (Standby instance)
+
+- Purpose: Provides high availability and failover support for your database. It automatically replicates data to a standby instance in a different Availability Zone (AZ) within the same region.
+- Replication: **Synchronously** replicates data between the primary and standby instances.
+- Failover: In the event of a failure (e.g., hardware failure, network issue), RDS automatically fails over to the standby instance without manual intervention. This ensures minimal downtime.
+- Usage: Ideal for production environments where high availability and automatic failover are critical.
+- Read/Write Operations: Both read and write operations are directed to the primary database, with the standby instance only taking over during a failover.
+- Zero down time from Single-AZ to multi AZ
+
+### RDS Custom
+
+Managed Oracle and Microsoft SQL Server Databases
+
+- This service grants full admin access to the OS and Database. (SSH access)
+
+It is recommended to stop the instance and take a snapshot before applying new configurations
+
+### Amazon Aurora
+
+- Not open source
+- Postgres & MySQL supported
+- Cloud optimized
+- Storage automatically grows from 10GB up 128TB
+- Up to 15 replicas with fast replica lag
+- HA native (fast failover recovery)
+- More efficient than EDS, but more expensive
+- Replicas can be of different sizes (CPU, ...)
+- Easy Amazon Machine Learning integration
+
+#### Aurora HA
+
+- 6 copies of data across 3 AZ:
+  - 4 copies out of 6 to writes
+  - 3 copies out of 6 to reads
+  - P2P self healing
+  - Storage across hundreds of volumes
+- Only Master can do write
+- Failover recovery in less than 30s
+- All can do reads
+- Support for Cross-Region
+- Endpoints
+  - 1 Reader endpoint
+  - 1 Writer endpoint
+
+#### Aurora Custom Endpoints
+
+db.size_3 --(Master)--> Writer endpoint
+
+db.size_3 --(Replica)--> CustomEndpoint_1 endpoint
+db.size_3 --(Replica)--> CustomEndpoint_1 endpoint
+
+db.size_6 --(Replica)--> CustomEndpoint_2 endpoint
+db.size_6 --(Replica)--> CustomEndpoint_2 endpoint
+
+Instead of a single reader endpoint,
+now there are different endpoints for different use cases that require different processing power
+
+#### Aurora Serverless
+
+- Automated init and scaling based on usage
+- Good for infrequent, intermittent or unpredictable workloads
+- No capacity planning needed
+- Pay per second
+
+#### Aurora Global
+
+- 1 Primary Region (read/write)
+- up to 5 secondary regions (read) (1s replication lag)
+- up to 16 read replicas per secondary region
+- Secondary regions can be promoted to Primary (Disaster recovery)
+
+### RDS Backups
+
+- Automated Backups
+  - Daily
+  - Transaction logs every 5 minutes
+  - Restore to any point in time in the timeframe
+  - 1 to 35 days retention, set 0 to disable
+
+- Manual DB Snapshot
+  - Retention until manual deletion
+  - Can be used to save costs by replacing a stopped database
+
+#### Aurora Backups
+
+Backup cannot be disabled
+
+#### RDS & Aurora Restore
+
+- Restore from backup/snapshot
+- Restore from S3
+
+#### Aurora Database Cloning
+
+- Uses copy-on-write protocol and is faster than snapshots & restore
+- Useful for creating a "dev" DB from prod
+
+### RDS Security
+
+- At-rest encryption
+  - Option must be activated on launch time
+  - else activate encryption from snapshot
+- In-flight encryption
+- IAM Authentication
+- Security Groups
+- Audit logs can be enable
+
+### Amazon RDS Proxy
+
+Similar with PGbouncer, share connections to reduce resource usage
+
+- reduce Aurora & RDS failover
+- no code change required (in most cases)
+- Autoscaling
+- Serverless
+- HA (multi-az)
+- Support for almost all DBs
+- Enforce IAM authentication for DB
+- RDS proxy is never public accessible (Access from VPC)
+
+#### Use cases examples
+
+When working with lambda functions that access DB,
+million of requests can appear in a minute,
+which would overload the database connection pool.
+RDS Proxy solves this
+
+### Amazon ElastiCache
+
+- Managed in-memory databases (Redis, Memcached)
+- Helps reduce DB load in intensive read environments
+- Helps make application stateless (One "RAM" to rule them all)
+- OS maintenance, setup, config, recovery, backup, ... managed by AWS
+- Requires application code to be adapted to work with cache-db
+
+#### ElastiCache Use cases
+
+- Store user sessions from applications
+- Store query results from DB reads
+- Must implement cache invalidation techniques
+
+#### Redis vs Memcached
+
+Summary:
+
+- Redis for HA, data persistency and Set/Sorted-sets
+- Memcached for Multi-threaded or simpler applications
+
+Table:
+
+| Feature                | Redis                                                                                                                   | Memcached                                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| Data Structure Support | Supports a wide variety of data structures like strings, hashes, lists, sets, sorted sets, bitmaps, and more.           | Primarily supports string data types (key-value pairs).                                        |
+| Persistence            | Offers disk persistence with options for snapshotting (RDB) and append-only file (AOF) logs.                            | No persistence; data is stored in memory only and lost upon reboot.                            |
+| Scalability            | Built-in replication (master-slave) and clustering for horizontal scalability.                                          | Supports horizontal scaling through sharding but does not have built-in clustering.            |
+| Memory Management      | Efficient memory usage with support for LRU eviction policies and data expiration.                                      | Also supports LRU eviction but lacks advanced memory management features of Redis.             |
+| Use Cases              | Suitable for caching, real-time analytics, messaging, session storage, and as a primary database for certain use cases. | Best for simple caching solutions where high-speed data access is critical.                    |
+| Complexity             | More complex due to its rich feature set, suitable for advanced use cases.                                              | Simpler and easier to set up, ideal for straightforward caching.                               |
+| Performance            | Slightly slower than Memcached in some use cases due to its additional features, but still extremely fast.              | Known for being lightweight and very fast, often faster than Redis for pure caching use cases. |
+| Atomic Operations      | Supports atomic operations for all data types.                                                                          | Limited atomic operations mainly for basic increment/decrement operations.                     |
+| License                | BSD License (Open Source).                                                                                              | BSD License (Open Source).                                                                     |
+| Cluster Support        | Native support for clustering with automatic data partitioning.                                                         | No native clustering; must be handled at the application level.                                |
+| Multi-threading        | Single-threaded with the ability to run multiple instances on a single server.                                          | Multi-threaded, which can lead to better performance in some cases.                            |
+| Backup & Restore       | Supports backup and restore with RDB and AOF files.                                                                     | No built-in backup and restore functionality.                                                  |
+| Language Support       | Wide range of client libraries in multiple programming languages.                                                       | Also has broad language support, but fewer client libraries than Redis.                        |
+| Geospatial Indexing    | Supports geospatial data types and operations.                                                                          | No support for geospatial data.                                                                |
+| Pub/Sub Messaging      | Built-in support for publish/subscribe messaging.                                                                       | No native support for pub/sub messaging.                                                       |
+| Community & Ecosystem  | Large, active community with extensive documentation and third-party tools.                                             | Smaller community and ecosystem compared to Redis.                                             |
+| Cost                   | Can be more resource-intensive due to additional features.                                                              | Generally more lightweight and cost-effective for basic caching.                               |
+
+#### ElastiCache Security
+
+- Redis
+  - IAM Authentication
+  - Password/Username
+  - Password/token
+  - Security groups
+  - SSL
+
+- Memcached
+  - SASL-based
+  - Password/Username
+
+#### Cache Patterns
+
+- LazyLoading
+  - Cache data after read (can become stale)
+- Write Trough
+  - Add/Update the cache after every DB write (no stale data)
+- Session Store
+  - Store temporary session data
+
+## Ports To Be Familiar With
+
+### Data
+
+- FTP: 21
+- SSH: 22
+- SFTP: 22
+- HTTP: 80
+- HTTPS: 443
+
+- RDP: 3389
+
+### Databases
+
+- Postgres: 5432
+- MySQL: 3306
+- MariaDB: 3306
+- MSSQL: 1433
+- Oracle RDS: 1521
+- Aurora: 5432 (Postgres), 3306 (MySQL)
 
 #
 #
