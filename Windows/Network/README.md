@@ -1,5 +1,17 @@
 # Useful Windows 11 Command Line Commands for Network Queries
 
+- [Useful Windows 11 Command Line Commands for Network Queries](#useful-windows-11-command-line-commands-for-network-queries)
+  - [Basic Network Information](#basic-network-information)
+    - [`ipconfig`](#ipconfig)
+    - [`ping`](#ping)
+    - [`tracert`](#tracert)
+    - [`pathping`](#pathping)
+    - [`nslookup`](#nslookup)
+    - [`netstat`](#netstat)
+    - [`netsh`](#netsh)
+    - [`arp`](#arp)
+    - [`getmac`](#getmac)
+
 ## Basic Network Information
 
 ### `ipconfig`

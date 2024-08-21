@@ -1,5 +1,12 @@
 # SSL
 
+- [SSL](#ssl)
+  - [Combine all certificates up to root (chain)](#combine-all-certificates-up-to-root-chain)
+  - [Convert SSL certificate into PFX](#convert-ssl-certificate-into-pfx)
+  - [Useful links](#useful-links)
+  - [Verify the Private Key and Certificate Match](#verify-the-private-key-and-certificate-match)
+  - [Verify the Intermediate Bundle](#verify-the-intermediate-bundle)
+
 ## Combine all certificates up to root (chain)
 
 Intermediate/chain certificate to link it to a trusted root certificate

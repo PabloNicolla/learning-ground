@@ -1,8 +1,117 @@
 # Architect Associate
 
-## AWS INFRASTRUCTURE INTRO
+- [Architect Associate](#architect-associate)
+  - [Aws Infrastructure Intro](#aws-infrastructure-intro)
+    - [Regions](#regions)
+    - [AZ](#az)
+  - [Identity and Access Management (IAM)](#identity-and-access-management-iam)
+    - [Users \& Groups](#users--groups)
+    - [IAM Policies](#iam-policies)
+      - [IAM Managed Policy](#iam-managed-policy)
+      - [IAM Inline Policy](#iam-inline-policy)
+      - [IAM Permissions](#iam-permissions)
+      - [IAM policies Structure](#iam-policies-structure)
+    - [Aws Access](#aws-access)
+      - [AWS SDK](#aws-sdk)
+      - [AWS CloudShell](#aws-cloudshell)
+    - [Roles For Services](#roles-for-services)
+    - [IAM Security Tools](#iam-security-tools)
+      - [IAM Credentials Report (account-level)](#iam-credentials-report-account-level)
+      - [IAM Access Advisor (user-level)](#iam-access-advisor-user-level)
+    - [IAM Guidelines \& Best Practices](#iam-guidelines--best-practices)
+  - [EC2 Fundamentals](#ec2-fundamentals)
+    - [EC2 sizing \& configuration options](#ec2-sizing--configuration-options)
+    - [EC2 Types](#ec2-types)
+    - [Security Groups](#security-groups)
+    - [EC2 SSH](#ec2-ssh)
+    - [EC2 Purchasing Options](#ec2-purchasing-options)
+    - [EC2 Stop Instance](#ec2-stop-instance)
+    - [IPs](#ips)
+    - [Placement Groups](#placement-groups)
+    - [Elastic Network Interface (ENI)](#elastic-network-interface-eni)
+    - [EC2 Hibernate](#ec2-hibernate)
+  - [Elastic Block Store (EBS) \[EC2 Instance Storage\]](#elastic-block-store-ebs-ec2-instance-storage)
+    - [EBS Volume Attributes](#ebs-volume-attributes)
+    - [EBS Snapshots](#ebs-snapshots)
+      - [Archive Tier Snapshots](#archive-tier-snapshots)
+      - [Recycle Bin for EBS Snapshots](#recycle-bin-for-ebs-snapshots)
+      - [Fast Snapshot Restore (FSR)](#fast-snapshot-restore-fsr)
+    - [Amazon Machine Image (AMI)](#amazon-machine-image-ami)
+      - [Types of AMIs](#types-of-amis)
+      - [Creating an AMI](#creating-an-ami)
+    - [EC2 Instance Store](#ec2-instance-store)
+    - [EBS volume types](#ebs-volume-types)
+      - [SSD-Backed Volumes](#ssd-backed-volumes)
+      - [HDD-Backed Volumes](#hdd-backed-volumes)
+    - [EBS Multiple Attach](#ebs-multiple-attach)
+      - [EBS Use cases](#ebs-use-cases)
+      - [Limitations and Considerations](#limitations-and-considerations)
+    - [EBS Encryption](#ebs-encryption)
+    - [Amazon Elastic File System (EFS)](#amazon-elastic-file-system-efs)
+      - [EFS Key Features](#efs-key-features)
+      - [EFS Performance Modes](#efs-performance-modes)
+      - [EFS Throughput Modes](#efs-throughput-modes)
+      - [EFS Storage Classes](#efs-storage-classes)
+      - [EFS Backup and Recovery](#efs-backup-and-recovery)
+      - [EFS Integration](#efs-integration)
+      - [EFS Cost](#efs-cost)
+      - [EFS Availability](#efs-availability)
+    - [EFS vs EBS](#efs-vs-ebs)
+  - [High Availability (HA) and Scalability: (ELB) \& (ASG)](#high-availability-ha-and-scalability-elb--asg)
+    - [Elastic Load Balancer (ELB)](#elastic-load-balancer-elb)
+      - [ELB Types](#elb-types)
+    - [ALP vs NLB vs GWLB](#alp-vs-nlb-vs-gwlb)
+    - [Application Load Balancer (ALP)](#application-load-balancer-alp)
+    - [Network Load Balancer (NLB)](#network-load-balancer-nlb)
+      - [NLB Use Cases Examples](#nlb-use-cases-examples)
+    - [Gateway Load Balancer (GWLB)](#gateway-load-balancer-gwlb)
+      - [GWLB Use Cases Examples](#gwlb-use-cases-examples)
+    - [Sticky Sessions Cookies Names](#sticky-sessions-cookies-names)
+    - [Cross-Zone Load Balancing](#cross-zone-load-balancing)
+    - [SSL - Server Name Indication (SNI)](#ssl---server-name-indication-sni)
+    - [Connection draining ELB](#connection-draining-elb)
+    - [Auto Scaling Group (ASG)](#auto-scaling-group-asg)
+      - [ASG Scaling Policies](#asg-scaling-policies)
+        - [Good Metrics for ASG](#good-metrics-for-asg)
+  - [RDS \& AURORA \& ElastiCache](#rds--aurora--elasticache)
+    - [Amazon RDS (Relational Database Service)](#amazon-rds-relational-database-service)
+      - [RDS Read Replicas](#rds-read-replicas)
+      - [Multi-AZ Deployments (Standby instance)](#multi-az-deployments-standby-instance)
+    - [RDS Custom](#rds-custom)
+    - [Amazon Aurora](#amazon-aurora)
+      - [Aurora HA](#aurora-ha)
+      - [Aurora Custom Endpoints](#aurora-custom-endpoints)
+      - [Aurora Serverless](#aurora-serverless)
+      - [Aurora Global](#aurora-global)
+    - [RDS Backups](#rds-backups)
+      - [Aurora Backups](#aurora-backups)
+      - [RDS \& Aurora Restore](#rds--aurora-restore)
+      - [Aurora Database Cloning](#aurora-database-cloning)
+    - [RDS Security](#rds-security)
+    - [Amazon RDS Proxy](#amazon-rds-proxy)
+      - [RDS Proxy Use cases examples](#rds-proxy-use-cases-examples)
+    - [Amazon ElastiCache](#amazon-elasticache)
+      - [ElastiCache Use cases](#elasticache-use-cases)
+      - [Redis vs Memcached](#redis-vs-memcached)
+      - [ElastiCache Security](#elasticache-security)
+      - [Cache Patterns](#cache-patterns)
+  - [Ports To Be Familiar With](#ports-to-be-familiar-with)
+    - [Common Ports](#common-ports)
+    - [Databases Ports](#databases-ports)
+  - [Domain Name System (DNS)](#domain-name-system-dns)
+- [](#)
+- [](#-1)
+- [](#-2)
+- [](#-3)
+- [](#-4)
+- [](#-5)
+- [](#-6)
+- [](#-7)
 
-### REGIONS
+
+## Aws Infrastructure Intro
+
+### Regions
 
 A geographical area that contains multiple, isolated locations known as Availability Zones.
 
@@ -20,7 +129,7 @@ Group can only have users
 Users can belong to multiple groups
 User can inherit policies from multiple groups
 
-### Policies
+### IAM Policies
 
 RECOMMENDED: **Least Privilege Principle**
 
@@ -29,21 +138,21 @@ RECOMMENDED: **Least Privilege Principle**
 - Policies can be attached to IAM users, groups, or roles to grant them permissions.
 - There are two main types of policies: managed policies and inline policies
 
-#### Managed Policy
+#### IAM Managed Policy
 
 - Managed policies are standalone policies that can be attached to multiple users, groups, or roles.
 - There are two types of managed policies:
   - AWS Managed Policies: Created and managed by AWS. They are designed to provide permissions for common use cases.
   - Customer Managed Policies: Created and managed by the user. They offer more flexibility and customization.
 
-#### Inline Policy
+#### IAM Inline Policy
 
 - Inline policies are embedded directly into a specific user, group, or role.
 - They maintain a strict one-to-one relationship with the identity they are attached to.
 - When the identity is deleted, the inline policy is also deleted.
 - Inline policies are useful when you want to ensure that the permissions are not inadvertently assigned to the wrong identity.
 
-#### Permissions
+#### IAM Permissions
 
 - Permissions are the actual actions that are allowed or denied by a policy.
 - They define what operations can be performed on specific AWS resources.
@@ -68,7 +177,7 @@ Statements consists of:
 
 ![Policy Example](image.png)
 
-### AWS ACCESS
+### Aws Access
 
 AWS Management Console: protected by password + MFA
 AWS Command Line Interface: protected by access keys
@@ -93,7 +202,7 @@ Embedded within your application, supports:
 
 "Safer" way to use AWS CLI
 
-### ROLES for services
+### Roles For Services
 
 Just like a user but intended for AWS services.
 
@@ -444,14 +553,14 @@ AWS EBS encryption provides data-at-rest encryption for EBS volumes and snapshot
 - Works across AZs
 - Use cases: content management, web serving, data sharing, Wordpress
 
-#### Key Features
+#### EFS Key Features
 
 - AWS manages all aspects of the file system, including scaling, patching, and backups.
 - Automatically scales up or down
 - Compatible with Linux based AMI
 - Pay-per-use
 
-#### Performance Modes
+#### EFS Performance Modes
 
 - General Purpose (default):
   - Best for latency-sensitive use cases like web serving, content management, and home directories.
@@ -460,7 +569,7 @@ AWS EBS encryption provides data-at-rest encryption for EBS volumes and snapshot
   - Designed for workloads requiring high levels of throughput, such as big data and analytics, media processing, and genomics analysis.
   - Optimized for higher aggregate throughput but with slightly higher latencies.
 
-#### Throughput Modes
+#### EFS Throughput Modes
 
 - Bursting Throughput (default)
   - Throughput scales with file system size
@@ -473,7 +582,7 @@ AWS EBS encryption provides data-at-rest encryption for EBS volumes and snapshot
   - Eliminates the need to provision throughput in advance
   - Ideal for unpredictable workloads
 
-#### Storage Classes
+#### EFS Storage Classes
 
 - Standard:
   - The default storage class, designed for frequently accessed files.
@@ -485,22 +594,22 @@ AWS EBS encryption provides data-at-rest encryption for EBS volumes and snapshot
 
 User lifetime policies to automatically move files between storage tiers
 
-#### Backup and Recovery
+#### EFS Backup and Recovery
 
 - EFS Backup: Integrated with AWS Backup for automated backups and compliance.
 - Durability: EFS is designed for 99.999999999% (11 9's) of durability and 99.99% availability.
 
-#### Integration
+#### EFS Integration
 
 - AWS Services: Seamlessly integrates with other AWS services like EC2, Lambda, ECS, and EKS.
 - On-Premises Access: EFS can be accessed from on-premises data centers using AWS Direct Connect or VPN.
 
-#### Cost
+#### EFS Cost
 
 - Pay-as-you-go pricing based on the storage and throughput you use.
 - Cost savings are possible by using the Infrequent Access storage class for less frequently accessed data.
 
-#### Availability
+#### EFS Availability
 
 - Standard: Multi-AZ: good for production
 - One Zone: One AZ: good for dev
@@ -838,7 +947,7 @@ Similar with PGbouncer, share connections to reduce resource usage
 - Enforce IAM authentication for DB
 - RDS proxy is never public accessible (Access from VPC)
 
-#### Use cases examples
+#### RDS Proxy Use cases examples
 
 When working with lambda functions that access DB,
 million of requests can appear in a minute,
@@ -912,7 +1021,7 @@ Table:
 
 ## Ports To Be Familiar With
 
-### Data
+### Common Ports
 
 - FTP: 21
 - SSH: 22
@@ -922,7 +1031,7 @@ Table:
 
 - RDP: 3389
 
-### Databases
+### Databases Ports
 
 - Postgres: 5432
 - MySQL: 3306
@@ -931,7 +1040,12 @@ Table:
 - Oracle RDS: 1521
 - Aurora: 5432 (Postgres), 3306 (MySQL)
 
-#
+## Domain Name System (DNS)
+
+Translate human friendly hostname into machine IP addresses
+
+[DNS](../../DNS/README.md)
+
 #
 #
 #

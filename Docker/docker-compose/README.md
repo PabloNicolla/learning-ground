@@ -1,5 +1,12 @@
 # Docker compose
 
+- [Docker compose](#docker-compose)
+  - [Create](#create)
+  - [Read](#read)
+  - [Update](#update)
+  - [Delete](#delete)
+  - [Debugging and Troubleshooting Docker Compose Commands](#debugging-and-troubleshooting-docker-compose-commands)
+
 ## Create
 
 ```bash

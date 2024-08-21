@@ -1,5 +1,9 @@
 # K8s
 
+- [K8s](#k8s)
+  - [Minikube](#minikube)
+  - [Kubectl](#kubectl)
+
 ## Minikube
 
 ```bash
