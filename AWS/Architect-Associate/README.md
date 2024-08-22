@@ -10,7 +10,8 @@
       - [IAM Managed Policy](#iam-managed-policy)
       - [IAM Inline Policy](#iam-inline-policy)
       - [IAM Permissions](#iam-permissions)
-      - [IAM policies Structure](#iam-policies-structure)
+      - [IAM Policies Structure](#iam-policies-structure)
+        - [IAM Policy Example](#iam-policy-example)
     - [Aws Access](#aws-access)
       - [AWS SDK](#aws-sdk)
       - [AWS CloudShell](#aws-cloudshell)
@@ -111,12 +112,21 @@
     - [Global Infrastructure](#global-infrastructure)
   - [Elastic Beanstalk](#elastic-beanstalk)
   - [S3](#s3)
+    - [S3 Use Cases](#s3-use-cases)
+    - [S3 Objects](#s3-objects)
+      - [S3 Objects attributes](#s3-objects-attributes)
+    - [S3 Security (Policies)](#s3-security-policies)
+      - [S3 Bucket Policy](#s3-bucket-policy)
+    - [S3 Static Website Hosting](#s3-static-website-hosting)
+    - [S3 Versioning](#s3-versioning)
+    - [S3 Replication](#s3-replication)
+    - [S3 Storage Classes](#s3-storage-classes)
+    - [S3 Lifecycle Rules](#s3-lifecycle-rules)
 - [](#)
 - [](#-1)
 - [](#-2)
 - [](#-3)
 - [](#-4)
-
 
 ## Aws Infrastructure Intro
 
@@ -167,7 +177,7 @@ RECOMMENDED: **Least Privilege Principle**
 - They define what operations can be performed on specific AWS resources.
 - Permissions are specified within the policy document using actions, resources, and conditions.
 
-#### IAM policies Structure
+#### IAM Policies Structure
 
 Consists of:
 
@@ -184,7 +194,43 @@ Statements consists of:
 - Resource: list of resources to which the actions applied to
 - Condition: conditions for when this policy is in effect **(optional)**
 
-![Policy Example](image.png)
+##### IAM Policy Example
+
+Purpose: This IAM policy grants full access to the S3 service and read-only access to EC2 instances.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "FullAccessToS3",
+      "Effect": "Allow",
+      "Action": "s3:*",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ReadOnlyAccessToEC2",
+      "Effect": "Allow",
+      "Action": [
+        "ec2:DescribeInstances",
+        "ec2:DescribeVolumes"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+Explanation:
+
+- Version: Specifies the policy language version.
+- Statement: Contains the individual policy rules.
+  - Sid: Unique identifier for the statement.
+  - Effect: Specifies whether the rule allows or denies the action.
+  - Action: The specific actions that are allowed or denied.
+    - "s3:*" grants all actions related to S3.
+    - "ec2:DescribeInstances", "ec2:DescribeVolumes" grant read-only access to describe EC2 instances and volumes.
+  - Resource: Specifies the resources to which the actions apply ("*" means all resources).
 
 ### Aws Access
 
@@ -1175,7 +1221,153 @@ Elastic Beanstalk simplifies the deployment and management of web applications b
 
 ## S3
 
+- S3 names must globally unique
+- S3 is defined Regionally
 
+### S3 Use Cases
+
+- data backups
+- archive
+- content storage
+- media hosting
+- static website
+- big data analytics
+
+### S3 Objects
+
+KEY: OBJECT
+
+`s3://my-bucket/f1.txt`:
+
+- key: f1.txt
+- object: ...DATA...
+
+`s3://my-bucket/folder1/folder2/f1.txt`:
+
+- key: folder1/folder2/f1.txt
+- object: ...DATA...
+
+#### S3 Objects attributes
+
+- Size (Max 5TB)
+  - files > 5GB must use multi-part upload
+- Metadata (KEY:VALUE)
+- Tags (KEY:VALUE) (up to 10)
+- Version ID (If enabled)
+
+### S3 Security (Policies)
+
+1. User-Based Policies:
+   - IAM Policies: These are attached to IAM users, groups, or roles and define what actions a user or service can perform on specific AWS resources, including S3. For example, an IAM policy can grant or restrict access to all S3 buckets or specific actions like uploading or deleting objects.
+2. Resource-Based Policies:
+   - Bucket Policies: These are JSON documents attached directly to S3 buckets. They define who (which users, roles, or accounts) can access the bucket and what actions they can perform. Bucket policies apply to all objects within the bucket and are used for broader, bucket-wide permissions.
+   - Object Access Control Lists (ACLs): ACLs provide finer-grained control at the individual object level within a bucket. They define specific permissions for each object, such as who can read or write to it. This is useful when different objects in the same bucket need different levels of access.
+   - Bucket Access Control Lists (ACLs): Similar to object ACLs, but less commonly used. Bucket ACLs are legacy tools that provide basic read and write permissions at the bucket level, typically in scenarios where more granular bucket policies are not needed.
+3. Policy Evaluation Logic:
+   - Access is Granted If: An IAM principal can access an S3 resource if the IAM policy allows the action or the resource-based policy allows it, and there is no explicit deny in any applicable policy. The evaluation of these policies follows the principle of "least privilege," meaning the combination of these policies determines the final access rights.
+
+#### S3 Bucket Policy
+
+S3 Bucket Policy Example
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowSpecificIPRange",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "s3:*",
+      "Resource": [
+        "arn:aws:s3:::example-bucket",
+        "arn:aws:s3:::example-bucket/*"
+      ],
+      "Condition": {
+        "IpAddress": {
+          "aws:SourceIp": "203.0.113.0/24"
+        }
+      }
+    }
+  ]
+}
+```
+
+Purpose: This S3 bucket policy allows access to a specific bucket (example-bucket) only from a particular IP address range.
+
+**Explanation:**
+
+- Version: Specifies the policy language version (best practice is to use "2012-10-17").
+- Statement: A container for the policy's main elements.
+  - Sid: A unique identifier for the statement (optional but useful for management).
+  - Effect: Specifies whether the statement allows or denies the action ("Allow" or "Deny").
+  - Principal: Specifies the user, account, service, or other entity that is allowed or denied access to a resource ("*" allows any entity).
+  - Action: The specific actions that are allowed or denied (e.g., "s3:*" allows all S3 actions).
+  - Resource: Specifies the bucket and objects to which the policy applies.
+    - "arn:aws:s3:::example-bucket" applies to the bucket itself.
+    - "arn:aws:s3:::example-bucket/*" applies to all objects within the bucket.
+  - Condition: Adds conditions to the policy.
+    - IpAddress: Restricts access to the specified IP range ("203.0.113.0/24").
+
+### S3 Static Website Hosting
+
+S3 can host static websites
+
+### S3 Versioning
+
+- Enabled at bucket level
+- Prior to being enabled, all versions are set to `null`
+- It allow for rollbacks
+- prevents against unintended deletes (Just marks as deleted)
+
+Turning versioning off is a safe operation and does not delete objects versions
+
+### S3 Replication
+
+- Versioning must be enabled
+- Cross-Region Replication (CRR)
+- Same-Region Replication (SRR)
+- Buckets can be from different AWS accounts
+- Copy process is asynchronous
+- IAM permissions must be configured
+
+1. Only new objects are replicated (After replication is enabled)
+2. Use S3 Batch Replication for existing objects
+3. (Optional) can replicate delete markers
+4. If b3 replicates b2 which replicates b1
+   1. Changes in b1 will not be replicated in b3
+
+### S3 Storage Classes
+
+|                                 | S3 Standard                                          | S3 Intelligent-Tiering*                                                  | S3 Express One Zone**                                           | S3 Standard-IA                                           | S3 One Zone-IA**                        | S3 GlacierInstant Retrieval                                                   | S3 Glacier Flexible Retrieval***                             | S3 GlacierDeep Archive***                                   |
+| ------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------ | --------------------------------------------------------------- | -------------------------------------------------------- | --------------------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------------- |
+| Use cases                       | General purpose storage for frequently accessed data | Automatic cost savings for data with unknown or changing access patterns | High performance storage for your most frequently accessed data | Infrequently accessed data that needs millisecond access | Re-creatable infrequently accessed data | Long-lived data that is accessed a few times per year with instant retrievals | Backup and archive data that is rarely accessed and low cost | Archive data that is very rarely accessed and very low cost |
+| First byte latency              | milliseconds                                         | milliseconds                                                             | single-digit milliseconds                                       | milliseconds                                             | milliseconds                            | milliseconds                                                                  | minutes or hours                                             | hours                                                       |
+| Designed for availability       | 99.99%                                               | 99.9%                                                                    | 99.95%                                                          | 99.9%                                                    | 99.5%                                   | 99.9%                                                                         | 99.99%                                                       | 99.99%                                                      |
+| Availability SLA                | 99.9%                                                | 99%                                                                      | 99.9%                                                           | 99%                                                      | 99%                                     | 99%                                                                           | 99.9%                                                        | 99.9%                                                       |
+| Availability Zones              | ≥3                                                   | ≥3                                                                       | 1                                                               | ≥3                                                       | 1                                       | ≥3                                                                            | ≥3                                                           | ≥3                                                          |
+| Minimum storage duration charge | N/A                                                  | N/A                                                                      | 1 hour                                                          | 30 days                                                  | 30 days                                 | 90 days                                                                       | 90 days                                                      | 180 days                                                    |
+| Retrieval charge                | N/A                                                  | N/A                                                                      | N/A                                                             | per GB retrieved                                         | per GB retrieved                        | per GB retrieved                                                              | per GB retrieved                                             | per GB retrieved                                            |
+| Lifecycle transitions           | Yes                                                  | Yes                                                                      | No                                                              | Yes                                                      | Yes                                     | Yes                                                                           | Yes                                                          | Yes                                                         |
+
+Durability: Amazon S3 provides the most durable storage in the cloud.
+Based on its unique architecture, S3 is designed to exceed 99.999999999% (11 nines) data durability.
+Additionally, S3 stores data redundantly across a minimum of 3 Availability Zones by default,
+providing built-in resilience against widespread disaster.
+Customers can store data in a single AZ to minimize storage cost or latency,
+in multiple AZs for resilience against the permanent loss of an entire data center,
+or in multiple AWS Regions to meet geographic resilience requirements.
+
+- *S3 Intelligent-Tiering charges a small monitoring and automation charge
+- ***S3 Glacier Flexible Retrieval
+  - Expedited (1 to 5 minutes)
+  - Standard (3 to 5 hours)
+  - Bulk (5 to 12 hours)
+- ***S3 Glacier Deep Archive
+  - Standard (12 hours)
+  - Bulk (48 hours)
+
+### S3 Lifecycle Rules
 
 #
 #
