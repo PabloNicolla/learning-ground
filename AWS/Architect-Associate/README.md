@@ -122,11 +122,20 @@
     - [S3 Replication](#s3-replication)
     - [S3 Storage Classes](#s3-storage-classes)
     - [S3 Lifecycle Rules](#s3-lifecycle-rules)
+    - [S3 Requester Pays](#s3-requester-pays)
+    - [S3 Event Notification](#s3-event-notification)
+    - [S3 Performance](#s3-performance)
+      - [S3 Recommendations \& Notes](#s3-recommendations--notes)
+    - [S3 Select \& Glacier Select](#s3-select--glacier-select)
+    - [S3 Batch Operations](#s3-batch-operations)
+    - [S3 Storage Lens](#s3-storage-lens)
+      - [S3 Storage Lens Metrics](#s3-storage-lens-metrics)
+      - [S3 Storage Lend - Free vs. Paid](#s3-storage-lend---free-vs-paid)
 - [](#)
 - [](#-1)
 - [](#-2)
 - [](#-3)
-- [](#-4)
+  - [Useful AWS Resources](#useful-aws-resources)
 
 ## Aws Infrastructure Intro
 
@@ -1237,6 +1246,8 @@ Elastic Beanstalk simplifies the deployment and management of web applications b
 
 KEY: OBJECT
 
+KEY is made of `prefix(optional) + name`
+
 `s3://my-bucket/f1.txt`:
 
 - key: f1.txt
@@ -1245,6 +1256,7 @@ KEY: OBJECT
 `s3://my-bucket/folder1/folder2/f1.txt`:
 
 - key: folder1/folder2/f1.txt
+- prefix: folder1/folder2/
 - object: ...DATA...
 
 #### S3 Objects attributes
@@ -1369,8 +1381,155 @@ or in multiple AWS Regions to meet geographic resilience requirements.
 
 ### S3 Lifecycle Rules
 
+1. Transition Rule
+   - Purpose: Automatically transitions objects to a different storage class after a specified number of days since object creation.
+   - Use Case: Move infrequently accessed data to a more cost-effective storage class, such as from S3 Standard to S3 Standard-IA, S3 One Zone-IA, or S3 Glacier.
+   - Example: Transition objects to S3 Standard-IA after 30 days and then to S3 Glacier after 180 days.
+2. Expiration Rule
+   - Purpose: Permanently deletes objects after a specified number of days since object creation.
+   - Use Case: Automatically remove outdated or temporary files to free up storage and reduce costs.
+   - Example: Delete log files that are older than 365 days.
+3. Noncurrent Version Transition Rule
+   - Purpose: Transitions noncurrent versions of objects (older versions kept after updates) to a different storage class after a specified number of days.
+   - Use Case: Manage the cost of retaining older versions of objects by moving them to cheaper storage classes like S3 Glacier.
+   - Example: Move noncurrent versions to S3 Glacier 30 days after they become noncurrent.
+4. Noncurrent Version Expiration Rule
+   - Purpose: Permanently deletes noncurrent versions of objects after a specified number of days.
+   - Use Case: Automatically clean up old versions of objects to reduce storage costs.
+   - Example: Delete noncurrent versions of objects 90 days after they become noncurrent.
+5. Abort Incomplete Multipart Upload Rule
+   - Purpose: Automatically aborts multipart uploads that have not been completed within a specified number of days after initiation.
+   - Use Case: Clean up incomplete multipart uploads to avoid unnecessary storage charges.
+   - Example: Abort multipart uploads that have been incomplete for more than 7 days.
+
+> *S3 Analytics can give recommendation related to increasing savings by moving objects between storage tiers*
+
+### S3 Requester Pays
+
+S3 Requester Pays is a bucket configuration that shifts the cost of data access from the bucket owner to the requester (the person downloading the data).
+This is useful when hosting large datasets where many users need to download the data, ensuring the owner doesn't bear all the costs.
+Example:
+
+- Scenario: An organization hosts a public dataset in an S3 bucket and enables the "Requester Pays" option.
+- Behavior: When users download data from this bucket, they pay for the data transfer and request charges, not the bucket owner.
+
+Use Case:
+
+Researchers accessing large datasets can be charged directly for the data they retrieve, reducing the financial burden on the data provider.
+
+Requirements:
+
+User must not be anonymous and must be authenticated into AWS
+
+### S3 Event Notification
+
+Send specific event that happens in the S3 buckets to SNS/SQS/"Lambda Function" or use **Amazon EventBridge**
+
+Requirements:
+
+SNS/SQS/"Lambda Function" must have access permission to the S3 event
+
+### S3 Performance
+
+- latency 100-200ms
+- 3500 PUT/COPY/POST/DELETE or 5500 GET/HEAD requests per second per prefix
+
+#### S3 Recommendations & Notes
+
+- Multi-Part upload
+  - recommended > 100MB (may speed upload with parallel uploads) | Required > 5GB
+- S3 Transfer Acceleration
+  - Upload file to closest Edge location instead of going directly to the S3
+- Parallelize Get by specifying byte ranges
+  - File is broken down into several ranges that are downloaded in parallel (faster and more resilient approach)
+  - Can be used to only get part of the file (e.g. just the top that contains metadata)
+
+### S3 Select & Glacier Select
+
+A more efficient and economic way to perform simple filter select action on a S3 bucket.
+Instead of selecting everything and filtering on the application side, S3 Selects happens on the AWS server-side.
+It uses **SQL**.
+
+retrieve a subset of your dataset stored in S3 with the .csv format.
+
+### S3 Batch Operations
+
+perform bulk operations in single request.
+
+- You can modify:
+  - object metadata/properties
+  - copy objects between S3 buckets
+  - encrypt all the un-encrypted objects
+  - modify ACLs/tags
+  - restore from S3 Glacier
+  - Invoke Lambda functions with custom actions on each object
+
+```
+S3 Inventory ==Object List Report==> S3 Select (Filter) ==filtered list==> S3 Batch Operations ====> Processed Objects
+                                                                                  /\
+                                                                                  ||
+                                                                        Operations + Parameters
+                                                                                  ||
+                                                                                  ||
+                                                                                 User
+```
+
+### S3 Storage Lens
+
+AWS Storage Lens is a cloud storage analytics feature that provides visibility into your S3 storage usage and activity.
+It offers detailed insights across all your S3 buckets, allowing you to optimize costs, improve data security, and enhance performance.
+Key Features:
+
+- Comprehensive Metrics: Collects and analyzes metrics on storage usage, object counts, and access patterns across your entire S3 environment.
+- Dashboard & Reports: Provides a centralized dashboard with visualizations and reports to help you understand storage trends, anomalies, and identify cost-saving opportunities.
+- Recommendations: Offers actionable insights, such as identifying underutilized storage, optimizing lifecycle policies, and enforcing security best practices.
+- Multi-Account Support: Enables **monitoring across multiple AWS accounts and regions**, providing an organization-wide view of storage usage.
+
+Example Use Case:
+
+You can use AWS Storage Lens to identify buckets with infrequent access, allowing you to apply S3 lifecycle policies to transition objects to cheaper storage classes, ultimately reducing costs.
+
+#### S3 Storage Lens Metrics
+
+1. Summary Metrics
+   - Purpose: Provides a high-level overview of your S3 environment.
+   - Insights: General insights about S3 usage, helping you identify the most and least used buckets and prefixes.
+2. Cost-Optimization Metrics
+   - Purpose: Helps you manage and reduce storage costs.
+   - Insights: Identifies areas where you can save money, such as unused storage or inefficient lifecycle policies.
+3. Data-Protection Metrics
+   - Purpose: Ensures the safety and durability of your data.
+   - Insights: Monitors factors like versioning, replication, and encryption to protect your data.
+4. Access-Management Metrics
+   - Purpose: Tracks how your data is accessed.
+   - Insights: Monitors access patterns, permissions, and policies to ensure proper data governance.
+5. Event Metrics
+   - Purpose: Provides insights into significant changes or events.
+   - Insights: Tracks actions like bucket policy changes, deletion events, and other critical operations.
+6. Performance Metrics
+   - Purpose: Measures the efficiency of your S3 operations.
+   - Insights: Monitors factors like latency and request rates to optimize performance.
+7. Activity Metrics
+   - Purpose: Tracks usage patterns over time.
+   - Insights: Monitors read/write operations, helping to understand how data is being used.
+8. Detailed Status Code Metrics
+   - Purpose: Provides a deeper understanding of request outcomes.
+   - Insights: Tracks status codes (e.g., 200, 404, 500) to identify errors or unusual activity patterns.
+
+#### S3 Storage Lend - Free vs. Paid
+
+- Free metrics
+  - Data queries available for 14 days
+- Advanced Metrics and Recommendations
+  - Data queries available for 15 months
+  - Prefix Aggregator: Collect metrics at prefix level
+  - CloudWatch Publishing: Access metrics on CloudWatch
+
 #
 #
 #
 #
-#
+
+## Useful AWS Resources
+
+[AWS Policy Generator](https://awspolicygen.s3.amazonaws.com/policygen.html)
