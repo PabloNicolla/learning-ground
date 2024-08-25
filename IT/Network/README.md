@@ -12,4 +12,5 @@
 
 ## Links
 
-[network layers - FCC](https://www.freecodecamp.org/news/osi-model-networking-layers-explained-in-plain-english/)
+[Network Layers - FCC](https://www.freecodecamp.org/news/osi-model-networking-layers-explained-in-plain-english/)
+[Networking Summary - Video](https://www.youtube.com/watch?v=sMHzfigUxz4)
