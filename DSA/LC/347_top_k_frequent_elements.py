@@ -1,3 +1,6 @@
+from typing import List
+
+
 class Solution:
     # Bucket Sort + HashMap
     def topKFrequent(self, nums: List[int], k: int) -> List[int]:

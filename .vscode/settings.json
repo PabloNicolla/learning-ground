@@ -1,5 +1,16 @@
 {
-  "cSpell.words": ["Burstable", "cooldown", "GENEVE", "GWLB", "Keycloak", "Proto"],
+  "cSpell.words": [
+    "Burstable",
+    "cooldown",
+    "curr",
+    "GENEVE",
+    "GWLB",
+    "Keycloak",
+    "nums",
+    "Proto",
+    "subgrid",
+    "subgrids"
+  ],
   "files.associations": {
     "xlocale": "cpp",
     "vector": "cpp",
