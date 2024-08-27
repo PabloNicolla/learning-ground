@@ -4,7 +4,7 @@
 class Solution
 {
 public:
-  int carFleet(int target, std::vector<int> position, std::vector<int> speed)
+  int carFleet(int target, std::vector<int> &position, std::vector<int> &speed)
   {
     std::vector<std::pair<int, int>> carsAndSpeed{};
 
