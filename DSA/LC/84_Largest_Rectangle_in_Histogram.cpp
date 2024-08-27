@@ -1,6 +1,45 @@
 #include <vector>
 
-class Solution
+class Solution2
+{
+public:
+  int largestRectangleArea(std::vector<int> &heights)
+  {
+    std::vector<std::pair<int, int>> stack{};
+    int maxArea{};
+    int i = 0;
+    for (; i < heights.size(); ++i)
+    {
+      int height = heights[i];
+      int HeightStartIndex = i;
+      while (!stack.empty() && stack.back().first > height)
+      {
+        int possibleNewMax = stack.back().first * (i - stack.back().second);
+        if (possibleNewMax > maxArea)
+        {
+          maxArea = possibleNewMax;
+        }
+        HeightStartIndex = stack.back().second;
+        stack.pop_back();
+      }
+
+      stack.push_back({height, HeightStartIndex});
+    }
+
+    for (const auto &kv : stack)
+    {
+      int possibleNewMax = kv.first * (i - kv.second);
+      if (possibleNewMax > maxArea)
+      {
+        maxArea = possibleNewMax;
+      }
+    }
+
+    return maxArea;
+  }
+};
+
+class Solution1
 {
 public:
   int largestRectangleArea(std::vector<int> &heights)
