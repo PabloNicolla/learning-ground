@@ -8,14 +8,14 @@ function findDuplicate(nums: number[]): number {
     slow = nums[slow];
   } while (fast != slow);
 
-  fast = nums[0];
+  let slow2 = nums[0];
 
-  while (fast != slow) {
-    fast = nums[fast];
+  while (slow2 != slow) {
+    slow2 = nums[slow2];
     slow = nums[slow];
   }
 
-  return fast;
+  return slow2;
 }
 
 console.log(findDuplicate([1, 3, 4, 2, 2]));
