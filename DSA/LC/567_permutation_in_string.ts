@@ -48,4 +48,6 @@ function checkInclusion(s1: string, s2: string): boolean {
 // tsc LC/567_permutation_in_string.ts --lib "es2017" --target 'es2015'
 // tsc --downlevelIteration ...
 
+// tsc --project tsconfig.json
+
 export {};

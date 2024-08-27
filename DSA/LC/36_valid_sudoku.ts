@@ -30,4 +30,6 @@ function isValidSudoku(board: string[][]): boolean {
 // npm install -g typescript
 // tsc yourfile.ts
 
+// tsc --project tsconfig.json
+
 export {};

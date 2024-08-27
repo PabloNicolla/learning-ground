@@ -22,6 +22,8 @@ function decode(str: string): string[] {
 // ts-node filename.ts
 
 // npm install -g typescript
-// tsc yourfile.ts
+// tsc yourfile
+
+// tsc --project tsconfig.json
 
 export {};

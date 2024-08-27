@@ -1,16 +1,13 @@
-function minWindow(s: string, t: string): string {
-  let windowMap: Map<string, number> = new Map();
-  let minWindow: number[] | null = null;
+function minWindow(s, t) {
+  let windowMap = new Map();
+  let minWindow = null;
   let minLen = Infinity;
-
   for (let c of t) {
     windowMap.set(c, (windowMap.get(c) || 0) + 1);
   }
-
   let have = 0;
   let start = 0;
   let need = windowMap.size;
-
   for (let i = 0; i < s.length; ++i) {
     const currChar = s[i];
     const currValue = windowMap.get(currChar);
@@ -20,7 +17,6 @@ function minWindow(s: string, t: string): string {
         have++;
       }
     }
-
     while (need == have) {
       const startChar = s[start];
       const startValue = windowMap.get(startChar);
@@ -39,13 +35,4 @@ function minWindow(s: string, t: string): string {
   }
   return minWindow ? s.substring(minWindow[0], minWindow[1] + 1) : "";
 }
-
-// npm install -g ts-node
-// ts-node filename.ts
-
-// npm install -g typescript
-// tsc yourfile.ts
-
-// tsc --project tsconfig.json
-
 export {};

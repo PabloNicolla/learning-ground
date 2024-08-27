@@ -29,4 +29,6 @@ function trap(height: number[]): number {
 // npm install -g typescript
 // tsc yourfile.ts
 
+// tsc --project tsconfig.json
+
 export {};
