@@ -36,8 +36,6 @@ function evalRPN(tokens: string[]): number {
   return operands[0];
 }
 
-console.log(evalRPN(["10", "6", "9", "3", "+", "-11", "*", "/", "*", "17", "+", "5", "+"]));
-
 // npm install -g ts-node
 // ts-node filename.ts
 
