@@ -15,6 +15,7 @@
     "xlocale": "cpp",
     "vector": "cpp",
     "unordered_map": "cpp",
-    "xstring": "cpp"
+    "xstring": "cpp",
+    "algorithm": "cpp"
   }
 }
