@@ -51,14 +51,14 @@ public:
       else if (timestamp > vec[mid].timestamp)
       {
         start = mid + 1;
+        prevSmallerTimeIndex = mid;
       }
       else
       {
-        prevSmallerTimeIndex = mid;
         end = mid - 1;
       }
     }
 
-    return vec[prevSmallerTimeIndex].value;
+    return vec[prevSmallerTimeIndex].value; // 1 3 5
   }
 };
