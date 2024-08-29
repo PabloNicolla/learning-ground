@@ -73,6 +73,11 @@
     "xtr1common": "cpp",
     "xtree": "cpp",
     "xutility": "cpp",
-    "functional": "cpp"
+    "functional": "cpp",
+    "array": "cpp",
+    "queue": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "unordered_set": "cpp"
   }
 }
