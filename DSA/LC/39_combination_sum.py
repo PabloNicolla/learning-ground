@@ -5,8 +5,6 @@ class Solution:
     def combinationSum(self, nums: List[int], target: int) -> List[List[int]]:
         res = []
 
-        nums.sort()
-
         combination = []
 
         def rec(index, total):
