@@ -136,6 +136,14 @@
 - [](#-2)
 - [](#-3)
   - [Useful AWS Resources](#useful-aws-resources)
+  - [EDGE](#edge)
+  - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
+  - [VPC](#vpc)
+  - [AWS SECURITY TABLE](#aws-security-table)
+  - [AWS FSx](#aws-fsx)
+  - [dbs](#dbs)
+  - [EDGE STORAGE](#edge-storage)
+  - [TODO 1](#todo-1)
 
 ## Aws Infrastructure Intro
 
@@ -1533,3 +1541,144 @@ You can use AWS Storage Lens to identify buckets with infrequent access, allowin
 ## Useful AWS Resources
 
 [AWS Policy Generator](https://awspolicygen.s3.amazonaws.com/policygen.html)
+
+
+
+## EDGE
+
+Edge locations are global locations where content is cached
+
+
+
+## AWS Shared Responsibility Model
+
+| **Security "IN" the Cloud** | **Customer Responsibility**                                     |
+| --------------------------- | --------------------------------------------------------------- |
+|                             | **Customer Data**                                               |
+|                             | Platform, Applications, Identity & Access Management            |
+|                             | Operating System, Network & Firewall Configuration              |
+|                             | Client-side Data Encryption & Data Integrity Authentication     |
+|                             | Server-side Encryption (File System and/or Data)                |
+|                             | Networking Traffic Protection (Encryption, Integrity, Identity) |
+
+| **Security "OF" the Cloud** | **AWS Responsibility**                      |
+| --------------------------- | ------------------------------------------- |
+|                             | **Software**                                |
+|                             | **Compute**                                 |
+|                             | **Storage**                                 |
+|                             | **Database**                                |
+|                             | **Networking**                              |
+|                             | **Hardware/AWS Global Infrastructure**      |
+|                             | Regions, Availability Zones, Edge Locations |
+
+## VPC
+
+Internet gateway - To activate internet connectivity for your VPC
+
+Virtual Private Gateway - A virtual private gateway connects your VPC to another private network
+
+AWS Direct Connect - To establish a secure physical connection between your on-premises data center and your Amazon VPC, you can use AWS Direct Connect.
+
+## AWS SECURITY TABLE
+
+AWS Security Services Overview
+
+| Service                                  | Description                                                  | Protection Level         | Primary Use Case                                           |
+| ---------------------------------------- | ------------------------------------------------------------ | ------------------------ | ---------------------------------------------------------- |
+| Security Groups                          | Instance-level virtual firewall                              | Instance                 | Controls inbound/outbound traffic for EC2 instances.       |
+| Network ACLs (NACLs)                     | Subnet-level virtual firewall                                | Subnet                   | Controls traffic in/out of a subnet within a VPC.          |
+| AWS Identity and Access Management (IAM) | User and role permissions management                         | Account/Service/Resource | Manages access to AWS services and resources.              |
+| AWS Key Management Service (KMS)         | Managed service for creating and controlling encryption keys | Resource                 | Encrypts data at rest across various AWS services.         |
+| AWS Shield                               | Managed DDoS protection                                      | Application              | Protects applications running on AWS from DDoS attacks.    |
+| AWS WAF (Web Application Firewall)       | Protects web applications from common web exploits           | Application              | Filters and monitors HTTP/HTTPS requests to web apps.      |
+| AWS Config                               | Monitors and records configuration changes                   | Resource                 | Audits and evaluates AWS resource configurations.          |
+| AWS CloudTrail                           | Logs and tracks user activity                                | Account/Service/Resource | Provides audit trails for AWS account activity.            |
+| Amazon GuardDuty                         | Threat detection service                                     | Account/Resource         | Monitors for malicious activity and unauthorized behavior. |
+| AWS Secrets Manager                      | Securely manages and retrieves secrets                       | Resource                 | Manages sensitive information like API keys and passwords. |
+
+Explanation of Each Service
+
+- Security Groups:
+  - Function: Acts as a virtual firewall for EC2 instances. Security groups control the inbound and outbound traffic at the instance level.
+  - Use Case: Typically used to allow or deny specific IP addresses or ranges, protocols, and ports to access an EC2 instance.
+
+- Network ACLs (NACLs):
+  - Function: Acts as a virtual firewall at the subnet level within a VPC. NACLs control traffic entering and leaving a subnet.
+  - Use Case: Often used to enforce network-wide security policies, such as blocking certain IP ranges across multiple instances in a subnet.
+
+- AWS Identity and Access Management (IAM):
+  - Function: Manages who (user or service) has what level of access to AWS resources.
+  - Use Case: Defines permissions and roles for users, groups, and services to access AWS resources. Ensures the principle of least privilege.
+
+- AWS Key Management Service (KMS):
+  - Function: Provides a managed service for creating and controlling encryption keys used to encrypt data at rest.
+  - Use Case: Encrypts data across services like S3, EBS, RDS, etc., ensuring data is secure both at rest and in transit.
+
+- AWS Shield:
+  - Function: Provides DDoS protection for applications running on AWS.
+  - Use Case: Automatically protects against DDoS attacks, ensuring the availability of applications.
+
+- AWS WAF (Web Application Firewall):
+  - Function: Protects web applications by filtering and monitoring HTTP/HTTPS requests.
+  - Use Case: Prevents common web exploits like SQL injection, cross-site scripting, and other OWASP top 10 vulnerabilities.
+
+- AWS Config:
+  - Function: Tracks configuration changes to AWS resources and evaluates these against desired configurations.
+  - Use Case: Used for compliance auditing, security analysis, and configuration change management.
+
+- AWS CloudTrail:
+  - Function: Logs user activity and API calls across your AWS environment.
+  - Use Case: Provides a detailed audit trail of actions taken within your AWS account, aiding in security and compliance.
+
+- Amazon GuardDuty:
+  - Function: Threat detection service that monitors for malicious activity or unauthorized behavior.
+  - Use Case: Provides continuous security monitoring by analyzing logs, detecting anomalies, and generating alerts.
+
+- AWS Secrets Manager:
+  - Function: Securely stores and retrieves sensitive information like API keys, passwords, and certificates.
+  - Use Case: Manages access to secrets, rotating them automatically to enhance security.
+
+## AWS FSx
+
+todo
+
+
+## dbs
+
+As we learned in the previous lessons, AWS has a variety of database options for different use cases. The following table provides a quick look at the AWS database portfolio.
+
+| AWS Service(s)                                                 | Database Type | Use Cases                                                                                          |
+| -------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------- |
+| Amazon RDS, Aurora,Amazon Redshift                             | Relational    | Traditional applications, ERP, CRM, ecommerce                                                      |
+| DynamoDB                                                       | Key-value     | High-traffic web applications, ecommerce systems, gaming applications                              |
+| Amazon ElastiCache for Memcached, Amazon ElastiCache for Redis | In-memory     | Caching, session management, gaming leaderboards, geospatial applications                          |
+| Amazon DocumentDB                                              | Document      | Content management, catalogs, user profiles                                                        |
+| Amazon Keyspaces                                               | Wide column   | High-scale industrial applications for equipment maintenance, fleet management, route optimization |
+| Neptune                                                        | Graph         | Fraud detection, social networking, recommendation engines                                         |
+| Timestream                                                     | Time series   | IoT applications, Development Operations (DevOps), industrial telemetry                            |
+| Amazon QLDB                                                    | Ledger        | Systems of record, supply chain, registrations, banking transactions                               |
+
+## EDGE STORAGE
+
+| Description                  | AWS Snowcone                              | AWS Snowcone SSD                          | AWS Snowball Edge Storage Optimize             | AWS Snowball Edge Storage Optimized with compute | AWS Snowball Edge Compute Optimized            |
+| ---------------------------- | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
+| Usable compute               | 2 vCPUs                                   | 2 vCPUs                                   | Not applicable                                 | 24 vCPUs                                         | 52 vCPUs 1 GPU (Optional)                      |
+| Usable compute services      | Amazon EC2                                | Amazon EC2                                | Not applicable                                 | Amazon EC2 AWS Lambda                            | Amazon EC2 AWS Lambda                          |
+| Usable memory                | 4 GB                                      | 4 GB                                      | Not applicable                                 | 32 GB                                            | 208 GB HDD                                     |
+| storage capacity             | 8 TB usable                               | None                                      | 80 TB usable                                   | 80 TB usable                                     | 42 TB usable                                   |
+| SSD storage capacity         | None                                      | 14 TB usable                              | None                                           | 1 TB                                             | 7.68 TB                                        |
+| Usable storage services      | Amazon EBS or NFS                         | Amazon EBS or NFS                         | Amazon S3                                      | Amazon EBS and Amazon S3                         | Amazon EBS and Amazon S3                       |
+| Cluster capable              | No                                        | No                                        | No                                             | Yes                                              | Yes                                            |
+| Device weight                | 4.5 pounds 2.1 kg                         | 4.5 pounds 2.1 kg                         | 49.7 pounds 22.54 kg                           | 49.7 pounds 22.54 kg                             | 49.7 pounds 22.54 kg                           |
+| Device size L x W x H        | 9 x 6 x 3 inches (227 x 148.6 x 82.65 mm) | 9 x 6 x 3 inches (227 x 148.6 x 82.65 mm) | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm) | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm)   | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm) |
+| Data and network connections | 1/10 Gbps RJ45 and WiFi                   | 1/10 Gbps RJ45 and WiFi                   | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28     | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28       | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28     |
+| Transfer options             | NFS and AWS DataSync                      | NFS and AWS DataSync                      | Amazon S3 API and NFS                          | Amazon S3 API and NFS                            | Amazon S3 API and NFS                          |
+| Encryption                   | Yes, 256-bit                              | Yes, 256-bit                              | Yes, 256-bit                                   | Yes, 256-bit                                     | Yes, 256-bit                                   |
+
+## TODO 1
+
+AWS Batch
+
+Amazon Lightsail
+
+![alt text](image.png)
