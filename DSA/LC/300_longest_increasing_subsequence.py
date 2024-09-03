@@ -14,3 +14,14 @@ class Solution:
             memo[i] += max_found + 1
             global_max = max(global_max, memo[i])
         return global_max
+
+
+class Solution2:
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        LIS = [1] * len(nums)
+
+        for i in range(len(nums) - 1, -1, -1):
+            for j in range(i + 1, len(nums)):
+                if nums[i] < nums[j]:
+                    LIS[i] = max(LIS[i], 1 + LIS[j])
+        return max(LIS)
