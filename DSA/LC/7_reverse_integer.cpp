@@ -1,3 +1,5 @@
+#include <limits>
+
 class Solution1
 {
 public:
