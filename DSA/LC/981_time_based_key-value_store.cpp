@@ -1,5 +1,6 @@
 #include <string>
 #include <unordered_map>
+#include <vector>
 
 struct Data
 {
@@ -59,6 +60,6 @@ public:
       }
     }
 
-    return vec[prevSmallerTimeIndex].value; // 1 3 5
+    return vec[prevSmallerTimeIndex].value;
   }
 };
