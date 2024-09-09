@@ -81,6 +81,7 @@
     "span": "cpp",
     "unordered_set": "cpp",
     "iomanip": "cpp",
-    "set": "cpp"
+    "set": "cpp",
+    "random": "cpp"
   }
 }
