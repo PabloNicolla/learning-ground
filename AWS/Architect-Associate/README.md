@@ -131,10 +131,24 @@
     - [S3 Storage Lens](#s3-storage-lens)
       - [S3 Storage Lens Metrics](#s3-storage-lens-metrics)
       - [S3 Storage Lend - Free vs. Paid](#s3-storage-lend---free-vs-paid)
+    - [S3 Encryption](#s3-encryption)
+      - [S3 Encryption Server Side](#s3-encryption-server-side)
+      - [S3 Encryption Client Side](#s3-encryption-client-side)
+      - [S3 Endpoints](#s3-endpoints)
+    - [S3 CORS](#s3-cors)
+    - [S3 MFA Delete](#s3-mfa-delete)
+    - [S3 Access Logs](#s3-access-logs)
+    - [S3 Pre-Signed URLs](#s3-pre-signed-urls)
+    - [S3 Glacier Vault Lock](#s3-glacier-vault-lock)
+    - [S3 Object Lock](#s3-object-lock)
+    - [S3 Access Points](#s3-access-points)
+      - [S3 Access Points VPC Origin](#s3-access-points-vpc-origin)
+    - [S3 Object Lambda](#s3-object-lambda)
 - [](#)
 - [](#-1)
 - [](#-2)
 - [](#-3)
+- [](#-4)
   - [Useful AWS Resources](#useful-aws-resources)
   - [EDGE](#edge)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
@@ -1533,10 +1547,132 @@ You can use AWS Storage Lens to identify buckets with infrequent access, allowin
   - Prefix Aggregator: Collect metrics at prefix level
   - CloudWatch Publishing: Access metrics on CloudWatch
 
-#
-#
-#
-#
+### S3 Encryption
+
+- Encryption for objects can be enforced via bucket policies
+
+#### S3 Encryption Server Side
+
+- SS3-S3
+  - uses key fully managed by AWS (you don't have access)
+  - Server-Side
+  - must have header "a-amz-server-side-encryption": "AES-256"
+  - enabled by default for new buckets & new objects
+- SSE-KMS (Key Management Service)
+  - uses keys managed by AWS KMS (you have access)
+  - Server-Side
+  - Advantages:
+    - more user control
+    - CloudTrail view on key usage
+  - must have header "a-amz-server-side-encryption": "aws:kms"
+  - Limitations:
+    - uploads and downloads counts towards AWS KMS quotas
+    - (GenerateDataKey) / (Decrypt)
+- SSE-C
+  - key managed outside AWS
+  - Server-Side
+  - Amazon S3 does NOT stores the provided key
+  - the is key must be in the HTTP header and only HTTPS is accepted
+
+#### S3 Encryption Client Side
+
+- fully managed by the client
+- uses client libraries such as Amazon S3 Client-Side Encryption Library
+- Client must encrypt the file before sending
+- Client must decrypt the file after receiving
+
+#### S3 Endpoints
+
+HTTP Endpoint
+HTTPS Endpoint
+
+HTTPS can be enforced via Bucket Policies
+
+### S3 CORS
+
+[What is CORS?](../../IT/Network/CORS/README.md)
+
+In a HTTP request, when the ORIGIN is different than HOST browser takes extra security steps before proceeding with the request.
+It is necessary that HOST allows requests from ORIGIN in the CORS configuration.
+
+### S3 MFA Delete
+
+This option protects buckets from destructive actions:
+
+- Permanently delete objects
+- Suspend Object Versioning
+
+Actions not affected
+
+- Activate Versioning
+- List delete versions
+
+To use MFA DELETE, **Versioning must be enabled**, and only the **bucket owner (root-account)** can enable/disable MFA delete.
+
+### S3 Access Logs
+
+- Log all access to S3 buckets
+- any request made to S3 will be logged into another S3 bucket
+- the target bucket must be in the same AWS region
+
+> [!WARNING]
+> Never set the logging bucket to store logs in itself. This will create an infinite loop.
+
+### S3 Pre-Signed URLs
+
+- Generate via S3 console, AWS CLI or SDK
+- Expiration time:
+  - S3 Console - 1 min to 720 max (12 Hours)
+  - AWS CLI (default) 3600 seconds, (max) 604800 secs (168 Hours)
+- The URL inherit the permissions of the user that generated it
+
+### S3 Glacier Vault Lock
+
+- Lock files, blocking delete/edit
+- WORM (Write Once Read Many)
+- Create a Vault Policy
+- Applies to the whole S3 bucket
+
+### S3 Object Lock
+
+- Version must be enabled
+- Applies to single object
+- Retention Modes:
+  - Compliance (Similar to Glacier Vault Lock):
+    - Cannot be deleted by any user
+    - Cannot be edited/delete until policy expiration
+  - Governance:
+    - Most users cannot overwrite or delete objects or lock settings
+- Retention Period:
+  - protects the object for a fixed period, and it can be extended
+- Legal Hold:
+  - protects the object indefinitely, independent from retention period
+  - can be placed/removed using IAM permission
+
+### S3 Access Points
+
+- Access points allows access (read, write or both) to specific S3 bucket prefixes
+- Policies are attached to each Access Point
+- Each Access Point has:
+  - its own DNS
+  - access point policy
+
+#### S3 Access Points VPC Origin
+
+- It is possible to define access point to be accessible only from within the VPC
+- You must create a VPC Endpoint to access the Access Point
+- VPC policy mus allow access to the bucket and access point
+
+### S3 Object Lambda
+
+- AWS Lambda can be used to change an object before it is retrieved by the called application.
+- Only one S3 bucket is needed. S3 access point and S3 object lambda access points are needed.
+
+# 
+# 
+# 
+# 
+# 
 
 ## Useful AWS Resources
 

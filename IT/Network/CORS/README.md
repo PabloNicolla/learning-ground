@@ -23,6 +23,7 @@ CORS Headers:
 ## CORS Example
 
 Suppose you have a frontend application hosted at `https://frontend.example.com` that needs to interact with an API hosted at `https://api.example.com`. By default, the browser would block requests from the frontend to the API due to the Same-Origin Policy. To enable communication, you would configure CORS on the API server.
+
 Server-Side Configuration:
 
 Here’s an example of a CORS policy in an Express.js (Node.js) API:
