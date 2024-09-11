@@ -10,10 +10,10 @@ public:
     for (int i = 0; i < s.size(); ++i)
     {
       int remaining = k;
-      int lenght = 1;
+      int length = 1;
       for (int j = i + 1; j < s.size(); ++j)
       {
-        lenght++;
+        length++;
         if (s[i] == s[j])
         {
           continue;
@@ -24,19 +24,19 @@ public:
         }
         else
         {
-          lenght--;
+          length--;
           break;
         }
       }
 
       for (int j = i - 1; j >= 0 && remaining > 0; --j, --remaining)
       {
-        lenght++;
+        length++;
       }
 
-      if (lenght > max)
+      if (length > max)
       {
-        max = lenght;
+        max = length;
       }
     }
 
