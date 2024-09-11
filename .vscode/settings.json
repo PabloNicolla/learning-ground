@@ -82,6 +82,12 @@
     "unordered_set": "cpp",
     "iomanip": "cpp",
     "set": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "*.tcc": "cpp",
+    "cwctype": "cpp",
+    "memory_resource": "cpp",
+    "string_view": "cpp",
+    "numbers": "cpp",
+    "text_encoding": "cpp"
   }
 }
