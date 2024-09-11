@@ -144,11 +144,28 @@
     - [S3 Access Points](#s3-access-points)
       - [S3 Access Points VPC Origin](#s3-access-points-vpc-origin)
     - [S3 Object Lambda](#s3-object-lambda)
+  - [AWS Cloud Front](#aws-cloud-front)
+    - [CloudFront - Origins](#cloudfront---origins)
+    - [CloudFront vs S3 Cross Region Replication](#cloudfront-vs-s3-cross-region-replication)
+    - [CloudFront - ALB or EC2 as Origin](#cloudfront---alb-or-ec2-as-origin)
+    - [CloudFront Geo Restriction](#cloudfront-geo-restriction)
+    - [CloudFront Price](#cloudfront-price)
+      - [CloudFront Price Classes](#cloudfront-price-classes)
+    - [CloudFront Cache Invalidations](#cloudfront-cache-invalidations)
+  - [AWS Global Accelerator](#aws-global-accelerator)
+    - [Anycast IP](#anycast-ip)
+    - [Unicast IP](#unicast-ip)
+    - [CloudFront versus Global Accelerator](#cloudfront-versus-global-accelerator)
+  - [AWS Storage Extras](#aws-storage-extras)
 - [](#)
 - [](#-1)
 - [](#-2)
 - [](#-3)
 - [](#-4)
+- [](#-5)
+- [](#-6)
+- [](#-7)
+- [](#-8)
   - [Useful AWS Resources](#useful-aws-resources)
   - [EDGE](#edge)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
@@ -1668,6 +1685,133 @@ To use MFA DELETE, **Versioning must be enabled**, and only the **bucket owner (
 - AWS Lambda can be used to change an object before it is retrieved by the called application.
 - Only one S3 bucket is needed. S3 access point and S3 object lambda access points are needed.
 
+## AWS Cloud Front
+
+- Content Delivery Network
+- Improve read performance by caching content at edge locations
+- 200+ edge locations around the world
+- DDoS protection, integration with Shield and AWS Web Application Firewall
+
+### CloudFront - Origins
+
+- S3 buckets
+  - distribute and cache files at the edge
+  - Enhanced security with CloudFront **Origin Access Control (OCA)**
+  - CloudFront can be used as ingress to upload files to S3
+- Custom Origin (HTTP)
+  - Application Load Balancer
+  - EC2 instance
+  - S3 website
+  - Any HTTP backend
+
+### CloudFront vs S3 Cross Region Replication
+
+- CloudFront
+  - Global Edge network
+  - cached for a TTL
+  - Great fot static content
+
+- S3 Cross Region Replication
+  - manual region selection
+  - files updated near real-time
+  - Read only
+  - Great for dynamic content that requires low-latency in few regions
+
+### CloudFront - ALB or EC2 as Origin
+
+Security Group must allow Public IP of Edge locations
+
+- either:
+  - EC2 allows edges IPs
+  - ALB allows edges IPs
+
+### CloudFront Geo Restriction
+
+- Allow-list
+- Block-list
+
+### CloudFront Price
+
+- varies across locations
+
+#### CloudFront Price Classes
+
+- reduce price by reducing the number of edge locations being used
+- Price classes:
+  - ALL: no region is excluded
+  - 200: exclude very expensive regions
+  - 100: only the least expensive regions
+
+### CloudFront Cache Invalidations
+
+- CloudFront does not know when the data changes in the host
+- partial or total cache refresh can be performed
+  - invalidate all (`*`) or specific path (`/my_path/*`)
+
+## AWS Global Accelerator
+
+AWS Global Accelerator is a networking service that improves the availability and performance of applications.
+
+- Purpose:
+  - Routes user traffic to the optimal AWS endpoint based on health, geography, and routing policies.
+- Key features:
+  - Static IP addresses
+  - Anycast routing
+  - Health checking
+  - Failover between regions
+  - Traffic dials for gradual rollouts
+- Benefits:
+  - Improved latency and availability
+  - Simplified global deployment
+  - Increased fault tolerance
+  - Fine-grained traffic control
+- Compatible with:
+  - EC2 instances
+  - ELB load balancers
+  - EIP addresses
+
+Use cases: Global applications, gaming, IoT, voice/video, financial services
+
+### Anycast IP
+
+An Anycast IP address is a single IP address advertised from multiple locations. Traffic sent to an Anycast IP is automatically routed to the nearest or best-performing location, providing high availability and resilience in global networking.
+
+### Unicast IP
+
+A Unicast IP address is a unique IP address assigned to a single network interface on a device. Traffic sent to a Unicast IP is delivered specifically to the one device or endpoint associated with that IP. It is the standard method for IP addressing in most networks, where each IP address corresponds to a single destination.
+
+### CloudFront versus Global Accelerator
+
+- AWS Global Accelerator
+  - Optimizes network layer traffic (Layer 3 and 4)
+  - Best for non-HTTP/S applications, APIs, gaming, IoT
+  - Uses Anycast IP addresses
+  - Direct server return possible
+  - Works with both static and dynamic content
+  - Provides static IP addresses
+
+- CloudFront:
+  - Content Delivery Network (CDN) for edge caching (Layer 7)
+  - Optimizes HTTP/S web content delivery
+  - Uses DNS for routing
+  - Caches static content at edge locations
+  - Better for static content, websites, video streaming
+  - Dynamic IP addresses
+
+- Key differences:
+  - Purpose: Global Accelerator for general traffic optimization; CloudFront for content caching and delivery
+  - Protocol support: Global Accelerator (TCP/UDP); CloudFront (primarily HTTP/S)
+  - Caching: Global Accelerator doesn't cache; CloudFront does
+  - IP addresses: Global Accelerator provides static IPs; CloudFront uses dynamic IPs
+
+## AWS Storage Extras
+
+
+
+# 
+# 
+# 
+# 
 # 
 # 
 # 
