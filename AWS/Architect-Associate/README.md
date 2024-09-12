@@ -190,6 +190,33 @@
       - [Pricing](#pricing)
       - [Use Cases](#use-cases)
   - [AWS Messaging](#aws-messaging)
+    - [SQS](#sqs)
+      - [SQS Queue Types](#sqs-queue-types)
+      - [SQS Message Retention](#sqs-message-retention)
+      - [SQS Message Size](#sqs-message-size)
+      - [SQS Visibility Timeout](#sqs-visibility-timeout)
+      - [SQS Long Polling](#sqs-long-polling)
+      - [SQS Dead Letter Queues (DLQ)](#sqs-dead-letter-queues-dlq)
+      - [SQS Delay Queues](#sqs-delay-queues)
+      - [SQS Encryption](#sqs-encryption)
+      - [SQS Access Control](#sqs-access-control)
+      - [SQS Use Cases](#sqs-use-cases)
+      - [SQS Integration with AWS Services](#sqs-integration-with-aws-services)
+    - [SNS](#sns)
+      - [SNS Key Features and Concepts](#sns-key-features-and-concepts)
+      - [Key Points](#key-points)
+      - [SNS FIFO Topic](#sns-fifo-topic)
+    - [SNS + SQS (Fanout)](#sns--sqs-fanout)
+    - [Kinesis](#kinesis)
+      - [Key Components of Amazon Kinesis](#key-components-of-amazon-kinesis)
+      - [Kinesis Data Streams](#kinesis-data-streams)
+      - [Kinesis Firehose](#kinesis-firehose)
+      - [Kinesis Data Analytics](#kinesis-data-analytics)
+      - [Kinesis When to use each](#kinesis-when-to-use-each)
+      - [Kinesis Key Features and Concepts](#kinesis-key-features-and-concepts)
+      - [Kinesis Important Notes](#kinesis-important-notes)
+    - [SQS vs SNS vs Kinesis](#sqs-vs-sns-vs-kinesis)
+    - [Amazon MQ](#amazon-mq)
 - [](#)
 - [](#-1)
 - [](#-2)
@@ -2108,7 +2135,356 @@ AWS DataSync is a data transfer service that simplifies, automates, and accelera
 
 ## AWS Messaging
 
+- Facilitates the communications between deployed applications
+- Async (event-based) communication
 
+### SQS
+
+Amazon Simple Queue Service (SQS) is a fully managed message queuing service that enables you to **decouple** and scale microservices, distributed systems, and serverless applications.
+
+- One or many producers push messages into the queue
+- One or many consumers poll messages from the queue
+- The object is to prevent one service from being overwhelmed by spikes surge in the number of requests/communications received
+- low latency
+
+#### SQS Queue Types
+
+- Standard Queues:
+  - At-least-once delivery
+  - Best-effort ordering
+  - Nearly unlimited throughput
+- FIFO Queues:
+  - Exactly-once processing
+  - First-In-First-Out delivery
+  - Limited to 300 transactions per second (TPS) per API action
+
+#### SQS Message Retention
+
+- Default retention period: 4 days
+- Configurable from 60 seconds to 14 days
+
+#### SQS Message Size
+
+- Up to 256 KB of text in any format
+- For larger messages, use SQS Extended Client Library (which uses S3 for storage)
+
+#### SQS Visibility Timeout
+
+- The period during which SQS prevents other consumers from receiving and processing a message
+- Default: 30 seconds
+- Configurable up to 12 hours
+- This is activated right after one consumer requested to receive the message and received it.
+- **Main object is to prevent processing the same message twice**
+
+#### SQS Long Polling
+
+- Reduces API calls by waiting for messages to arrive
+- Can be enabled at queue level or in ReceiveMessage requests
+- Increases the efficiency and latency of the application
+- Between 1sec to 20secs
+- Long Polling is preferable over short polling
+
+#### SQS Dead Letter Queues (DLQ)
+
+- Destination for messages that can't be processed successfully
+- Useful for debugging and isolating problematic messages
+
+#### SQS Delay Queues
+
+- Postpone delivery of new messages to a queue for a specified time
+- For standard queues, per-message delays override queue delay
+
+#### SQS Encryption
+
+- Server-side encryption (SSE) using AWS KMS
+- HTTPS for encryption in transit
+
+#### SQS Access Control
+
+- IAM policies for queue-level permissions
+- SQS Access Policy for cross-account access and service integrations
+
+#### SQS Use Cases
+
+- Decoupling application components
+- Buffering and batching operations
+- Smoothing spikes in workload
+- Implementing asynchronous workflows
+
+#### SQS Integration with AWS Services
+
+- EC2, Lambda, ECS for message processing
+- SNS for fanout pattern
+- S3 event notifications
+- CloudWatch for monitoring
+
+### SNS
+
+Amazon Simple Notification Service (SNS) is a fully managed pub/sub messaging service for both application-to-application (A2A) and application-to-person (A2P) communication.
+
+- One message and Many receivers
+
+#### SNS Key Features and Concepts
+
+- Topics:
+  - The fundamental unit of SNS
+  - A communication channel for sending messages
+- Publishers:
+  - Entities that send messages to SNS topics
+- Subscribers:
+  - Endpoints that receive messages from SNS topics
+  - Can include SQS, Lambda, HTTP/S webhooks, email, SMS, mobile push notifications
+- Message Filtering:
+  - Allows subscribers to receive only a subset of messages published to a topic
+  - Based on message attributes
+- Message Attributes:
+  - Metadata about the message (up to 10 attributes)
+- Message Size:
+  - Up to 256 KB for most endpoints
+  - Up to 140 bytes for SMS
+- Delivery Protocols:
+  - Supports multiple protocols: HTTP/S, Email, SMS, SQS, Lambda, and more
+- Encryption:
+  - Server-side encryption (SSE) using AWS KMS
+  - HTTPS for encryption in transit
+- Access Control:
+  - IAM policies for topic-level permissions
+  - SNS Access Policy for cross-account access and service integrations
+- Message Durability:
+  - Messages are stored redundantly across multiple Availability Zones
+
+#### Key Points
+
+- Use Cases:
+  - Fanout pattern (sending to multiple subscribers)
+  - Application and system alerts
+  - Push email and text messaging
+  - Mobile push notifications
+- Integration with AWS Services:
+  - CloudWatch alarms for monitoring and alerting
+  - Auto Scaling for notifications on scaling events
+  - S3 for event notifications
+  - Lambda for serverless event processing
+- Scalability and Reliability:
+  - Highly scalable, able to handle high-volume messaging
+  - Automatic replication across multiple AZs
+- Message Delivery:
+  - At-least-once delivery semantics
+  - No guarantee of message ordering
+- Security:
+  - Encryption options (SSE, in-transit)
+  - Access control mechanisms (IAM, SNS Access Policy)
+- Cost Optimization:
+  - Understanding the pricing model (API calls, deliveries)
+  - Using message filtering to reduce unnecessary deliveries
+- Comparison with SQS:
+  - SNS: Push-based, one-to-many
+  - SQS: Pull-based, one-to-one
+  - Common pattern: SNS + SQS for reliable, scalable message processing
+- Mobile Push:
+  - Supports major push notification services (Apple, Google, Amazon)
+- Retry Policy and Dead-Letter Queues:
+  - Configurable retry policy for HTTP/S endpoints
+  - Support for dead-letter queues to capture undelivered messages
+
+#### SNS FIFO Topic
+
+- Ordering of messages is preserved
+- Similar to SQS FIFO
+- Limited Throughput
+- Deduplication
+
+### SNS + SQS (Fanout)
+
+- One application sends a message to one SNS topic that has many SQS subscribed to it.
+- Higher transaction integrity since the message is guarantee to be received by all queues once it is successfully pushed into SNS.
+
+### Kinesis
+
+Amazon Kinesis is a platform for streaming data on AWS, making it easy to collect, process, and analyze real-time, streaming data.
+
+#### Key Components of Amazon Kinesis
+
+- Kinesis Data Streams:
+  - For real-time streaming data ingestion and processing
+  - Consists of shards for parallel processing
+  - Data retention period: 24 hours (default) to 365 days
+- Kinesis Data Firehose:
+  - Fully managed service for delivering streaming data to destinations
+  - Supports destinations like S3, Redshift, Elasticsearch, and Splunk
+  - Near real-time (minimum 60 seconds latency)
+- Kinesis Data Analytics:
+  - For real-time analytics on streaming data using SQL or Apache Flink
+  - Can process data from Streams or Firehose
+- Kinesis Video Streams:
+  - For streaming video from connected devices to AWS for analytics and ML
+
+#### Kinesis Data Streams
+
+Purpose: Enables real-time, scalable data streaming.
+
+- Key Features:
+  - Shards: A stream is composed of shards. Each shard has a specific capacity (1 MB/sec for writes, 2 MB/sec for reads).
+  - Data Retention: Data can be retained for up to 365 days (24 hours by default).
+  - Producers & Consumers: Producers (e.g., IoT devices, application logs) continuously send data. Consumers (e.g., EC2, Lambda) read and process data in real-time.
+  - Ordering: Within each shard, data is ordered and processed sequentially.
+  - Immutability: Once data is inserted, it cannot be deleted.
+
+Use Cases: Real-time data processing, log and event aggregation, IoT, and real-time analytics.
+
+- Important Exam Points:
+  - Scaling: You scale a stream by adjusting the number of shards.
+  - Data Retrieval: Data can be retrieved using the Kinesis Client Library (KCL) or using AWS Lambda.
+  - Pricing: Based on the number of shards and the volume of data flowing through the stream.
+
+- Capacity Modes:
+  - Provisioned Mode:
+    - Control the number if shards
+    - Each shard gets 1MB/s in
+    - Each shard gets 2MB/s out
+    - Pay per shard per hour
+  - On-Demand:
+    - Automatic scaling based on peak throughput during the last 30 days
+    - 4MB/s in default capacity
+    - Pay per stream per hour & data in/out per GB
+
+#### Kinesis Firehose
+
+Purpose: Fully managed service for loading streaming data into AWS services like S3, Redshift, OpenSearch (Elasticsearch), and Splunk.
+
+- Key Features:
+  - No Shard Management: Unlike Kinesis Data Streams, Firehose automatically scales and adjusts throughput.
+  - Buffering: Data is buffered before delivery to destinations. You can control buffer size and buffer interval.
+  - Transformation: Supports data transformation/conversion using AWS Lambda before delivering data.
+  - Encryption: Offers encryption at rest and in transit.
+
+Use Cases: Delivering streaming data to AWS storage and analytics services (e.g., for log analysis, data lakes, or batch processing).
+
+- Important Exam Points:
+  - Simplicity: Firehose is fully managed, making it easier to set up than Kinesis Data Streams.
+  - Data Conversion: Can convert data formats (e.g., CSV to JSON) via Lambda.
+  - Delivery Streams: You configure a delivery stream to specify destination (S3, Redshift, OpenSearch (Elasticsearch), Splunk, 3rd Parties, custom HTTP).
+  - Pricing: Based on the volume of data ingested and transformations performed.
+  - Near Real Time
+    - Buffer interval 0sec to 900sec
+
+#### Kinesis Data Analytics
+
+Purpose: Real-time analytics for data streams using SQL.
+
+- Key Features:
+  - SQL Queries: Analyze streaming data in real-time using standard SQL queries.
+  - Sources: Takes input from Kinesis Data Streams or Kinesis Data Firehose.
+  - Integrations: Results can be output to Kinesis Firehose for delivery to S3, Redshift, or other storage services.
+  - Parallel Processing: Scales horizontally to handle large volumes of data.
+
+Use Cases: Real-time dashboards, anomaly detection, log analysis, and IoT analytics.
+
+- Important Exam Points:
+  - Real-time Analysis: You can apply SQL-like queries to streaming data.
+  - Windowing: Supports windowed operations (e.g., sliding windows) to aggregate data over specific time periods.
+  - Ease of Use: You don't need to build custom applications for processing; instead, you use SQL.
+  - Pricing: Based on the amount of input data analyzed.
+
+#### Kinesis When to use each
+
+- Kinesis Data Streams: Use when you need fine-grained control over shards and a real-time streaming data platform.
+- Kinesis Data Firehose: Use for simpler, fully managed data ingestion and delivery to AWS services.
+- Kinesis Data Analytics: Use when real-time data analysis and SQL-based querying on streaming data is required.
+
+#### Kinesis Key Features and Concepts
+
+- Shards (for Kinesis Data Streams):
+  - Base throughput unit
+  - 1MB/sec input, 2MB/sec output
+  - 1000 records/sec for writes
+- Partition Key:
+  - Determines which shard processes a data record
+- Sequence Number:
+  - Unique identifier for each record within a shard
+- Kinesis Client Library (KCL):
+  - Helps in building consumer applications
+- Enhanced Fan-Out:
+  - Dedicated throughput per consumer (2MB/sec per shard)
+- Data Encryption:
+  - Server-side encryption using KMS
+
+#### Kinesis Important Notes
+
+- Use Cases:
+  - Log and event data collection
+  - Real-time analytics
+  - Mobile data capture
+  - IoT device data telemetry
+- Scaling and Performance:
+  - Understanding shard splitting and merging
+  - Calculating required number of shards based on throughput needs
+- Data Retention:
+  - Default 24 hours, configurable up to 365 days for Kinesis Data Streams
+  - Understanding the difference with Firehose (no retention, near real-time delivery)
+- Integration with AWS Services:
+  - Lambda for serverless processing
+  - Glue for ETL jobs
+  - S3, Redshift, Elasticsearch as destinations via Firehose
+- Security:
+  - Encryption at rest and in transit
+  - IAM for access control
+  - VPC endpoints for enhanced network security
+- Consumers:
+  - Shared (standard) vs. enhanced fan-out consumers
+  - Understanding KCL and its benefits
+- Error Handling and Monitoring:
+  - CloudWatch integration for monitoring
+  - Error handling strategies (e.g., poisonous messages)
+- Cost Optimization:
+  - Understanding the pricing model (per shard hour, PUT payload unit)
+  - Strategies to optimize shard usage
+- Comparison with Other AWS Services:
+  - Kinesis vs. SQS (streaming vs. queuing)
+  - Kinesis vs. MSK (managed Kafka)
+
+### SQS vs SNS vs Kinesis
+
+| Feature                     | Amazon SQS (Simple Queue Service)                | Amazon SNS (Simple Notification Service)         | Amazon Kinesis                                     |
+| --------------------------- | ------------------------------------------------ | ------------------------------------------------ | -------------------------------------------------- |
+| **Service Type**            | Message Queue                                    | Pub/Sub Messaging                                | Real-time Data Streaming                           |
+| **Data Model**              | Message-based (point-to-point)                   | Message-based (fan-out to multiple subscribers)  | Stream-based (real-time data streams)              |
+| **Use Case**                | Decoupling of producer and consumer applications | Broadcast/notification to many endpoints         | Real-time data analytics, log/event aggregation    |
+| **Delivery Method**         | Polling-based (pull from queue)                  | Push-based (to multiple subscribers)             | Real-time consumption (multiple consumers)         |
+| **Order Guarantee**         | FIFO (optional with SQS FIFO queues)             | No order guarantees                              | Ordered per shard                                  |
+| **Message Retention**       | Up to 14 days                                    | No storage (messages are immediately delivered)  | Configurable retention (up to 7 days)              |
+| **Consumer**                | Single consumer (unless using SQS FIFO queues)   | Multiple consumers (fan-out)                     | Multiple real-time consumers (via Kinesis Streams) |
+| **Message Size**            | Up to 256 KB                                     | Up to 256 KB                                     | Up to 1 MB per record                              |
+| **Message Durability**      | Messages stored in queue until consumed/expired  | No durability (messages are not stored)          | Data retained for a configurable duration          |
+| **Scaling**                 | Automatically scales                             | Automatically scales                             | Manually scales by adjusting shard count           |
+| **Processing Model**        | At-least-once or exactly-once (with FIFO)        | Best-effort delivery                             | Real-time processing, parallel consumers per shard |
+| **Latency**                 | Low latency (milliseconds)                       | Very low latency                                 | Real-time, low latency                             |
+| **Dead Letter Queue (DLQ)** | Supported                                        | Not natively supported                           | Not natively supported                             |
+| **Typical Integration**     | Microservices, decoupling, batch processing      | Notifications, mobile push, SMS, emails          | Real-time analytics, IoT, machine learning         |
+| **AWS Lambda Integration**  | Supported                                        | Supported                                        | Supported (Kinesis Data Streams & Firehose)        |
+| **Pricing Model**           | Based on the number of requests and payload size | Based on the number of requests and payload size | Based on shard count and data volume               |
+
+### Amazon MQ
+
+Amazon MQ is a managed message broker service that makes it easy to set up and operate message brokers in the cloud. Alternative to cloud native solutions (SNS, SQS).
+
+- Supported Protocols:
+  - JMS (Java Message Service)
+  - NMS (.NET Message Service)
+  - AMQP (Advanced Message Queuing Protocol)
+  - MQTT (Message Queuing Telemetry Transport)
+  - WebSocket
+
+- Broker Types:
+  - Apache ActiveMQ
+  - RabbitMQ
+
+- Deployment Options:
+  - Single-instance broker (for development)
+  - Highly available (HA) broker for production (active/standby pair)
+
+- Storage:
+  - Uses Amazon EBS for durable persistence of messages
 
 # 
 # 
