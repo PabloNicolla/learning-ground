@@ -163,6 +163,33 @@
     - [AWS FSx](#aws-fsx)
       - [FSx for Windows File Server](#fsx-for-windows-file-server)
       - [FSx for Lustre](#fsx-for-lustre)
+      - [FSx for OpenZFS](#fsx-for-openzfs)
+      - [FSx for NetApp ONTAP](#fsx-for-netapp-ontap)
+      - [FSx General features and considerations](#fsx-general-features-and-considerations)
+      - [FSx File System Deployment Options](#fsx-file-system-deployment-options)
+    - [AWS Storage Gateway](#aws-storage-gateway)
+      - [File Gateway](#file-gateway)
+        - [File Gateway S3](#file-gateway-s3)
+        - [File Gateway FSx](#file-gateway-fsx)
+      - [Volume Gateway](#volume-gateway)
+      - [Tape Gateway](#tape-gateway)
+      - [Storage Gateway FSx General features and considerations](#storage-gateway-fsx-general-features-and-considerations)
+      - [Performance and optimization](#performance-and-optimization)
+      - [Security](#security)
+    - [AWS Transfer Family](#aws-transfer-family)
+    - [AWS DataSync](#aws-datasync)
+      - [Data Transfer Capabilities](#data-transfer-capabilities)
+      - [Supported AWS Storage Services](#supported-aws-storage-services)
+      - [Supported On-premises Storage](#supported-on-premises-storage)
+      - [Transfer Acceleration](#transfer-acceleration)
+      - [Scheduling and Automation](#scheduling-and-automation)
+      - [Data Integrity and Validation](#data-integrity-and-validation)
+      - [Bandwidth Throttling](#bandwidth-throttling)
+      - [Filtering and Syncing](#filtering-and-syncing)
+      - [DataSync Security](#datasync-security)
+      - [Pricing](#pricing)
+      - [Use Cases](#use-cases)
+  - [AWS Messaging](#aws-messaging)
 - [](#)
 - [](#-1)
 - [](#-2)
@@ -171,9 +198,7 @@
 - [](#-5)
 - [](#-6)
 - [](#-7)
-- [](#-8)
   - [Useful AWS Resources](#useful-aws-resources)
-  - [EDGE](#edge)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
   - [VPC](#vpc)
   - [AWS SECURITY TABLE](#aws-security-table)
@@ -1862,46 +1887,229 @@ A larger, rugged device (up to 80 TB) for data migration and edge computing, ava
 
 #### FSx for Lustre
 
+- High-performance file system for compute-intensive workloads
+- Commonly used for **HPC (High Performance Computing)**, machine learning, and media processing
+- Can be linked to S3 buckets for data ingestion and processing
 
-High-performance file system for compute-intensive workloads
-Commonly used for HPC, machine learning, and media processing
-Can be linked to S3 buckets for data ingestion and processing
+- Scales up to 100s GB/s, millions of IOPs, sub-ms latencies
+- Can "Read S3" as a file system
+- Can write the output of computations back to S3
+- on-premises access (VPN or Direct Connect)
+
+#### FSx for OpenZFS
+
+- Based on the ZFS file system
+- Only compatible with NFS
+- Provides high performance and advanced data management features
+- Suitable for workloads requiring low-latency access
+- Up to 1,000,000 IOPS
+- Point-in-time instantaneous cloning
+- Snapshot, compression, low costs
+
+#### FSx for NetApp ONTAP
+
+- Fully managed NetApp ONTAP file system
+- Supports NFS, SMB, and iSCSI protocols
+- Offers data deduplication, compression, and snapshots
+- Large compatibility with several OS
+- Scales automatically
+- Snapshot, compression, low costs, data de-duplication
+- Point-in-time instantaneous cloning
+
+#### FSx General features and considerations
+
+- All FSx file systems are fully managed by AWS
+- They offer high availability and durability
+- Support data encryption at rest and in transit
+- Can be accessed from EC2 instances, on-premises servers, and AWS Lambda
+
+#### FSx File System Deployment Options
+
+- Scratch File System
+  - Temp storage
+  - No data replication
+  - High burst (6 time faster)
+  - lower costs
+
+- Persistent File System
+  - Long-term Storage
+  - data replicated within AZ
+  - Replace files within minutes
+
+### AWS Storage Gateway
+
+AWS Storage Gateway is a hybrid cloud storage service that provides on-premises access to virtually unlimited cloud storage.
+
+- AWS Storage Gateway Types:
+  - File Gateway
+    - FSX
+    - S3
+  - Volume Gateway
+  - Tape Gateway
+
+#### File Gateway
+
+- Supports SMB and NFS protocols
+- Stores files as objects in S3 buckets
+- Provides local caching for frequently accessed data
+- Useful for file shares, data lakes, and backing up on-premises files to S3
+
+##### File Gateway S3
+
+- All S3 tiers except glacier
+  - objects can transition to glacier via bucket policy
+- most recent accessed data is cached in the gateway
+- IAM roles are required so Gateway can access S3 buckets
+- Application Server <== NFS or SMB protocol ==> File Gateway
+
+##### File Gateway FSx
+
+- Native access to Amazon FSx for Windows File Server
+- FSx is natively already accessible on-premisses, the gateway will provide caching feature
+
+#### Volume Gateway
+
+- Presents iSCSI block storage volumes to on-premises applications
+  - Two modes: Cached volumes and Stored volumes
+    - Cached volumes: Primary data in S3, frequently accessed data cached locally
+    - Stored volumes: Full copy on-premises, async backups to S3 as EBS snapshots
+  - Useful for disaster recovery, backup, and bursting
+
+#### Tape Gateway
+
+- Emulates a tape library interface
+- Stores virtual tapes in S3 and Glacier
+- Compatible with major backup software vendors
+- Useful for replacing physical tape libraries and long-term archival
+
+#### Storage Gateway FSx General features and considerations
+
+- Runs as a virtual machine on-premises or in EC2
+- Provides low-latency access to data through local caching
+- Supports data encryption in transit and at rest
+- Integrates with AWS IAM, CloudWatch, and CloudTrail
+
+#### Performance and optimization
+
+Local cache sizing is crucial for performance
+Bandwidth throttling can be configured to control data transfer rates
+Optimize network configuration for best performance
+
+#### Security
+
+Data is encrypted in transit using SSL/TLS
+Data at rest in S3 is encrypted using SSE-S3 or SSE-KMS
+File Gateway supports SMB file sharing with AD authentication
+
+### AWS Transfer Family
+
+WS Transfer Family is a fully managed service that enables continuos secure file transfers to and from Amazon S3 or Amazon EFS using SFTP, FTPS, and FTP protocols.
+
+- Protocols:
+  - AWS Transfer for SFTP (SSH File Transfer Protocol)
+  - AWS Transfer for FTPS (File Transfer Protocol over SSL)
+  - AWS Transfer for FTP (File Transfer Protocol)
+  - AWS Transfer for AS2 (Applicability Statement 2)
+
+- Storage Integration:
+  - Amazon S3
+  - Amazon EFS
+
+- Authentication Methods:
+  - Service-managed (username/password or SSH keys)
+  - Directory Service for Microsoft Active Directory
+  - Custom identity providers via AWS Lambda
+
+- Endpoint Types:
+  - Public (internet-facing)
+  - VPC (accessible within your VPC)
+  - VPC_ENDPOINT (uses PrivateLink for enhanced security)
+
+- Security:
+  - Encryption in transit (FTPS, SFTP)
+  - Integration with AWS IAM for access control
+  - Support for AWS KMS for encryption key management
+
+- Scalability and Availability:
+  - Automatically scales to meet demand
+  - High availability within an AWS Region
+
+- Monitoring and Logging:
+  - Integration with CloudWatch for metrics
+  - CloudTrail for API call logging
+  - Support for S3 access logging
+
+- Pricing:
+  - Based on the number of protocols enabled and data transferred
+
+### AWS DataSync
+
+AWS DataSync is a data transfer service that simplifies, automates, and accelerates moving data between on-premises storage systems and AWS storage services, as well as between AWS storage services.
+
+#### Data Transfer Capabilities
+
+- On-premises to AWS
+- AWS to on-premises
+- Between AWS storage services
+
+#### Supported AWS Storage Services
+
+- Amazon S3 (including all storage classes)
+- Amazon EFS (Elastic File System)
+- Amazon FSx (for Windows File Server, Lustre, OpenZFS, NetApp ONTAP)
+
+#### Supported On-premises Storage
+
+- NFS (Network File System)
+- SMB (Server Message Block)
+- HDFS (Hadoop Distributed File System)
+- Self-managed object storage
+
+#### Transfer Acceleration
+
+- Uses a purpose-built network protocol and multi-threaded architecture
+- Can be significantly faster than traditional tools like rsync
+
+#### Scheduling and Automation
+
+- One-time transfers
+- Scheduled recurring transfers
+
+#### Data Integrity and Validation
+
+- Automatic checksums to ensure data integrity during transfer
+
+#### Bandwidth Throttling
+
+- Ability to limit bandwidth usage to avoid network congestion
+
+#### Filtering and Syncing
+
+- Can include or exclude files based on criteria like file type, date, etc.
+- Supports incremental transfers (only changed files)
+
+#### DataSync Security
+
+- Data encryption in transit using TLS
+- Integration with AWS Key Management Service (KMS) for encryption at rest
+- Support for VPC endpoints for enhanced network security
+
+#### Pricing
+
+- Based on the amount of data transferred
+
+#### Use Cases
+
+- Data migration to AWS
+- Disaster recovery and backup
+- Data replication for analytics or processing
+- Archiving data to lower-cost storage tiers
+- Can be combined with AWS Snowcone when bandwidth is a limitation
+
+## AWS Messaging
 
 
-FSx for OpenZFS:
 
-
-Based on the ZFS file system
-Provides high performance and advanced data management features
-Suitable for workloads requiring low-latency access
-
-
-FSx for NetApp ONTAP:
-
-
-Fully managed NetApp ONTAP file system
-Supports NFS, SMB, and iSCSI protocols
-Offers data deduplication, compression, and snapshots
-
-General features and considerations:
-
-All FSx file systems are fully managed by AWS
-They offer high availability and durability
-Support data encryption at rest and in transit
-Can be accessed from EC2 instances, on-premises servers, and AWS Lambda
-
-For the AWS Certified Solutions Architect exam, focus on:
-
-Understanding use cases for each file system type
-Knowing the supported protocols and integration points
-Familiarity with performance characteristics and scalability options
-Understanding backup and recovery options
-Knowing how FSx integrates with other AWS services
-
-
-
-
-# 
 # 
 # 
 # 
@@ -1914,14 +2122,6 @@ Knowing how FSx integrates with other AWS services
 ## Useful AWS Resources
 
 [AWS Policy Generator](https://awspolicygen.s3.amazonaws.com/policygen.html)
-
-
-
-## EDGE
-
-Edge locations are global locations where content is cached
-
-
 
 ## AWS Shared Responsibility Model
 
