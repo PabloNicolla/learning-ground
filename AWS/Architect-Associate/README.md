@@ -157,6 +157,12 @@
     - [Unicast IP](#unicast-ip)
     - [CloudFront versus Global Accelerator](#cloudfront-versus-global-accelerator)
   - [AWS Storage Extras](#aws-storage-extras)
+    - [EDGE STORAGE](#edge-storage)
+      - [Snowcone](#snowcone)
+      - [Snowball](#snowball)
+    - [AWS FSx](#aws-fsx)
+      - [FSx for Windows File Server](#fsx-for-windows-file-server)
+      - [FSx for Lustre](#fsx-for-lustre)
 - [](#)
 - [](#-1)
 - [](#-2)
@@ -171,9 +177,7 @@
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
   - [VPC](#vpc)
   - [AWS SECURITY TABLE](#aws-security-table)
-  - [AWS FSx](#aws-fsx)
   - [dbs](#dbs)
-  - [EDGE STORAGE](#edge-storage)
   - [TODO 1](#todo-1)
 
 ## Aws Infrastructure Intro
@@ -1806,6 +1810,95 @@ A Unicast IP address is a unique IP address assigned to a single network interfa
 
 ## AWS Storage Extras
 
+### EDGE STORAGE
+
+- AWS Snowcone and Snowball are part of AWS Snow Family for data transfer and edge computing.
+- Offline data transfer to solve network costs/limitations
+- Edge Computing to pre-process data, machine learning, transcoding media, run EC2 instances ro lambda function at the edge
+
+| Description                  | AWS Snowcone                              | AWS Snowcone SSD                          | AWS Snowball Edge Storage Optimize             | AWS Snowball Edge Storage Optimized with compute | AWS Snowball Edge Compute Optimized            |
+| ---------------------------- | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
+| Usable compute               | 2 vCPUs                                   | 2 vCPUs                                   | Not applicable                                 | 24 vCPUs                                         | 52 vCPUs 1 GPU (Optional)                      |
+| Usable compute services      | Amazon EC2                                | Amazon EC2                                | Not applicable                                 | Amazon EC2 AWS Lambda                            | Amazon EC2 AWS Lambda                          |
+| Usable memory                | 4 GB                                      | 4 GB                                      | Not applicable                                 | 32 GB                                            | 208 GB HDD                                     |
+| storage capacity             | 8 TB usable                               | None                                      | 80 TB usable                                   | 80 TB usable                                     | 42 TB usable                                   |
+| SSD storage capacity         | None                                      | 14 TB usable                              | None                                           | 1 TB                                             | 7.68 TB                                        |
+| Usable storage services      | Amazon EBS or NFS                         | Amazon EBS or NFS                         | Amazon S3                                      | Amazon EBS and Amazon S3                         | Amazon EBS and Amazon S3                       |
+| Cluster capable              | No                                        | No                                        | No                                             | Yes                                              | Yes                                            |
+| Device weight                | 4.5 pounds 2.1 kg                         | 4.5 pounds 2.1 kg                         | 49.7 pounds 22.54 kg                           | 49.7 pounds 22.54 kg                             | 49.7 pounds 22.54 kg                           |
+| Device size L x W x H        | 9 x 6 x 3 inches (227 x 148.6 x 82.65 mm) | 9 x 6 x 3 inches (227 x 148.6 x 82.65 mm) | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm) | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm)   | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm) |
+| Data and network connections | 1/10 Gbps RJ45 and WiFi                   | 1/10 Gbps RJ45 and WiFi                   | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28     | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28       | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28     |
+| Transfer options             | NFS and AWS DataSync                      | NFS and AWS DataSync                      | Amazon S3 API and NFS                          | Amazon S3 API and NFS                            | Amazon S3 API and NFS                          |
+| Encryption                   | Yes, 256-bit                              | Yes, 256-bit                              | Yes, 256-bit                                   | Yes, 256-bit                                     | Yes, 256-bit                                   |
+
+#### Snowcone
+
+A small, portable device (8 TB) used for edge computing, data transfer, and storage in rugged or space-constrained environments.
+
+#### Snowball
+
+A larger, rugged device (up to 80 TB) for data migration and edge computing, available in storage and compute-optimized versions. Ideal for transferring large amounts of data to/from AWS.
+
+- Computer Optimized
+- Storage Optimized
+
+### AWS FSx
+
+- Launch high-performance file systems on AWS
+- Fully managed service
+
+#### FSx for Windows File Server
+
+- Built on Windows Server
+- Supports SMB protocol and NTFS
+- Integrates with Microsoft Active Directory, ACLs, user quotas
+- Useful for Windows-based applications and workloads
+- **Can be mounted on Linux EC2 instances**
+- Supports Microsoft's Distributed File System (DFS) Namespaces
+
+- Multi-AZ support
+- on-premises access (VPN or Direct Connect)
+- Scales from 10s GB/s, millions of IOPS, 100s PB of data
+
+#### FSx for Lustre
+
+
+High-performance file system for compute-intensive workloads
+Commonly used for HPC, machine learning, and media processing
+Can be linked to S3 buckets for data ingestion and processing
+
+
+FSx for OpenZFS:
+
+
+Based on the ZFS file system
+Provides high performance and advanced data management features
+Suitable for workloads requiring low-latency access
+
+
+FSx for NetApp ONTAP:
+
+
+Fully managed NetApp ONTAP file system
+Supports NFS, SMB, and iSCSI protocols
+Offers data deduplication, compression, and snapshots
+
+General features and considerations:
+
+All FSx file systems are fully managed by AWS
+They offer high availability and durability
+Support data encryption at rest and in transit
+Can be accessed from EC2 instances, on-premises servers, and AWS Lambda
+
+For the AWS Certified Solutions Architect exam, focus on:
+
+Understanding use cases for each file system type
+Knowing the supported protocols and integration points
+Familiarity with performance characteristics and scalability options
+Understanding backup and recovery options
+Knowing how FSx integrates with other AWS services
+
+
 
 
 # 
@@ -1918,9 +2011,7 @@ Explanation of Each Service
   - Function: Securely stores and retrieves sensitive information like API keys, passwords, and certificates.
   - Use Case: Manages access to secrets, rotating them automatically to enhance security.
 
-## AWS FSx
 
-todo
 
 
 ## dbs
@@ -1938,22 +2029,6 @@ As we learned in the previous lessons, AWS has a variety of database options for
 | Timestream                                                     | Time series   | IoT applications, Development Operations (DevOps), industrial telemetry                            |
 | Amazon QLDB                                                    | Ledger        | Systems of record, supply chain, registrations, banking transactions                               |
 
-## EDGE STORAGE
-
-| Description                  | AWS Snowcone                              | AWS Snowcone SSD                          | AWS Snowball Edge Storage Optimize             | AWS Snowball Edge Storage Optimized with compute | AWS Snowball Edge Compute Optimized            |
-| ---------------------------- | ----------------------------------------- | ----------------------------------------- | ---------------------------------------------- | ------------------------------------------------ | ---------------------------------------------- |
-| Usable compute               | 2 vCPUs                                   | 2 vCPUs                                   | Not applicable                                 | 24 vCPUs                                         | 52 vCPUs 1 GPU (Optional)                      |
-| Usable compute services      | Amazon EC2                                | Amazon EC2                                | Not applicable                                 | Amazon EC2 AWS Lambda                            | Amazon EC2 AWS Lambda                          |
-| Usable memory                | 4 GB                                      | 4 GB                                      | Not applicable                                 | 32 GB                                            | 208 GB HDD                                     |
-| storage capacity             | 8 TB usable                               | None                                      | 80 TB usable                                   | 80 TB usable                                     | 42 TB usable                                   |
-| SSD storage capacity         | None                                      | 14 TB usable                              | None                                           | 1 TB                                             | 7.68 TB                                        |
-| Usable storage services      | Amazon EBS or NFS                         | Amazon EBS or NFS                         | Amazon S3                                      | Amazon EBS and Amazon S3                         | Amazon EBS and Amazon S3                       |
-| Cluster capable              | No                                        | No                                        | No                                             | Yes                                              | Yes                                            |
-| Device weight                | 4.5 pounds 2.1 kg                         | 4.5 pounds 2.1 kg                         | 49.7 pounds 22.54 kg                           | 49.7 pounds 22.54 kg                             | 49.7 pounds 22.54 kg                           |
-| Device size L x W x H        | 9 x 6 x 3 inches (227 x 148.6 x 82.65 mm) | 9 x 6 x 3 inches (227 x 148.6 x 82.65 mm) | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm) | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm)   | 28.3 x 10.6 x 15.5 inches (718 x 269 x 394 mm) |
-| Data and network connections | 1/10 Gbps RJ45 and WiFi                   | 1/10 Gbps RJ45 and WiFi                   | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28     | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28       | 10 Gbps RJ45 25 Gbps SFP28 100 Gbps QSFP28     |
-| Transfer options             | NFS and AWS DataSync                      | NFS and AWS DataSync                      | Amazon S3 API and NFS                          | Amazon S3 API and NFS                            | Amazon S3 API and NFS                          |
-| Encryption                   | Yes, 256-bit                              | Yes, 256-bit                              | Yes, 256-bit                                   | Yes, 256-bit                                     | Yes, 256-bit                                   |
 
 ## TODO 1
 
