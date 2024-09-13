@@ -1,5 +1,21 @@
 # Docker
 
+- [Docker](#docker)
+  - [Intro to Docker](#intro-to-docker)
+  - [Key Concepts](#key-concepts)
+  - [Why Docker?](#why-docker)
+  - [How Docker Works](#how-docker-works)
+  - [Core Components](#core-components)
+  - [Docker Workflow](#docker-workflow)
+  - [Popular Docker Commands](#popular-docker-commands)
+  - [Advantages of Docker](#advantages-of-docker)
+  - [Docker vs. Virtual Machines](#docker-vs-virtual-machines)
+  - [Security in Docker](#security-in-docker)
+  - [Use Cases](#use-cases)
+  - [Container Orchestration](#container-orchestration)
+  - [Common Challenges](#common-challenges)
+  - [Summary](#summary)
+
 ## Intro to Docker
 
 Docker is a platform that allows developers to automate the deployment, scaling, and management of applications within lightweight, portable containers. Containers are isolated environments that package an application and all its dependencies, ensuring consistency across different computing environments (e.g., development, testing, production). Docker streamlines the development lifecycle by providing a standardized unit of software.
