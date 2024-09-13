@@ -217,20 +217,64 @@
       - [Kinesis Important Notes](#kinesis-important-notes)
     - [SQS vs SNS vs Kinesis](#sqs-vs-sns-vs-kinesis)
     - [Amazon MQ](#amazon-mq)
-- [](#)
-- [](#-1)
-- [](#-2)
-- [](#-3)
-- [](#-4)
-- [](#-5)
-- [](#-6)
-- [](#-7)
+  - [AWS Container Services](#aws-container-services)
+    - [AWS ECS](#aws-ecs)
+      - [ECS Core Concepts](#ecs-core-concepts)
+      - [ECS Launch Types](#ecs-launch-types)
+      - [ECS Clusters](#ecs-clusters)
+      - [ECS Container Networking](#ecs-container-networking)
+      - [ECS Auto Scaling](#ecs-auto-scaling)
+      - [ECS IAM Roles and Security](#ecs-iam-roles-and-security)
+      - [ECS Data Volumes (EFS)](#ecs-data-volumes-efs)
+      - [ECS Task vs Container](#ecs-task-vs-container)
+      - [ECS Monitoring and Logging](#ecs-monitoring-and-logging)
+      - [ECS ECS vs EKS (Elastic Kubernetes Service)](#ecs-ecs-vs-eks-elastic-kubernetes-service)
+      - [ECS Amazon ECR (Elastic Container Registry)](#ecs-amazon-ecr-elastic-container-registry)
+      - [ECS Exam-Relevant Topics](#ecs-exam-relevant-topics)
+      - [ECS Pricing](#ecs-pricing)
+    - [AWS EKS](#aws-eks)
+      - [EKS Core Concepts](#eks-core-concepts)
+      - [EKS Node Types](#eks-node-types)
+      - [EKS Cluster Architecture](#eks-cluster-architecture)
+      - [EKS Worker Nodes](#eks-worker-nodes)
+      - [Networking in EKS](#networking-in-eks)
+      - [Storage in EKS](#storage-in-eks)
+      - [EKS IAM and Security](#eks-iam-and-security)
+      - [Scaling in EKS](#scaling-in-eks)
+      - [EKS Monitoring and Logging](#eks-monitoring-and-logging)
+      - [EKS Add-ons](#eks-add-ons)
+      - [EKS EKS vs ECS](#eks-eks-vs-ecs)
+      - [EKS Blueprints](#eks-blueprints)
+      - [EKS Pricing](#eks-pricing)
+      - [EKS Exam-Relevant Topics](#eks-exam-relevant-topics)
+      - [Use Cases for EKS](#use-cases-for-eks)
+    - [AWS Fargate](#aws-fargate)
+      - [Fargate Core Concepts](#fargate-core-concepts)
+      - [How Fargate Works](#how-fargate-works)
+      - [Fargate Launch Types](#fargate-launch-types)
+      - [Fargate Cost Management](#fargate-cost-management)
+      - [Fargate Networking](#fargate-networking)
+      - [Fargate Security](#fargate-security)
+      - [Fargate Monitoring and Logging](#fargate-monitoring-and-logging)
+      - [Fargate Storage](#fargate-storage)
+      - [Fargate Scaling](#fargate-scaling)
+      - [Fargate Use Cases](#fargate-use-cases)
+      - [Fargate for ECS vs EKS](#fargate-for-ecs-vs-eks)
+      - [Fargate Key Benefits](#fargate-key-benefits)
+      - [Fargate Pricing](#fargate-pricing)
+      - [Fargate Exam-Relevant Topics](#fargate-exam-relevant-topics)
+    - [AWS App Runner](#aws-app-runner)
+  - [TODO 1](#todo-1)
+  - [TODO 2](#todo-2)
+  - [TODO 3](#todo-3)
+  - [TODO 4](#todo-4)
+  - [TODO 5](#todo-5)
   - [Useful AWS Resources](#useful-aws-resources)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
   - [VPC](#vpc)
   - [AWS SECURITY TABLE](#aws-security-table)
   - [dbs](#dbs)
-  - [TODO 1](#todo-1)
+  - [TODO 1](#todo-1-1)
 
 ## Aws Infrastructure Intro
 
@@ -2486,14 +2530,334 @@ Amazon MQ is a managed message broker service that makes it easy to set up and o
 - Storage:
   - Uses Amazon EBS for durable persistence of messages
 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+## AWS Container Services
+
+[Intro to Docker](../../Docker/INTRO.md)
+
+### AWS ECS
+
+Amazon Elastic Container Service (ECS) is a fully managed container orchestration service that helps you run and scale containerized applications using Docker containers in AWS.
+
+#### ECS Core Concepts
+
+- Task Definitions: The blueprint for your application, specifying how containers should be configured. It includes details such as:
+  - Docker image to use.
+  - Resource requirements (CPU, memory).
+  - Networking settings.
+  - IAM roles for accessing other AWS services.
+- Tasks: A running instance of a task definition. A task can run one or more containers.
+- Services: Services ensure that a specified number of tasks are running and can be configured for scaling, load balancing, and recovery of tasks in case of failures.
+
+#### ECS Launch Types
+
+- Fargate: A serverless compute engine that lets you run containers without managing the underlying infrastructure (EC2 instances). You pay for the resources the containers use (CPU, memory). It simplifies operations by abstracting away the need to manage EC2 instances.
+- EC2: You can use a cluster of EC2 instances to run containers, where you control the underlying infrastructure. You choose the instance type, manage scaling, and are responsible for optimizing instance capacity.
+  - EC2 Instances need ECS agent
+
+#### ECS Clusters
+
+- A logical grouping of tasks or services. Each cluster can use either Fargate or EC2 launch types, and they contain the computing resources (EC2 instances or Fargate tasks).
+- Clusters are region-specific and provide isolation between tasks in different clusters.
+
+#### ECS Container Networking
+
+- Elastic Network Interface (ENI): Each ECS task can be assigned an ENI, enabling it to have its own private IP address in a VPC.
+- Security Groups: ECS integrates with VPC security groups, allowing you to control inbound and outbound traffic to containers.
+- Application Load Balancer (ALB): ECS services can be integrated with ALBs to distribute incoming traffic across containers. ALB supports dynamic port mapping, making it easier to route traffic to the correct container instances.
+
+#### ECS Auto Scaling
+
+- ECS services can scale in response to demand. You can set scaling policies based on metrics like:
+  - CPU utilization
+  - memory utilization
+  - ALB Request Count per Target
+  - CloudWatch metric
+- Service Auto Scaling: Automatically adjusts the number of running tasks based on demand. Scaling types:
+  - Target
+  - Step
+  - Scheduled
+- Cluster Auto Scaling (EC2): Automatically adjusts the number of EC2 instances in your ECS cluster to meet the demands of your running services.
+  - Auto Scaling Group
+  - Cluster Capacity Provider
+
+#### ECS IAM Roles and Security
+
+- Task Roles: Each ECS task can assume an IAM role, allowing containers to access other AWS services securely (e.g., accessing S3, DynamoDB).
+- Execution Role: This role allows ECS to pull images from Amazon ECR (Elastic Container Registry) or manage logs and other system-level functions.
+- Service Linked Roles: ECS integrates with other AWS services using service-linked roles to automate actions like scaling or health checks.
+
+#### ECS Data Volumes (EFS)
+
+- Mount EFS on ECS tasks for data persistence
+- Multi-AZ shared storage for containers
+
+#### ECS Task vs Container
+
+- A task is the basic unit of work in ECS. It represents a running instance of a defined group of one or more containers.
+- A task definition is a blueprint that describes how to run your containerized application. It specifies:
+  - Which Docker container(s) to run.
+  - The CPU and memory required.
+  - Networking settings.
+  - IAM roles for permissions.
+  - Storage volumes.
+  - Logging configuration.
+- When you run a task, ECS pulls the container image(s), launches the containers, and applies the task definition’s configurations (e.g., resource limits, network, security).
+
+Key Differences:
+
+- Containers are inside tasks: A task can run one or more containers. For example, if your application has a web server and a database, both could run as separate containers within the same task.
+- Tasks manage container lifecycle: Tasks define how and when containers are deployed, run, and stopped. You manage tasks, and ECS manages the containers inside them.
+- Task Definition vs Container Definition: The task definition contains one or more container definitions, which describe the specifics for each container (like image, ports, environment variables).
+
+#### ECS Monitoring and Logging
+
+- CloudWatch Logs: ECS can send container logs to Amazon CloudWatch for monitoring and troubleshooting.
+- CloudWatch Metrics: ECS services generate metrics like CPU and memory usage, which can be used for scaling and alerting.
+- X-Ray Integration: AWS X-Ray can be used for distributed tracing of microservices running on ECS, helping with performance optimization and troubleshooting.
+
+#### ECS ECS vs EKS (Elastic Kubernetes Service)
+
+- ECS is AWS's native container orchestration service, tightly integrated with other AWS services.
+- EKS (Elastic Kubernetes Service): Another AWS service that allows you to run Kubernetes on AWS. While ECS is simpler and managed, EKS gives more flexibility with Kubernetes-based orchestration.
+- ECS for Fargate is ideal for serverless container management, while ECS with EC2 gives you more control over the underlying infrastructure.
+
+#### ECS Amazon ECR (Elastic Container Registry)
+
+- ECS integrates with ECR, which is a managed Docker registry service for storing, managing, and deploying Docker container images.
+- ECR supports lifecycle policies for automated image cleanup and versioning.
+
+#### ECS Exam-Relevant Topics
+
+- ECS Architecture: Be familiar with how ECS works and its architecture, including task definitions, clusters, services, and how they relate to each other.
+- Launch Types: Understand the differences between Fargate and EC2 launch types and when to use each.
+- Networking and Security: Know how ECS integrates with VPCs, security groups, and how containers can be isolated using networking features.
+- Scaling: Be able to explain how ECS services scale, how to configure service auto-scaling, and the role of CloudWatch metrics.
+- IAM Roles: Understand the importance of task roles and execution roles in securely accessing AWS resources from ECS tasks.
+- ECS Integration: Know how ECS works with other AWS services like ALB, CloudWatch, and X-Ray.
+
+#### ECS Pricing
+
+- Fargate: You pay for the amount of CPU and memory used by your tasks. There are no charges for the underlying infrastructure.
+- EC2: You pay for the EC2 instances that host your containers. You can use on-demand, reserved, or spot instances to optimize costs.
+
+### AWS EKS
+
+Amazon Elastic Kubernetes Service (EKS) is a fully managed service that allows you to run Kubernetes on AWS without needing to set up, operate, or maintain Kubernetes control planes or nodes.
+
+- Open Source (cloud-agnostic)
+
+#### EKS Core Concepts
+
+- Kubernetes: An open-source container orchestration platform that automates the deployment, scaling, and management of containerized applications. EKS manages the Kubernetes control plane, allowing you to focus on deploying and scaling applications.
+- Control Plane: Managed by AWS, it consists of the API server, etcd (key-value store), and control plane components that make global decisions about the cluster, including scheduling, monitoring, and state management.
+- Worker Nodes: The EC2 instances (or Fargate tasks) that run containerized applications. Worker nodes communicate with the control plane via the Kubernetes API.
+
+#### EKS Node Types
+
+- Managed Node Groups:
+  - AWS manages node provisioning and lifecycle
+  - Automatic updates and patching
+  - Easier to scale and maintain
+- Self-Managed Nodes:
+  - You control node configuration and management
+  - More flexibility but higher operational overhead
+  - Useful for custom requirements
+
+#### EKS Cluster Architecture
+
+- EKS Control Plane: The control plane is fully managed by AWS and distributed across multiple Availability Zones (AZs) for high availability.
+- Worker Nodes: You can provision EC2 instances to act as worker nodes, or use AWS Fargate to run Kubernetes pods without managing EC2 instances.
+- VPC Integration: EKS runs inside a VPC, and worker nodes can interact with other AWS services through the VPC. EKS integrates with AWS networking services like VPC, ELB (Elastic Load Balancing), and IAM.
+- Pod Networking: Pods are assigned IP addresses from your VPC subnet using AWS VPC CNI (Container Network Interface). This provides high performance and native networking with VPC services.
+
+#### EKS Worker Nodes
+
+- EC2: Worker nodes can be EC2 instances, which you manage. This gives you full control over the underlying infrastructure, allowing for instance customization.
+- Fargate: EKS can also run on AWS Fargate, a serverless compute engine for containers. This eliminates the need to manage EC2 instances, simplifying operations.
+- Node Groups: EKS allows you to create managed node groups, where AWS manages the lifecycle of EC2 instances, including updating and scaling.
+
+#### Networking in EKS
+
+- VPC CNI Plugin: EKS uses the AWS VPC CNI plugin for Kubernetes, which integrates Kubernetes pods with the underlying AWS VPC. Each pod gets its own IP address from the VPC subnet.
+- Service Discovery: EKS integrates with Route 53 for DNS-based service discovery within the cluster.
+- Load Balancers: EKS can automatically create Elastic Load Balancers (ELBs) to distribute traffic to services running inside the cluster.
+  - Classic Load Balancer (CLB), Application Load Balancer (ALB), and Network Load Balancer (NLB) can all be used depending on your application’s networking needs.
+
+#### Storage in EKS
+
+- EBS (Elastic Block Store): Persistent storage for stateful workloads. EBS volumes are attached to EC2 worker nodes and can be used by Kubernetes pods.
+- EFS (Elastic File System): Provides scalable, distributed file storage that can be shared between multiple pods across nodes.
+  - **Only storage compatible with Fargate**
+- FSx for Lustre: Used for high-performance workloads requiring fast, parallel file systems.
+
+#### EKS IAM and Security
+
+- IAM Integration: Kubernetes service accounts can be mapped to IAM roles, allowing fine-grained permissions for pods to interact with other AWS services.
+- Pod Security: EKS supports Kubernetes RBAC (Role-Based Access Control), allowing you to control access to resources based on user roles.
+- Encryption: EKS integrates with AWS Key Management Service (KMS) for encrypting data at rest. You can enable encryption for Kubernetes secrets.
+
+#### Scaling in EKS
+
+- Horizontal Pod Autoscaler (HPA): Automatically adjusts the number of pods based on metrics like CPU or memory utilization.
+- Cluster Autoscaler: Automatically adjusts the number of EC2 worker nodes in response to demand. When there are not enough nodes to run pods, new EC2 instances are automatically provisioned.
+- Fargate Autoscaling: For Fargate-based pods, the underlying infrastructure is managed automatically, and you can scale based on pod needs.
+
+#### EKS Monitoring and Logging
+
+- CloudWatch Logs: EKS can send container logs to Amazon CloudWatch for centralized monitoring and troubleshooting.
+- CloudWatch Metrics: You can monitor your cluster performance using CloudWatch metrics. Kubernetes components like nodes, pods, and services generate metrics that can be used for scaling or alerting.
+- Prometheus: A common open-source monitoring tool often used with EKS for more advanced metrics and alerts.
+- AWS Distro for OpenTelemetry: This allows you to collect, process, and export telemetry data like traces and metrics from your applications.
+
+#### EKS Add-ons
+
+EKS allows you to install and manage add-ons like:
+
+- VPC CNI: For enhanced pod networking.
+- CoreDNS: For DNS-based service discovery.
+- Kube-proxy: For network rules that allow communication between pods and services.
+
+#### EKS EKS vs ECS
+
+- EKS (Kubernetes): Offers flexibility and control, but with more complexity. It is ideal for teams already familiar with Kubernetes or who need advanced orchestration capabilities.
+- ECS (Elastic Container Service): Simplified AWS-native container orchestration. ECS is easier to use and manage, but with less flexibility than Kubernetes.
+- Use Cases: EKS is typically chosen for teams with existing Kubernetes knowledge, for multi-cloud or hybrid cloud environments, or for highly customizable container environments.
+
+#### EKS Blueprints
+
+AWS provides EKS Blueprints to help you quickly configure and deploy best-practice architectures for EKS. Blueprints can include configurations for VPCs, networking, and integrations with observability tools like Prometheus and Grafana.
+
+#### EKS Pricing
+
+- Control Plane: There is a fixed charge for running the EKS control plane (approximately $0.10 per hour per cluster).
+- Worker Nodes: You pay for the EC2 instances or Fargate tasks that serve as worker nodes. Costs depend on the instance type or Fargate usage.
+- Add-ons and Storage: Additional costs for services like EBS, EFS, or FSx, as well as for any networking services like load balancers.
+
+#### EKS Exam-Relevant Topics
+
+- Kubernetes Architecture: Be familiar with Kubernetes components like control planes, nodes, and the role they play in EKS.
+- Launch Types: Understand the differences between EC2 worker nodes and Fargate, and when to use each.
+- Networking: Know how EKS integrates with VPCs, security groups, and load balancers. Be familiar with the VPC CNI plugin.
+- Scaling and Auto Scaling: Be prepared to explain how to use the Horizontal Pod Autoscaler and Cluster Autoscaler to manage scaling.
+- Storage: Know the options for persistent storage (EBS, EFS, FSx) and their use cases in Kubernetes workloads.
+- IAM Roles and Security: Understand how EKS integrates with IAM and how to configure fine-grained permissions for Kubernetes pods.
+- Monitoring: Understand how to use CloudWatch for logging and metrics, and how Prometheus can be integrated for advanced monitoring.
+
+#### Use Cases for EKS
+
+- Microservices: EKS is ideal for deploying microservices-based applications, where each service can be managed as an independent Kubernetes pod.
+- Hybrid Cloud: EKS supports multi-cloud and hybrid environments, allowing you to run Kubernetes clusters on AWS, on-premises, or in other clouds.
+- High Availability Applications: With multi-AZ control plane architecture, EKS is well-suited for applications that require high availability.
+
+### AWS Fargate
+
+AWS Fargate is a serverless compute engine for running containers in Amazon ECS (Elastic Container Service) and EKS (Elastic Kubernetes Service). With Fargate, you don’t need to manage the underlying EC2 infrastructure; AWS handles scaling, provisioning, and maintaining servers for containerized applications.
+
+#### Fargate Core Concepts
+
+- Serverless Containers: Fargate removes the need to manage the underlying EC2 instances by providing compute capacity for containers, which makes it a serverless option for running containers.
+- Task-Based Execution: You only need to define the CPU and memory requirements for your tasks, and Fargate automatically provisions the resources to run them.
+- Separation of Compute and Orchestration: Fargate is used with container orchestration services like ECS or EKS. You define tasks (ECS) or pods (EKS), and Fargate handles provisioning and scaling the necessary infrastructure.
+
+#### How Fargate Works
+
+- For ECS: In Amazon ECS, you define tasks and services as usual, and select Fargate as the launch type. ECS schedules the tasks on Fargate, which then runs the containers.
+- For EKS: In Amazon EKS, Fargate profiles map Kubernetes pods to Fargate. Pods are scheduled to run on Fargate when they match the profile, eliminating the need for managing worker nodes.
+- Auto Scaling: Fargate automatically scales based on the container requirements, allowing you to run containers without worrying about managing EC2 instances.
+
+#### Fargate Launch Types
+
+- Fargate vs EC2 Launch Type:
+  - Fargate: AWS handles provisioning, scaling, and maintenance of infrastructure. It is easier to use for tasks that don’t require direct control over the underlying infrastructure.
+  - EC2: You manage the EC2 instances. EC2 gives you more control and flexibility (e.g., instance type, storage configuration), but requires more management overhead.
+
+#### Fargate Cost Management
+
+- Pricing Model: Fargate charges are based on the amount of vCPU and memory resources consumed by the containers. You pay only for the resources the containers use during their runtime, making it cost-efficient for variable workloads.
+- Cost Optimization: Since Fargate scales to meet demand, it is often a better choice for workloads with unpredictable scaling needs. It eliminates the need to pay for idle EC2 instances.
+
+#### Fargate Networking
+
+- AWS VPC Integration: Each task in Fargate is automatically assigned a network interface in a VPC. This allows tasks to interact with AWS services (e.g., RDS, S3) in a secure manner.
+- Elastic Network Interface (ENI): Fargate tasks/pods are allocated individual ENIs, giving each container direct networking access, with its own security groups and private IP.
+- Service Discovery: Integration with AWS Cloud Map and Route 53 allows Fargate services to discover other services and resources easily.
+
+#### Fargate Security
+
+- IAM Roles for Tasks: Fargate integrates with IAM, allowing each task or pod to assume an IAM role. This provides fine-grained permissions to interact with other AWS services securely (e.g., access to S3, DynamoDB).
+- Isolation: Containers running on Fargate are isolated at the kernel level, providing a high degree of security. Unlike ECS on EC2, where containers might share a host, Fargate containers don’t share infrastructure with other customers.
+- Data Encryption: Data in Fargate is encrypted using AWS KMS (Key Management Service), ensuring that data at rest and in transit is secure.
+
+#### Fargate Monitoring and Logging
+
+- CloudWatch Logs: Fargate tasks can automatically send logs to Amazon CloudWatch, enabling centralized logging and monitoring for your containers.
+- CloudWatch Metrics: Fargate provides out-of-the-box metrics like CPU, memory utilization, and network usage, which can be used for alerting and scaling decisions.
+- X-Ray Integration: AWS X-Ray can be used to trace requests across containers and other AWS services for debugging and monitoring distributed applications.
+
+#### Fargate Storage
+
+- Ephemeral Storage: Each Fargate task is allocated a small amount of ephemeral storage for temporary data.
+- EFS (Elastic File System): Fargate integrates with EFS for persistent storage, allowing containers to share and store data across tasks and services. This is ideal for stateful applications that require shared file storage.
+
+#### Fargate Scaling
+
+- Auto Scaling: Fargate integrates with ECS Service Auto Scaling, allowing you to automatically adjust the number of running tasks in response to demand.
+- Elastic Scaling: Fargate dynamically scales based on the defined resource requirements (vCPU, memory) of your tasks, ensuring you always have the necessary resources without over-provisioning.
+
+#### Fargate Use Cases
+
+- Microservices: Fargate is ideal for running microservices architectures where each service can be containerized and scaled independently.
+- CI/CD Pipelines: Fargate can be used in CI/CD pipelines for building, testing, and deploying containerized applications.
+- Batch Jobs: Fargate’s serverless nature makes it well-suited for running periodic or batch workloads that don’t need dedicated EC2 instances.
+- Event-Driven Applications: Fargate integrates well with event-driven AWS services like Amazon SQS, SNS, and Lambda for building decoupled, scalable applications.
+
+#### Fargate for ECS vs EKS
+
+- ECS: When using Fargate with ECS, you focus on task definitions and service configuration. Fargate handles task scheduling and infrastructure management automatically.
+- EKS: When using Fargate with EKS, you define Kubernetes pods, and Fargate handles node management. Fargate is well-suited for Kubernetes workloads that don’t require custom node configurations.
+- Choosing ECS or EKS: Fargate is compatible with both ECS and EKS. ECS is simpler for AWS-native container orchestration, while EKS gives more flexibility but with higher complexity due to Kubernetes.
+
+#### Fargate Key Benefits
+
+- No Infrastructure Management: Fargate takes care of provisioning and managing servers, allowing you to focus solely on building and running your applications.
+- Improved Security: Fargate provides enhanced security by isolating tasks at the kernel level, reducing the surface area for security vulnerabilities.
+- Granular Scaling: With Fargate, you can scale tasks up and down without worrying about over-provisioning EC2 instances.
+- Cost Efficiency: Fargate is cost-effective for workloads with unpredictable traffic or scaling needs since you pay for what you use without any idle infrastructure costs.
+
+#### Fargate Pricing
+
+- Pay per Use: Fargate pricing is based on the amount of vCPU and memory allocated to tasks, and you only pay for the runtime of the containers.
+- No Infrastructure Costs: Unlike EC2 launch types, there are no upfront costs or commitments for the infrastructure in Fargate.
+- Cost Consideration: Fargate can become expensive for long-running or high-resource workloads compared to EC2, where you can optimize using reserved or spot instances.
+
+#### Fargate Exam-Relevant Topics
+
+- Serverless Containers: Be able to explain how Fargate abstracts infrastructure management for running containers.
+- ECS vs EKS with Fargate: Understand when to use ECS or EKS with Fargate and how it simplifies container orchestration.
+- Networking and Security: Know how Fargate tasks integrate with VPCs, security groups, and IAM roles.
+- Scaling and Monitoring: Be familiar with how Fargate handles auto scaling, and how it integrates with CloudWatch for logging and metrics.
+- Storage Options: Understand the use of ephemeral storage and EFS with Fargate for persistent, shared storage.
+
+### AWS App Runner
+
+AWS App Runner is a fully managed service that makes it easy to deploy web applications and APIs quickly without managing infrastructure. Key points:
+
+- Automatic deployment from source code or container image
+- Built-in auto-scaling
+- Load balancing included
+- Supports popular languages and frameworks
+- Integrates with other AWS services
+- Simplified security and compliance
+
+## TODO 1
+
+## TODO 2
+
+## TODO 3
+
+## TODO 4
+
+## TODO 5
 
 ## Useful AWS Resources
 
