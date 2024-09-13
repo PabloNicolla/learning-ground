@@ -102,14 +102,14 @@
     - [Databases Ports](#databases-ports)
   - [Domain Name System (DNS)](#domain-name-system-dns)
   - [Amazon Route 53](#amazon-route-53)
-    - [Domain Registration](#domain-registration)
-    - [DNS Routing](#dns-routing)
-    - [Health Checks and Monitoring](#health-checks-and-monitoring)
-    - [Traffic Flow Management](#traffic-flow-management)
-    - [Domain Name Management](#domain-name-management)
-    - [Security and Compliance](#security-and-compliance)
-    - [Integration with Other AWS Services](#integration-with-other-aws-services)
-    - [Global Infrastructure](#global-infrastructure)
+    - [Route 53 Domain Registration](#route-53-domain-registration)
+    - [Route 53 DNS Routing](#route-53-dns-routing)
+    - [Route 53 Health Checks and Monitoring](#route-53-health-checks-and-monitoring)
+    - [Route 53 Traffic Flow Management](#route-53-traffic-flow-management)
+    - [Route 53 Domain Name Management](#route-53-domain-name-management)
+    - [Route 53 Security and Compliance](#route-53-security-and-compliance)
+    - [Route 53 Integration with Other AWS Services](#route-53-integration-with-other-aws-services)
+    - [Route 53 Global Infrastructure](#route-53-global-infrastructure)
   - [Elastic Beanstalk](#elastic-beanstalk)
   - [S3](#s3)
     - [S3 Use Cases](#s3-use-cases)
@@ -264,6 +264,63 @@
       - [Fargate Pricing](#fargate-pricing)
       - [Fargate Exam-Relevant Topics](#fargate-exam-relevant-topics)
     - [AWS App Runner](#aws-app-runner)
+  - [AWS Serverless](#aws-serverless)
+    - [AWS Lambda Overview](#aws-lambda-overview)
+      - [What is AWS Lambda?](#what-is-aws-lambda)
+      - [Lambda Key Features](#lambda-key-features)
+      - [Lambda How It Works](#lambda-how-it-works)
+      - [Lambda Common Use Cases](#lambda-common-use-cases)
+      - [Lambda Benefits](#lambda-benefits)
+      - [Lambda Limitations](#lambda-limitations)
+      - [Lambda Pricing](#lambda-pricing)
+      - [Lambda SnapStart](#lambda-snapstart)
+      - [Lambda VPC](#lambda-vpc)
+      - [Invoking Lambda From RDS (Postgres) \& Aurora](#invoking-lambda-from-rds-postgres--aurora)
+    - [AWS CloudFront Functions](#aws-cloudfront-functions)
+      - [Key Features of CloudFront Functions](#key-features-of-cloudfront-functions)
+      - [Common Use Cases for CloudFront Functions](#common-use-cases-for-cloudfront-functions)
+      - [Advantages of CloudFront Functions](#advantages-of-cloudfront-functions)
+    - [AWS Lambda@Edge](#aws-lambdaedge)
+      - [Key Features of Lambda@Edge](#key-features-of-lambdaedge)
+      - [Common Use Cases for Lambda@Edge](#common-use-cases-for-lambdaedge)
+      - [Advantages of Lambda@Edge](#advantages-of-lambdaedge)
+      - [Limitations of Lambda@Edge](#limitations-of-lambdaedge)
+    - [Comparison: CloudFront Functions vs Lambda@Edge](#comparison-cloudfront-functions-vs-lambdaedge)
+    - [AWS DynamoDB](#aws-dynamodb)
+      - [DynamoDB Key Features](#dynamodb-key-features)
+      - [DynamoDB Data Model](#dynamodb-data-model)
+      - [DynamoDB Consistency Models](#dynamodb-consistency-models)
+      - [DynamoDB Querying and Accessing Data](#dynamodb-querying-and-accessing-data)
+      - [DynamoDB Security](#dynamodb-security)
+      - [DynamoDB Performance and Scaling](#dynamodb-performance-and-scaling)
+      - [DynamoDB Backup and Restore](#dynamodb-backup-and-restore)
+      - [DynamoDB Cost](#dynamodb-cost)
+      - [DynamoDB Integration with AWS Ecosystem](#dynamodb-integration-with-aws-ecosystem)
+      - [DynamoDB Comparison with Other AWS Databases](#dynamodb-comparison-with-other-aws-databases)
+      - [DynamoDB Common Use Cases](#dynamodb-common-use-cases)
+      - [DynamoDB Read/Write Capacity Modes](#dynamodb-readwrite-capacity-modes)
+      - [DynamoDB Accelerator (DAX)](#dynamodb-accelerator-dax)
+      - [DynamoDB Global Tables](#dynamodb-global-tables)
+      - [DynamoDB TTL](#dynamodb-ttl)
+    - [AWS API Gateway](#aws-api-gateway)
+      - [API Gateway + AWS Lambda (Full Serverless Architecture)](#api-gateway--aws-lambda-full-serverless-architecture)
+        - [Use Cases of API Gateway + Lambda](#use-cases-of-api-gateway--lambda)
+    - [AWS API Cognito](#aws-api-cognito)
+      - [Cognito User Pools](#cognito-user-pools)
+      - [Cognito Identity Pools](#cognito-identity-pools)
+      - [Cognito OAuth 2.0 \& OpenID Connect](#cognito-oauth-20--openid-connect)
+      - [Cognito Security \& Compliance](#cognito-security--compliance)
+      - [Cognito User Federation](#cognito-user-federation)
+      - [Cognito AWS Integration](#cognito-aws-integration)
+      - [Use Cases of AWS Cognito](#use-cases-of-aws-cognito)
+      - [Cognito User Pools vs. Identity Pools](#cognito-user-pools-vs-identity-pools)
+      - [Cognito Security Features](#cognito-security-features)
+      - [Cognito Integration with Other AWS Services](#cognito-integration-with-other-aws-services)
+      - [Cognito Federated Identity](#cognito-federated-identity)
+      - [Key Benefits of Using AWS Cognito](#key-benefits-of-using-aws-cognito)
+      - [Cognito Pricing](#cognito-pricing)
+      - [API Gateway + Lambda + Cognito (Complete Serverless Authentication)](#api-gateway--lambda--cognito-complete-serverless-authentication)
+    - [AWS Step Functions](#aws-step-functions)
   - [TODO 1](#todo-1)
   - [TODO 2](#todo-2)
   - [TODO 3](#todo-3)
@@ -1256,12 +1313,12 @@ Translate human friendly hostname into machine IP addresses
 
 ## Amazon Route 53
 
-### Domain Registration
+### Route 53 Domain Registration
 
 - Route 53 allows you to register domain names directly through AWS. It supports a wide range of top-level domains (TLDs) like .com, .org, .net, etc.
 - It manages domain settings, such as DNS configuration, domain transfer, and renewal.
 
-### DNS Routing
+### Route 53 DNS Routing
 
 - Authoritative DNS: Route 53 provides authoritative DNS services, which means it responds to DNS queries for your domain with the correct IP address or other DNS records.
 - Routing Policies: Route 53 offers various routing policies to determine how DNS queries are resolved:
@@ -1276,7 +1333,7 @@ Translate human friendly hostname into machine IP addresses
     - More secure than Simple Routing since health checks can eliminate unhealthy endpoints from the answer
     - Client chooses the IP randomly
 
-### Health Checks and Monitoring
+### Route 53 Health Checks and Monitoring
 
 - **HTTP Health Checks only works for public resources**
 - Route 53 can monitor the health of your resources through health checks, ensuring that DNS queries are only routed to healthy endpoints.
@@ -1295,11 +1352,11 @@ Translate human friendly hostname into machine IP addresses
   - other health checks (Parent combines all Child's health checks into one)
   - CloudWatch Alarms (Useful to monitor private resources)
 
-### Traffic Flow Management
+### Route 53 Traffic Flow Management
 
 - Traffic Flow: An easy-to-use visual editor that allows you to create complex routing configurations combining multiple routing policies. It enables you to manage traffic across multiple AWS regions and optimize performance for global users.
 
-### Domain Name Management
+### Route 53 Domain Name Management
 
 - Hosted Zones: A hosted zone is a container for DNS records for a specific domain. Route 53 supports:
   - public hosted zones (for routing traffic on the internet).
@@ -1312,18 +1369,18 @@ Translate human friendly hostname into machine IP addresses
     - it is can only point to some AWS resources (It does not work with EC2 DNS name)
 - You can use 3rd party domains with Route 53. (Create a Public Hosted Zone as update 3rd party Registrar NS(Name Servers))
 
-### Security and Compliance
+### Route 53 Security and Compliance
 
 - DNSSEC (Domain Name System Security Extensions): Route 53 supports DNSSEC for domain signing, providing authenticity and integrity for DNS records.
 - IAM Policies: Integrates with AWS Identity and Access Management (IAM) to control access to Route 53 resources.
 - Audit Logging: Provides logging of DNS query requests via AWS CloudTrail for monitoring and auditing purposes.
 
-### Integration with Other AWS Services
+### Route 53 Integration with Other AWS Services
 
 - Seamless Integration: Route 53 integrates closely with other AWS services like S3, CloudFront, Elastic Load Balancing, and more, facilitating smooth DNS configuration for AWS-hosted applications.
 - Private DNS for Amazon VPC: You can create private DNS namespaces within your VPC, allowing Route 53 to resolve DNS queries for resources within the VPC.
 
-### Global Infrastructure
+### Route 53 Global Infrastructure
 
 - Highly Available: Route 53 is designed with global redundancy and low-latency query resolution using a global network of DNS servers.
 - Scalable: Automatically scales to handle large volumes of DNS queries without user intervention.
@@ -2662,6 +2719,8 @@ Amazon Elastic Kubernetes Service (EKS) is a fully managed service that allows y
   - You control node configuration and management
   - More flexibility but higher operational overhead
   - Useful for custom requirements
+- Fargate
+  - Fully managed by AWS
 
 #### EKS Cluster Architecture
 
@@ -2848,6 +2907,517 @@ AWS App Runner is a fully managed service that makes it easy to deploy web appli
 - Supports popular languages and frameworks
 - Integrates with other AWS services
 - Simplified security and compliance
+
+## AWS Serverless
+
+AWS offers a variety of serverless services that allow you to build and run applications without managing infrastructure.
+
+- Compute:
+  - AWS Lambda
+  - AWS Fargate (for containers)
+
+- Databases & Storage:
+  - Amazon DynamoDB
+  - Amazon S3 (for object storage)
+  - Amazon Aurora Serverless (for relational databases)
+
+- Messaging & Orchestration:
+  - Amazon SNS (Simple Notification Service)
+  - Amazon SQS (Simple Queue Service)
+  - Amazon EventBridge
+  - AWS Step Functions
+  - Amazon Kinesis Data Streams
+
+- API & App Integration:
+  - Amazon API Gateway
+  - AWS AppSync
+
+- Monitoring & Management:
+  - Amazon CloudWatch
+  - AWS X-Ray
+
+### AWS Lambda Overview
+
+AWS Lambda is one of the core serverless compute services in AWS. It lets you run code without provisioning or managing servers.
+
+- Lambda Container Image
+  - use container as lambda
+
+Execution:
+
+- RAM: from 128MB up to 10GB
+- ENVIRONMENT variables: (4KB)
+- Disk capacity in the "function container" (in /tmp): 512MB to 10GB
+- Max execution time: 900secs (15 minutes)
+- Concurrent Executions: 1000 (can be increased)
+
+Deployment:
+
+- Function size (compressed .zip): 50MB
+- Uncompressed Deployment (code + dependencies): 250MB
+- Can use /tmp directory to load other files at startup
+   ENVIRONMENT variables: (4KB)
+
+#### What is AWS Lambda?
+
+AWS Lambda is a Function-as-a-Service (FaaS) platform that allows you to execute code in response to events, such as changes to data in S3, HTTP requests via API Gateway, database events, or scheduled tasks. You pay only for the time the function runs, measured in milliseconds.
+
+#### Lambda Key Features
+
+- Event-Driven: AWS Lambda functions are triggered by specific events from AWS services (S3, DynamoDB, API Gateway, etc.) or external events.
+- Automated Scaling: Lambda automatically scales by invoking functions in response to the number of incoming requests. Each request is handled individually, ensuring near-infinite scalability.
+- Support for Multiple Languages: Lambda supports many programming languages, including Python, Java, Node.js, Go, Ruby, and custom run-times.
+- Pay-per-Use Pricing: Billing is based on the number of requests and the execution time (billed in 1ms increments). There are no charges for idle time.
+- Stateless Execution: Each Lambda function invocation is stateless, meaning Lambda does not persist data between invocations (though you can use external storage like S3 or DynamoDB for persistence).
+
+#### Lambda How It Works
+
+- Function Code: You upload the function code to Lambda. This can be done manually, via deployment packages, or through integrations with services like AWS CodePipeline.
+- Triggering Events: AWS Lambda is event-driven, meaning it executes in response to defined triggers from AWS services (like S3, DynamoDB, API Gateway, SNS, etc.) or custom events.
+- Execution: Lambda provisions and runs containers to execute your function when an event occurs. The execution environment is automatically created and destroyed as needed.
+- Resource Allocation: You allocate memory (from 128MB to 10GB), and AWS Lambda allocates CPU power proportionally.
+
+#### Lambda Common Use Cases
+
+- Real-Time Data Processing: Processing files uploaded to S3, such as resizing images, transcoding videos, or processing logs.
+- API Backends: Using Lambda with API Gateway to build scalable, serverless APIs.
+- Automated Infrastructure Tasks: Automating EC2 instance backups, infrastructure monitoring, or response to cloud events (e.g., CloudWatch Alarms).
+- Data Transformation: Processing streams of data from services like Amazon Kinesis or DynamoDB Streams.
+
+#### Lambda Benefits
+
+- No Server Management: Lambda abstracts all server management tasks. You focus only on writing and deploying code.
+- Automatic Scaling: Lambda scales automatically with the number of incoming requests.
+- Cost-Efficient: You only pay for the compute time your code consumes, making it highly cost-effective for intermittent workloads.
+- Integration with AWS Services: Lambda integrates seamlessly with other AWS services, providing a cohesive serverless ecosystem.
+
+#### Lambda Limitations
+
+- Timeout: Maximum execution timeout for a Lambda function is 15 minutes.
+- Statelessness: Lambda does not maintain state between invocations. Any state must be stored externally (e.g., S3, DynamoDB).
+- Cold Starts: Initial invocations of Lambda functions after inactivity can experience latency, known as a cold start, due to environment setup.
+
+#### Lambda Pricing
+
+- Requests: The first 1 million requests per month are free. After that, $0.20 per 1 million requests.
+- Duration: Billed based on the number of milliseconds used for each execution and the amount of memory allocated to the function.
+
+#### Lambda SnapStart
+
+AWS Lambda SnapStart is a performance optimization feature for Java functions. Key points:
+
+- Reduces cold start times significantly (up to 10x faster)
+- Works by taking a snapshot of the initialized function
+- Snapshot is cached and reused for subsequent invocations
+- Automatically enabled for Java 11 and newer run-times
+- No code changes required to use it
+- Best for latency-sensitive Java applications
+- May not benefit all workloads equally
+- Considerations for stateful applications and external connections
+
+#### Lambda VPC
+
+- By default lambda function are launched outside your VPC (AWS owned VPC)
+  - This prevents access to resources in private VPCs
+- It is possible to launch lambdas in user owned VPCs
+
+Common use cases
+
+- Lambda with RDS proxy
+
+#### Invoking Lambda From RDS (Postgres) & Aurora
+
+- Process data events from within a database
+  - Correct permission must be configured
+
+Comparing to RDS Event Notification
+
+- Provides information about the database itself, this does not provide access/information on the data events (DB data)
+
+**For access to data events** use RDS invoking lambda feature
+
+### AWS CloudFront Functions
+
+CloudFront Functions is a lightweight serverless solution designed to run JavaScript code at the edge of the AWS CloudFront network. It provides low-latency execution for simple HTTP request and response manipulation tasks directly at AWS edge locations. CloudFront Functions is tailored for high-volume, lightweight operations with faster response times and lower cost compared to other Lambda-based services.
+
+Client ---Viewer Request---> CloudFront ---Origin Request---> Origin Server
+Client <---Viewer Response--- CloudFront <---Origin Response--- Origin Server
+
+#### Key Features of CloudFront Functions
+
+- Ultra-Low Latency: Designed to handle lightweight request manipulations at high scale with minimal latency (often in the order of microseconds).
+- Global Edge Execution: Runs at CloudFront’s globally distributed edge locations, ensuring rapid responses for viewers worldwide.
+- Event Types: Can be triggered on two events:
+  - Viewer Request (when a user makes a request to CloudFront)
+  - Viewer Response (before the response is sent to the user)
+- JavaScript Runtime: Uses JavaScript for defining the logic and supports basic manipulations such as URL rewrites, HTTP header adjustments, or cache-key normalizations.
+
+#### Common Use Cases for CloudFront Functions
+
+- Simple URL Rewrites/Redirects: Modify URLs or issue redirects to different paths or domains.
+- Custom HTTP Headers: Add, modify, or remove headers from HTTP requests or responses (e.g., security headers).
+- User-Agent-Based Content Personalization: Serve different content based on user agents (mobile vs. desktop users).
+- A/B Testing: Split traffic across different versions of your site for A/B testing.
+- Cache Key Normalization: Adjust request URLs to create more efficient cache keys for CloudFront caching.
+
+#### Advantages of CloudFront Functions
+
+- Low Cost: Designed for lightweight operations with significantly lower execution costs compared to Lambda@Edge.
+- Fast Execution: Faster than Lambda@Edge, since CloudFront Functions are optimized for very low-latency execution.
+- High-Scale: Built to handle millions of requests per second at global edge locations.
+
+### AWS Lambda@Edge
+
+Lambda@Edge is an AWS service that allows you to run Node.js or Python functions at AWS edge locations in response to CloudFront events. It enables the execution of more complex logic compared to CloudFront Functions, such as dynamic content generation or request authentication.
+
+#### Key Features of Lambda@Edge
+
+- Event Types: Lambda@Edge can be triggered by four types of CloudFront events:
+  - Viewer Request: Triggered when CloudFront receives a request from the viewer.
+  - Viewer Response: Triggered just before CloudFront sends a response to the viewer.
+  - Origin Request: Triggered when CloudFront forwards a request to the origin server.
+  - Origin Response: Triggered when CloudFront receives a response from the origin server before forwarding it to the viewer.
+- Programming Languages: Supports Node.js and Python run-times for executing functions.
+- Regional Execution: Functions are executed at the edge location closest to the request, reducing latency and improving performance.
+
+#### Common Use Cases for Lambda@Edge
+
+- Dynamic Content Modification: Generate personalized content, modify HTML or JSON responses on the fly, or perform URL rewrites.
+- Request and Response Authentication: Verify authentication tokens or restrict access based on specific rules.
+- Image or Video Processing: Resize images, transcode videos, or compress assets dynamically before sending them to the viewer.
+- Real-Time A/B Testing: Deliver different experiences to users by dynamically altering content based on cookies or headers.
+
+#### Advantages of Lambda@Edge
+
+- More Complex Logic: Can execute more resource-intensive or complex tasks compared to CloudFront Functions.
+- Access to Origin-Level Events: Lambda@Edge can be triggered on both viewer and origin events, offering more flexibility in processing.
+- Integrated with CloudFront: Seamless integration with CloudFront for low-latency, globally distributed applications.
+
+#### Limitations of Lambda@Edge
+
+- Cold Start Latency: Lambda@Edge may experience cold starts, leading to higher initial response times for functions that haven’t been executed recently.
+- Higher Cost: Lambda@Edge is more expensive than CloudFront Functions due to its ability to handle more complex workloads.
+
+### Comparison: CloudFront Functions vs Lambda@Edge
+
+| Feature       | CloudFront Functions                       | Lambda@Edge                                                        |
+| ------------- | ------------------------------------------ | ------------------------------------------------------------------ |
+| Use Cases     | Lightweight request/response manipulations | Complex processing (e.g., authentication, content personalization) |
+| Event Types   | Viewer Request, Viewer Response            | Viewer Request, Viewer Response, Origin Request, Origin Response   |
+| Runtime       | JavaScript                                 | Node.js, Python                                                    |
+| Cost          | Lower                                      | Higher                                                             |
+| Cold Start    | No                                         | Yes                                                                |
+| Customization | Limited to simple tasks                    | Suitable for more complex logic                                    |
+| Max Exec time | < 1ms                                      | 1 - 10 secs                                                        |
+| Max Memory    | 2 MB                                       | 128MB - 10GB                                                       |
+| # Requests    | Millions per second                        | Thousands per second                                               |
+
+### AWS DynamoDB
+
+Amazon DynamoDB is a fully managed, serverless, key-value and document database designed for high performance and scalability. It is part of the AWS NoSQL database services and is optimized for applications requiring consistent, **single-digit millisecond latency** at any scale.
+
+- Item max size is 400KB
+
+#### DynamoDB Key Features
+
+- Fully Managed: DynamoDB handles operational tasks such as hardware and software provisioning, setup, configuration, and scaling.
+- Scalable: Automatically scales up or down to accommodate your application’s needs without manual intervention.
+- Performance: Provides consistent, single-digit millisecond response times for both read and write operations.
+- Serverless: No need to manage servers or clusters; DynamoDB automatically scales to handle your throughput and storage needs.
+- High Availability: Replicates data across multiple AWS regions to ensure high availability and durability.
+- Integrated with AWS Services: Works seamlessly with other AWS services like Lambda, S3, and CloudWatch for event-driven architectures and monitoring.
+
+#### DynamoDB Data Model
+
+- Tables: The primary structure in DynamoDB. Each table is identified by its name and has a primary key.
+- Primary Key: Consists of a partition key and optionally a sort key.
+  - Partition Key: A single attribute that DynamoDB uses to distribute data across partitions.
+  - Sort Key: An optional attribute that allows you to store multiple items with the same partition key but different sort keys.
+- Attributes: Data items in DynamoDB are stored as attributes. Each item is a collection of attributes, similar to a JSON document.
+- Indexes:
+  - Global Secondary Indexes (GSI): Allow queries on non-primary key attributes.
+  - Local Secondary Indexes (LSI): Allow queries on a different sort key within the same partition key.
+
+#### DynamoDB Consistency Models
+
+- Eventually Consistent Reads: Data is replicated across multiple nodes, and there may be a slight delay before the latest write is reflected in subsequent reads.
+- Strongly Consistent Reads: Ensures that the read returns the most recent data, reflecting all writes that received a successful response.
+
+#### DynamoDB Querying and Accessing Data
+
+- Query: Retrieves multiple items that have the same partition key. Can also use optional sort keys for more refined querying.
+- Scan: Scans the entire table or a subset of the table and retrieves all data matching specific criteria. Less efficient than a Query.
+
+- Stream Processing: Captures changes to items in a table and enables you to react to these changes, such as triggering AWS Lambda functions.
+  - ordered stream of modifications (create/update/delete) in a table
+  - DynamoDB Streams
+    - 24 hours retention
+    - Limited # of consumers
+  - Kinesis Data Streams
+    - 1 year retention
+    - High # of consumers
+
+#### DynamoDB Security
+
+- IAM Integration: Control access to DynamoDB tables using AWS IAM policies.
+- Encryption: Data is encrypted at rest and in transit. DynamoDB supports encryption using AWS KMS (Key Management Service).
+- VPC Endpoints: Access DynamoDB from within a VPC without traversing the public internet.
+
+#### DynamoDB Performance and Scaling
+
+- Provisioned Throughput: You can specify the number of reads and writes per second. DynamoDB automatically scales the capacity based on the configured throughput.
+- On-Demand Capacity Mode: Automatically scales to accommodate unpredictable workloads and allows you to pay only for the reads and writes your application performs.
+
+#### DynamoDB Backup and Restore
+
+- On-Demand Backup: Create full backups of your tables at any time.
+- Point-in-Time Recovery (PITR): Provides continuous backups and allows recovery of tables to any point in time within the last 35 days.
+
+#### DynamoDB Cost
+
+- Pay-as-You-Go: Pay for the read and write throughput, storage, and data transfer used by your DynamoDB tables.
+- Provisioned and On-Demand Pricing: Choose between provisioned throughput mode (fixed capacity) and on-demand mode (auto-scaling).
+
+#### DynamoDB Integration with AWS Ecosystem
+
+- AWS Lambda: Create triggers with DynamoDB Streams to automatically invoke Lambda functions.
+- Amazon S3:
+  - Store large files and use DynamoDB for metadata and indexing.
+  - Export/Import table to S3. (json support)
+- Amazon CloudWatch: Monitor DynamoDB tables and indexes with built-in metrics and alarms.
+
+#### DynamoDB Comparison with Other AWS Databases
+
+- DynamoDB vs. RDS: DynamoDB is a NoSQL database designed for high performance and scalability with flexible schema, while RDS is a relational database with structured schema and SQL querying.
+- DynamoDB vs. DocumentDB: DynamoDB is key-value and document-oriented, whereas DocumentDB is a document database compatible with MongoDB APIs.
+
+#### DynamoDB Common Use Cases
+
+- Real-Time Data Processing: Applications needing high-speed reads and writes, such as gaming or IoT.
+- Mobile Backends: Scalable backend for mobile applications with high read/write throughput.
+- E-Commerce: Product catalogs, shopping carts, and real-time inventory management.
+
+#### DynamoDB Read/Write Capacity Modes
+
+- Provisioned Mode (default)
+  - Specify number of reads/writes per seconds
+  - Plan predictable capacity
+  - Pay for provisioned Read Capacity Units (RCU) and Write Capacity Units (WCU)
+  - Possibility to add auto-scaling mode for RCU and WCU
+
+- On-Demand Mode
+  - Automatic scaling
+  - more expensive than provisioned
+  - good for unpredictable workloads
+
+#### DynamoDB Accelerator (DAX)
+
+DynamoDB Accelerator (DAX) is an in-memory cache designed specifically for DynamoDB. It can significantly improve read performance for your DynamoDB tables.
+
+1. Purpose:
+   - Provides **microsecond** latency for cached reads
+   - Improves performance for read-heavy workloads
+2. How it works:
+   - Acts as a write-through cache
+   - Sits between your application and DynamoDB
+   - Caches read results in memory
+3. API compatibility:
+   - Fully compatible with existing DynamoDB API calls
+   - No/Minimal application changes required to use DAX
+4. Cache hit scenarios:
+   - Item cache for GetItem and BatchGetItem operations
+   - Query cache for Query and Scan operations
+5. Consistency:
+   - Supports both eventually consistent and strongly consistent reads
+   - For strongly consistent reads, DAX passes the request through to DynamoDB
+6. Write operations:
+   - Writes go directly to DynamoDB and then to DAX
+   - Ensures data consistency between DAX and DynamoDB
+7. TTL (Time to Live):
+   - Default TTL for cached data is 5 minutes
+   - Can be configured
+8. Scaling:
+   - DAX clusters can scale from 3 to 10 nodes
+   - Multi-AZ deployment for high availability
+9. Use cases:
+   - Apps requiring fastest possible read performance
+   - Read-intensive workloads
+   - Repeated reads on the same data
+10. Limitations:
+    - Not suitable for write-intensive applications
+    - Doesn't cache negative results (i.e., queries for non-existent items)
+11. Pricing:
+    - Charged per node-hour consumed
+
+#### DynamoDB Global Tables
+
+- Make a table accessible with low latency in multiple regions
+- Active-Active replication
+- (Read/Write) in any region
+- DynamoDB Streams must be enabled
+
+#### DynamoDB TTL
+
+- Automatically delete items after an expiry timestamp
+
+### AWS API Gateway
+
+Amazon API Gateway is a fully managed service for creating, deploying, and managing APIs at scale. It acts as a "front door" for applications, enabling communication between clients and backend services. API Gateway supports RESTful APIs, WebSocket APIs, and integrates seamlessly with AWS Lambda, making it a key part of serverless infrastructure.
+
+- API Types:
+  - RESTful APIs: Traditional, stateless APIs that follow the REST architecture.
+  - WebSocket APIs: For real-time, stateful communication between clients and backend services.
+
+- Integration with AWS Lambda:
+  - API Gateway + Lambda allows you to create a fully serverless architecture by handling requests without the need for provisioning or managing servers.
+  - API Gateway invokes Lambda functions as backends, and these functions process the request and return responses.
+
+- Endpoints Types:
+  - **Edge-Optimized (default)**: For global clients
+    - API Gateway still lives in one region
+    - but, requests are routed through the CloudFront Edge Locations (improving latency)
+  - **Regional**: For clients in the same region
+    - can be manually combined with CloudFront for granular control (compared to default)
+  - **Private**
+    - Can be accessed from VPC using VPC endpoint (ENI)
+    - Must configure policy permissions
+
+- Security Features:
+  - IAM Authorization: Use AWS Identity and Access Management (IAM) for securing APIs.
+  - Lambda Authorizers: A Lambda function to control access by validating tokens or headers (like JWT or custom headers).
+  - CORS: Cross-Origin Resource Sharing (CORS) configuration to allow access from specific origins.
+  - API Keys & Usage Plans: Rate-limiting, metering, and access control with API keys and usage plans for different clients.
+
+- Throttling & Rate Limiting:
+  - API Gateway can throttle API calls to prevent overloading backends.
+  - Rate limits and quotas can be set on usage plans to control API usage.
+
+- Monitoring & Logging:
+  - Amazon CloudWatch: Full integration with CloudWatch for monitoring API performance, metrics (latency, errors, etc.), and setting alarms.
+  - API Logging: Logs can be collected in CloudWatch for troubleshooting and analyzing API requests.
+
+- API Versioning & Stages:
+  - Supports versioning of APIs and deployment to different stages (e.g., dev, test, prod).
+  - Each stage can have different settings, usage plans, and endpoints.
+
+- Caching:
+  - API Gateway can cache responses at the edge or on the server-side to reduce latency and backend load.
+  - Configurable TTL (Time To Live) for caching API responses.
+
+- Scaling & High Availability:
+  - API Gateway automatically scales as the request load increases, making it ideal for unpredictable traffic patterns.
+  - Built-in support for high availability with redundancy across multiple AWS regions.
+
+- Pricing:
+  - API Gateway pricing is based on the number of requests and data transferred.
+  - API Gateway + Lambda pricing is cost-effective for low- to moderate-throughput applications, paying for the actual usage without the need for pre-provisioning.
+
+- Custom Domain Name HTTPS for API Gateway:
+  - You can set up a custom domain name for your API and secure it with HTTPS.
+
+#### API Gateway + AWS Lambda (Full Serverless Architecture)
+
+By integrating API Gateway with AWS Lambda, you can create a fully serverless infrastructure for APIs:
+
+- Serverless Backend: API Gateway invokes Lambda functions in response to client API calls, which allows you to build backends without any servers.
+- Pay-per-Use: With Lambda, you're billed for the compute time consumed per invocation, and API Gateway charges are based on the number of requests.
+- Auto-scaling: Both API Gateway and Lambda automatically scale with demand, allowing you to handle sudden traffic spikes without manual intervention.
+- Security: You can secure Lambda-backed APIs using IAM roles, Lambda authorizers, or custom authorizers for authentication and authorization.
+- Error Handling & Response: API Gateway integrates natively with Lambda’s error responses and customizes error responses for clients.
+
+##### Use Cases of API Gateway + Lambda
+
+- Mobile & Web Applications: API Gateway allows mobile and web apps to interact with backend services using RESTful or WebSocket APIs.
+- Microservices: API Gateway acts as a unified front for microservices running on Lambda or other services, simplifying routing and management.
+- Real-time Communication: Using WebSocket APIs, you can build real-time apps (like chat applications) with API Gateway and Lambda as the backend.
+- Proxy for External Services: API Gateway can act as a proxy for invoking external HTTP services or Lambda functions.
+
+### AWS API Cognito
+
+Amazon Cognito is a managed service that provides user sign-up, sign-in, and access control to web and mobile applications. It supports authentication, authorization, and user management through scalable and secure features, making it a key part of serverless applications.
+
+#### Cognito User Pools
+
+- User Authentication: Amazon Cognito User Pools manage user directories and allow users to sign in using their username/password or through third-party providers like Google, Facebook, and Amazon.
+- MFA (Multi-Factor Authentication): Supports optional multi-factor authentication (MFA) and advanced security features to protect user accounts.
+- Customizable Authentication Flows: You can customize the user authentication process with triggers (e.g., pre-sign-up, post-authentication) by using AWS Lambda functions.
+- Built-in UI: Cognito provides a hosted UI for user sign-up/sign-in, or you can integrate it into your own app using SDKs.
+
+#### Cognito Identity Pools
+
+Specifically designed to give limited AWS privileges to users
+
+- Federated Identities: Cognito Identity Pools enable federated access by allowing users to authenticate with external identity providers (IdPs) like Google, Facebook, Amazon, SAML, or even your own identity provider.
+- AWS Resource Access: Once authenticated, Cognito Identity Pools provide temporary, limited-privilege AWS credentials so that users can access other AWS resources (like S3, DynamoDB) securely.
+
+#### Cognito OAuth 2.0 & OpenID Connect
+
+- OAuth 2.0 and OIDC Support: Cognito integrates with OAuth 2.0 and OpenID Connect to support industry-standard protocols for authorization and authentication.
+
+#### Cognito Security & Compliance
+
+- Secure Tokens: AWS Cognito issues JWT, ID, and Access tokens for securely managing sessions and authenticating users.
+- Advanced Security Features: It automatically detects and responds to unusual sign-in activity and can lock or challenge users with additional verification.
+- Encryption: All user data is encrypted at rest and in transit.
+
+#### Cognito User Federation
+
+- Social & Enterprise Logins: Supports integration with social identity providers (like Google, Facebook) and SAML-based enterprise identity providers for single sign-on (SSO).
+
+#### Cognito AWS Integration
+
+- AWS Services Access: Cognito integrates directly with AWS services, allowing you to restrict access to services like Amazon S3, Lambda, and API Gateway based on user roles and permissions.
+- Lambda Triggers: Lambda functions can be triggered to customize the authentication workflow and user pool events (e.g., account confirmation, custom validations).
+
+#### Use Cases of AWS Cognito
+
+- User Authentication: Managing user authentication for mobile or web apps, including social login and multi-factor authentication.
+- Access Control for AWS Resources: Using Cognito Identity Pools, users can gain secure, temporary access to AWS services based on roles and policies.
+- Federated Identity: Allow users to sign in with existing credentials from third-party identity providers or corporate SSO systems.
+- Mobile & Web Apps: Integration with mobile apps for secure sign-up, sign-in, and identity management, especially for IoT, gaming, and social apps.
+
+#### Cognito User Pools vs. Identity Pools
+
+- User Pools: Handle authentication for users (managing user accounts, signing in, MFA).
+- Identity Pools: Provide temporary AWS credentials to access AWS services once authenticated (used for authorization).
+
+#### Cognito Security Features
+
+- Know how to enable MFA, advanced security features, and the use of Lambda triggers to extend authentication flows.
+- Token Handling: Understand the role of JWT, ID tokens, and Access tokens in managing user sessions.
+
+#### Cognito Integration with Other AWS Services
+
+- How Cognito integrates with API Gateway, Lambda, S3, DynamoDB, and other AWS services for role-based access control.
+
+#### Cognito Federated Identity
+
+- Understanding how Cognito supports multiple identity providers (OAuth, OpenID, SAML, etc.) and handles federation for enterprise applications.
+
+#### Key Benefits of Using AWS Cognito
+
+- Scalability: It automatically scales to handle millions of users, allowing you to focus on your application rather than user management.
+- Security: Offers advanced security features like MFA, encryption, and the detection of unusual sign-in attempts.
+- Cost-Efficiency: You only pay for the number of active users and identity operations, making it cost-effective for growing applications.
+
+#### Cognito Pricing
+
+- User Pools: Charges based on monthly active users (MAUs) and the number of operations (sign-ins, sign-ups, etc.).
+- Identity Pools: Charges based on the number of identity operations and AWS resources accessed.
+
+#### API Gateway + Lambda + Cognito (Complete Serverless Authentication)
+
+When combined with API Gateway and AWS Lambda, Cognito enables end-to-end serverless authentication:
+
+- Cognito User Pools manage user authentication.
+- API Gateway is used for managing and exposing APIs securely.
+- Lambda handles custom logic behind the APIs.
+- Identity Pools grant temporary credentials for authenticated users to securely access AWS resources.
+
+### AWS Step Functions
+
+AWS Step Functions allows you to coordinate multiple AWS services into serverless workflows. It helps break down complex processes into simple steps, enabling easier management and automation. Workflows are defined using state machines and can integrate with services like Lambda, ECS, and more.
+
 
 ## TODO 1
 
