@@ -322,6 +322,62 @@
       - [API Gateway + Lambda + Cognito (Complete Serverless Authentication)](#api-gateway--lambda--cognito-complete-serverless-authentication)
     - [AWS Step Functions](#aws-step-functions)
   - [AWS Database Services Comparison](#aws-database-services-comparison)
+  - [AWS Data \& Analytics](#aws-data--analytics)
+    - [AWS Athena](#aws-athena)
+      - [Key Features of Amazon Athena](#key-features-of-amazon-athena)
+      - [Athena Common Use Cases](#athena-common-use-cases)
+      - [Athena Architecture](#athena-architecture)
+      - [Athena Integration with AWS Services](#athena-integration-with-aws-services)
+      - [Athena Federated Query](#athena-federated-query)
+      - [Athena Best Case Scenario](#athena-best-case-scenario)
+    - [AWS Redshift](#aws-redshift)
+      - [Redshift Key Features](#redshift-key-features)
+      - [Redshift Cluster](#redshift-cluster)
+      - [Redshift Enhanced VPC Routing](#redshift-enhanced-vpc-routing)
+      - [Redshift Snapshots and DR](#redshift-snapshots-and-dr)
+      - [Redshift Common Use Cases](#redshift-common-use-cases)
+      - [Redshift Integration with Other AWS Services](#redshift-integration-with-other-aws-services)
+      - [Redshift Exam Focus](#redshift-exam-focus)
+    - [AWS OpenSearch (formerly Amazon Elasticsearch Service)](#aws-opensearch-formerly-amazon-elasticsearch-service)
+      - [OpenSearch Key Features](#opensearch-key-features)
+      - [OpenSearch Common Use Cases](#opensearch-common-use-cases)
+      - [OpenSearch Integration with Other AWS Services](#opensearch-integration-with-other-aws-services)
+      - [OpenSearch Exam Focus](#opensearch-exam-focus)
+    - [AWS EMR (Elastic MapReduce)](#aws-emr-elastic-mapreduce)
+      - [EMR Key Features](#emr-key-features)
+      - [EMR Note Types](#emr-note-types)
+      - [EMR Common Use Cases](#emr-common-use-cases)
+      - [EMR Integration with Other AWS Services](#emr-integration-with-other-aws-services)
+      - [EMR Exam Focus](#emr-exam-focus)
+    - [AWS QuickSight](#aws-quicksight)
+      - [QuickSight Key Features](#quicksight-key-features)
+      - [QuickSight Common Use Cases](#quicksight-common-use-cases)
+      - [QuickSight Integration with Other AWS Services](#quicksight-integration-with-other-aws-services)
+      - [QuickSight SPICE engine](#quicksight-spice-engine)
+      - [QuickSight Dashboard \& Analysis](#quicksight-dashboard--analysis)
+      - [QuickSight Exam Focus](#quicksight-exam-focus)
+    - [AWS Glue](#aws-glue)
+      - [Glue Key Features](#glue-key-features)
+      - [Glue Common Use Cases](#glue-common-use-cases)
+      - [Glue Integration with Other AWS Services](#glue-integration-with-other-aws-services)
+      - [Glue Exam Focus](#glue-exam-focus)
+    - [AWS Lake Formation](#aws-lake-formation)
+      - [Lake Formation Key Features](#lake-formation-key-features)
+      - [Lake Formation Common Use Cases](#lake-formation-common-use-cases)
+      - [Lake Formation Integration with Other AWS Services](#lake-formation-integration-with-other-aws-services)
+      - [Lake Formation Exam Focus](#lake-formation-exam-focus)
+      - [AWS Kinesis Data Analytics](#aws-kinesis-data-analytics)
+      - [Kinesis Data Analytics Key Features](#kinesis-data-analytics-key-features)
+      - [Kinesis Data Analytics Common Use Cases](#kinesis-data-analytics-common-use-cases)
+      - [Kinesis Data Analytics Integration with Other AWS Services](#kinesis-data-analytics-integration-with-other-aws-services)
+      - [Kinesis Data Analytics Exam Focus](#kinesis-data-analytics-exam-focus)
+    - [AWS MSK (Managed Streaming for Apache Kafka)](#aws-msk-managed-streaming-for-apache-kafka)
+      - [AWS MSK Key Features](#aws-msk-key-features)
+      - [MSK Serverless](#msk-serverless)
+      - [AWS MSK Common Use Cases](#aws-msk-common-use-cases)
+      - [AWS MSK Integration with Other AWS Services](#aws-msk-integration-with-other-aws-services)
+      - [AWS MSK Exam Focus](#aws-msk-exam-focus)
+    - [AWS Data \& Analytics Comparison](#aws-data--analytics-comparison)
   - [TODO 1](#todo-1)
   - [TODO 2](#todo-2)
   - [TODO 3](#todo-3)
@@ -3423,7 +3479,7 @@ AWS Step Functions allows you to coordinate multiple AWS services into serverles
 
 | Database Service       | Type                | Data Model                         | Key Features                                                                                                                                | Use Cases                                                         | Managed / Serverless | Scalability                                                                          | Consistency                       | Pricing Model                                                                 |
 | ---------------------- | ------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | -------------------- | ------------------------------------------------------------------------------------ | --------------------------------- | ----------------------------------------------------------------------------- |
-| **Amazon RDS**         | Relational          | SQL                                | Multi-AZ deployments, Automated backups, Read replicas, Supports multiple engines (MySQL, PostgreSQL, MariaDB, Oracle, SQL Server)          | Traditional web applications, E-commerce, CRM systems             | Managed              | Vertical (single instance), Horizontal (Read replicas, Aurora supports auto-scaling) | Strongly consistent               | Pay for instance size, storage, I/O operations, and data transfer             |
+| **Amazon RDS**         | Relational          | SQL                                | Multi-AZ deployments, Automated backups, Read replicas, Supports multiple engines (MySQL, PostgreSQL, MariaDB, Oracle, SQL Server)          | Traditional web applications, E-commerce, CRM systems, OLTP       | Managed              | Vertical (single instance), Horizontal (Read replicas, Aurora supports auto-scaling) | Strongly consistent               | Pay for instance size, storage, I/O operations, and data transfer             |
 | **Amazon Aurora**      | Relational          | SQL                                | MySQL and PostgreSQL-compatible, Multi-AZ, Continuous backups to S3, Read replicas, Auto-scaling, Serverless option                         | Enterprise applications, SaaS, High-performance websites          | Managed / Serverless | Auto-scaling with Aurora Serverless, Scale-out with read replicas                    | Strongly consistent               | Pay for instance size, Aurora Serverless is pay-per-use                       |
 | **Amazon DynamoDB**    | NoSQL (Key-value)   | Key-value, Document                | Single-digit millisecond response time, Global tables, DynamoDB Streams, Auto-scaling, On-Demand Mode, Strongly consistent reads (optional) | Mobile apps, IoT applications, Real-time gaming, E-commerce carts | Serverless           | Auto-scaling (provisioned or on-demand throughput modes)                             | Eventual or Strong                | Pay for read/write capacity units, storage, and data transfer                 |
 | **Amazon DocumentDB**  | NoSQL (Document)    | JSON-like Document                 | MongoDB-compatible, Auto-scaling storage, Multi-AZ, Fully managed                                                                           | Content management, Mobile app backends, Catalogs                 | Managed              | Auto-scaling storage, Manual instance scaling                                        | Eventual or Strong                | Pay for instance size, storage, I/O operations, and data transfer             |
@@ -3440,6 +3496,453 @@ Notes:
 - **Consistency Models**: Some NoSQL databases provide options for eventual or strongly consistent reads. Relational databases typically use strongly consistent reads by default.
 - **Scaling**: Most managed AWS databases automatically scale storage and throughput, with some (like Aurora, DynamoDB) offering auto-scaling and serverless models for cost efficiency.
 
+## AWS Data & Analytics
+
+### AWS Athena
+
+Amazon Athena is a serverless, interactive query service that makes it easy to analyze data directly in Amazon S3 using standard SQL. It is commonly used for running queries on structured, semi-structured, and unstructured data without needing to manage any infrastructure.
+
+#### Key Features of Amazon Athena
+
+- Serverless: Athena automatically scales and manages the infrastructure required to run queries. There's no need to provision or manage servers.
+
+- SQL-based Queries: Athena uses Presto as its SQL query engine, which means it can execute SQL queries against data stored in Amazon S3.
+
+- Supported Data Formats: Athena supports various data formats, including:
+  - Structured: CSV, JSON, Avro, ORC, Parquet
+  - Semi-structured: JSON
+  - Unstructured: Text
+
+- Tight Integration with Amazon S3: Athena reads directly from data stored in S3. It doesn’t require loading data into the service, which makes it ideal for use cases involving large datasets already in S3.
+
+- Pay-per-query pricing: You are charged based on the amount of data scanned by your queries (per TB scanned), which makes Athena cost-effective for ad-hoc queries on large datasets.
+
+- Data Catalog Integration: Athena integrates with the AWS Glue Data Catalog to create and store metadata about the data stored in S3. This makes it easier to define tables and perform queries without needing to define schemas manually.
+
+- Partitioning: You can optimize performance by using partitioning, which organizes data into different directories within S3 based on certain criteria (e.g., date). Athena will only scan relevant partitions, reducing query costs and improving performance.
+
+- Security:
+  - IAM Permissions: Query access can be controlled using AWS IAM policies to ensure that only authorized users can run queries.
+  - Encryption: Athena supports query result encryption, as well as encryption of data at rest using SSE-S3, SSE-KMS, or CSE-KMS.
+  - VPC Endpoints: Athena can be configured to access S3 through VPC endpoints, ensuring that data never traverses the public internet.
+
+#### Athena Common Use Cases
+
+- Ad-hoc Data Analysis: Athena is excellent for running ad-hoc SQL queries on data stored in S3, especially for non-transactional use cases like log analysis or web click-stream analysis.
+
+- Big Data Analytics: It allows you to query large datasets without the overhead of provisioning and managing infrastructure, making it useful for big data use cases such as data exploration, reporting, and visualization.
+
+- Cost-effective Data Processing: Since Athena charges based on the amount of data scanned, it is more cost-effective for irregular or unpredictable workloads where you don't want the overhead of maintaining a database.
+
+- Data Lake Queries: You can use Athena to query data stored in data lakes on S3, making it an essential tool in AWS’s Lake Formation and data lake strategies.
+
+- Log and Security Data Analysis: It is frequently used to analyze AWS CloudTrail logs, VPC flow logs, and security logs for auditing and monitoring.
+
+#### Athena Architecture
+
+- Data Source: Athena queries data that resides in S3.
+- Query Engine: Athena uses Presto to execute SQL queries. Presto is a high-performance distributed SQL query engine.
+- Catalog: The AWS Glue Data Catalog or Athena's internal catalog is used to store metadata (schemas, table definitions).
+- Results Storage: Query results are stored in another S3 bucket.
+
+#### Athena Integration with AWS Services
+
+- S3: Athena is tightly integrated with Amazon S3, enabling you to query objects stored in S3 directly without moving data.
+
+- Glue Data Catalog: Athena can use AWS Glue to discover data and create table schemas, enabling you to manage metadata easily and efficiently.
+
+- QuickSight: Athena can integrate with Amazon QuickSight to build visualizations and dashboards based on query results.
+
+- Lambda: You can trigger Athena queries from AWS Lambda functions to perform automated data analysis or reporting workflows.
+
+- CloudWatch: You can use AWS CloudWatch Logs to monitor query execution and troubleshoot errors.
+
+#### Athena Federated Query
+
+Allows to run SQL queries across Databases and custom data sources (AWS or on-premisses)
+
+#### Athena Best Case Scenario
+
+- Efficient data format:
+  - ORC, Parquet
+- Efficient data size:
+  - Use larger files > 128 MB
+
+### AWS Redshift
+
+AWS Redshift is a fully managed, petabyte-scale data warehouse service that enables efficient querying and reporting of large datasets. It is designed for OLAP (Online Analytical Processing) workloads and is optimized for complex SQL queries, aggregations, and joins across multiple data sources.
+
+#### Redshift Key Features
+
+- Columnar Storage: Redshift stores data in a columnar format rather than row-based, optimizing for read-heavy analytical queries and reducing disk I/O.
+
+- Massively Parallel Processing (MPP): Queries are distributed across multiple nodes, enabling high performance and scalability for large datasets.
+
+- Data Warehousing: Ideal for complex analytical queries that involve aggregating large datasets, business intelligence, and reporting.
+
+- Compression: Uses advanced compression algorithms to reduce the storage footprint and improve query performance.
+
+- Redshift Spectrum: Allows you to run queries against data stored directly in Amazon S3 without needing to load it into the data warehouse. This enables querying structured and unstructured data in the same query.
+
+- Concurrency Scaling: Automatically adds additional resources when there are high query loads to ensure consistent performance.
+
+- Materialized Views: Allows you to cache query results for faster retrieval, improving performance for repeat queries.
+
+- Security: Supports encryption of data both at rest and in transit using AWS KMS. Also integrates with AWS Identity and Access Management (IAM) for access control.
+
+#### Redshift Cluster
+
+- Ledger Node (leader):
+  - query planning
+  - result aggregation
+- Compute Node:
+  - perform the queries
+  - send results to leader
+
+- Provisioned Mode:
+  - Choose instances types in advance
+  - Can reserve instances for cost saving
+
+- Serverless:
+  - Fully managed by AWS
+
+#### Redshift Enhanced VPC Routing
+
+- Forces the COPY and UNLOAD operations to use the VPC's networking infrastructure, allowing you to:
+  - Control the flow of data between your Amazon Redshift cluster and data repositories (like Amazon S3).
+  - Use VPC features such as VPC security groups, network access control lists (ACLs), and VPC endpoints.
+
+#### Redshift Snapshots and DR
+
+- Some clusters have multi-AZ mode
+- Snapshots can be created for point-in-time restore
+
+#### Redshift Common Use Cases
+
+- Data Warehousing: Redshift is commonly used as the backbone for enterprise data warehouses.
+- Business Intelligence: Integrates with BI tools like Amazon QuickSight, Tableau, and PowerBI for reporting and dashboards.
+- Analytics on S3 Data: Redshift Spectrum enables querying of massive datasets stored in S3 without moving them into Redshift.
+
+#### Redshift Integration with Other AWS Services
+
+- Amazon S3: Can use S3 as a direct query source via Redshift Spectrum or as a destination for unloading query results.
+- AWS Glue: For ETL operations, Redshift integrates with AWS Glue to load and transform data.
+- AWS QuickSight: Natively integrates with QuickSight for data visualization and dashboards.
+
+#### Redshift Exam Focus
+
+- Columnar Storage: Understand why columnar storage is efficient for analytical queries.
+- Redshift Spectrum: Know the use cases for querying S3 data directly with Redshift.
+- Concurrency Scaling: Be aware of how Redshift automatically scales during high concurrency.
+
+### AWS OpenSearch (formerly Amazon Elasticsearch Service)
+
+AWS OpenSearch is a managed service that allows you to deploy, secure, and run OpenSearch (previously Elasticsearch) clusters for search, log analytics, and real-time monitoring. It is often used to search, analyze, and visualize large volumes of data in near real-time.
+
+#### OpenSearch Key Features
+
+- Fully Managed: AWS manages the cluster setup, patching, and scaling.
+
+- Elasticsearch and OpenSearch Compatibility: Compatible with both Elasticsearch and OpenSearch APIs.
+
+- Kibana: OpenSearch Dashboards (similar to Kibana) are used for visualizing data and creating interactive dashboards.
+
+- Search & Analytics: Used for full-text search, log and event analytics, and real-time application monitoring.
+
+- Multi-AZ Deployments: Supports high availability through multi-AZ deployments.
+
+- Snapshot & Restore: Allows you to take snapshots of your cluster data to back it up to Amazon S3.
+
+- Security: Provides integration with AWS KMS for encryption, supports IAM policies for access control, and includes VPC access for isolated environments.
+
+#### OpenSearch Common Use Cases
+
+- Log & Event Analytics: Often used with AWS services like CloudWatch Logs and VPC Flow Logs to analyze logs in real-time.
+- Search Applications: Powers search functionality in web applications by indexing large datasets for quick retrieval.
+- Monitoring & Observability: Used for real-time monitoring of applications and infrastructure.
+
+#### OpenSearch Integration with Other AWS Services
+
+- AWS CloudWatch: OpenSearch can ingest CloudWatch logs for monitoring.
+- AWS S3: Snapshots are stored in S3 for backup and restore purposes.
+- AWS Lambda: Lambda functions can trigger data ingestion into OpenSearch for real-time analytics.
+
+#### OpenSearch Exam Focus
+
+- Use Cases: Understand when to choose OpenSearch for log analytics or search-based applications.
+- Scaling: Know how OpenSearch scales to handle large datasets and heavy search loads.
+- Security: Understand how to secure OpenSearch clusters with IAM, KMS, and VPC access.
+
+### AWS EMR (Elastic MapReduce)
+
+AWS EMR is a managed big data platform that simplifies running large-scale distributed data processing jobs, including Apache Hadoop, Apache Spark, HBase, and other big data frameworks. It is used to process and analyze vast amounts of data.
+
+#### EMR Key Features
+
+- Big Data Processing: EMR makes it easy to set up and run big data frameworks like Hadoop and Spark.
+
+- Managed Cluster: AWS handles the provisioning, configuration, and management of the cluster.
+
+- Scaling: Clusters can scale automatically based on the demand for processing power, including autoscaling and instance fleet configurations.
+
+- Data Processing: Supports ETL, machine learning, and data transformation workloads.
+
+- Custom Configurations: You can customize the configuration of your cluster to suit specific workload needs.
+
+- Cost-effective: Pay only for the instances you use, and integrate with Spot Instances for further cost reductions.
+
+#### EMR Note Types
+
+- Master Node - long running - manages the cluster
+- Core Node - long running - run tasks and store data
+- Task Node (optional) - short lived - just to run tasks
+- Purchasing Options
+  - On-demand, cannot be terminated
+  - Reserver (1 year min)
+  - Spot instances, can be terminated
+
+#### EMR Common Use Cases
+
+- Big Data Analytics: EMR is often used for running large-scale analytics jobs on petabytes of data.
+- ETL Pipelines: Often used to transform, clean, and prepare data for analysis.
+- Data Lake Processing: Can integrate with Amazon S3 to process and store large data lakes.
+
+#### EMR Integration with Other AWS Services
+
+- Amazon S3: EMR can read data from and write data to S3.
+- AWS Glue: Can be used for cataloging and managing metadata associated with data processed by EMR.
+- Amazon Redshift: Data processed in EMR can be ingested into Redshift for further analysis.
+
+#### EMR Exam Focus
+
+- Data Processing Frameworks: Be familiar with the use of Spark, Hadoop, and Presto on EMR.
+- Cost Optimization: Know when to use Spot Instances for cost savings and how to leverage autoscaling.
+- Integration: Understand the integration points between EMR, S3, and Glue for managing data lakes.
+
+### AWS QuickSight
+
+AWS QuickSight is a business intelligence (BI) service that provides data visualization, reporting, and analytics. It enables users to create dashboards and interactive reports from data stored across AWS services.
+
+#### QuickSight Key Features
+
+- Serverless BI: Fully managed service for creating BI dashboards and reports without managing infrastructure.
+
+- SPICE Engine: QuickSight uses the Super-fast, Parallel, In-memory Calculation Engine (SPICE) to accelerate data retrieval and analysis.
+
+- Interactive Dashboards: Allows you to create interactive dashboards and share them with stakeholders.
+
+- Pay-per-Session Pricing: Charges are based on active users, making it a cost-efficient BI solution.
+
+- Machine Learning Insights: Offers built-in ML-powered insights such as anomaly detection and forecasting.
+
+- Data Sources: Can connect to multiple data sources, including Redshift, S3, RDS, Athena, and third-party sources like Salesforce or on-prem databases.
+
+#### QuickSight Common Use Cases
+
+- BI Dashboards: Create visual dashboards for tracking KPIs, sales, and performance metrics.
+- Ad-hoc Reporting: Allows business users to generate on-demand reports and visualizations from multiple data sources.
+- ML Insights: Leverage built-in ML insights to detect trends or anomalies in the data.
+
+#### QuickSight Integration with Other AWS Services
+
+- Amazon S3: Data stored in S3 can be visualized directly in QuickSight.
+- Amazon Redshift: Can connect to Redshift as a data source to visualize data warehouses.
+- AWS Athena: Athena query results can be directly visualized in QuickSight.
+
+#### QuickSight SPICE engine
+
+- In-memory computation using SPICE engine if data is imported into QuickSight
+
+#### QuickSight Dashboard & Analysis
+
+- Define Users (standard versions) and Groups (Enterprise Version)
+  - Not the same as IAM
+- Dashboard:
+  - Is a read-only snapshot of an analysis that you can share
+  - You can share the analysis or the dashboard with Users or Groups (it must be published first)
+
+#### QuickSight Exam Focus
+
+- Data Sources: Know which AWS data sources can be integrated with QuickSight.
+- Cost Model: Understand how the pay-per-session model works and when to recommend it for cost-effective BI.
+- SPICE Engine: Be aware of how the SPICE engine accelerates data analysis and why it’s beneficial.
+
+### AWS Glue
+
+AWS Glue is a fully managed ETL (Extract, Transform, Load) service that makes it easier to prepare and load data for analytics. It simplifies discovering, cataloging, cleaning, and transforming data, enabling seamless integration with various data lakes and data warehouses.
+
+#### Glue Key Features
+
+- Serverless: Glue provides a serverless environment, meaning you don't need to manage infrastructure. You only pay for the resources you use.
+
+- Data Catalog: The Glue Data Catalog is a persistent metadata store to store table definitions, job definitions, and other control information. It's integrated with other AWS services like Athena, Redshift, and S3.
+
+- ETL Jobs: Glue allows you to author ETL scripts in Python or Scala. You can either write your own code or use the visual ETL interface.
+
+- Glue Crawlers: These automatically detect schema changes and populate the Data Catalog with table definitions.
+
+- Glue Studio: A visual tool for creating, running, and monitoring ETL workflows without writing any code.
+
+- Job Triggers: Automate workflows using triggers based on schedules or events.
+
+- Job Bookmark: prevent re-processing of data
+
+- Glue Elastic Views:
+  - Combine and replicate data across multiple data stores using SQL
+  - No custom code, Glu monitors for changes in the source data, serverless
+  - Leverages a "virtual table" (Materialized View)
+
+- GLue DataBrew: clean and normalize data using pre-built transformation
+
+- Flue Streaming ETL: Compatible with Kinesis Data Streaming, Kafka, MSK (AWS managed Kafka)
+
+#### Glue Common Use Cases
+
+- ETL Processing: Clean, transform, and prepare data for analytics or machine learning.
+- Data Cataloging: Organize, search, and query metadata from multiple data sources.
+- Data Lake Integration: Simplifies managing and preparing data for analytics stored in S3 data lakes.
+
+#### Glue Integration with Other AWS Services
+
+- Amazon S3: Glue is tightly integrated with S3 to catalog and process data stored in data lakes.
+- Amazon Athena: Use Glue Data Catalog for querying data in S3 with Athena.
+- Amazon Redshift: Can load and transform data into Redshift for analysis.
+
+#### Glue Exam Focus
+
+- Data Catalog: Understand the role of the Glue Data Catalog in maintaining metadata for data lakes.
+- Crawlers and ETL Jobs: Know how Glue crawlers and ETL jobs automate data preparation.
+- Serverless: Glue is serverless, removing the need to provision or manage compute resources.
+
+### AWS Lake Formation
+
+AWS Lake Formation is a service that simplifies the process of building, securing, and managing data lakes. It automates data ingestion, cleaning, cataloging, and security for data lakes, allowing organizations to create a centralized repository of structured and unstructured data.
+
+Data Lake = central place to have all your data for analytics purposes
+
+#### Lake Formation Key Features
+
+- Data Ingestion: Automates the process of ingesting data from multiple sources into the data lake.
+
+- Fine-Grained Security: Offers fine-grained access control **(row and column-level)** over data stored in the lake, using IAM and Lake Formation Permissions.
+
+- Unified Data Catalog: Integrates with AWS Glue to manage metadata across your data lake.
+
+- Data Governance: Centralized governance over data with features like encryption, audit logs, and permission management.
+
+- Automated Data Preparation: Automatically cleans and transforms raw data into usable formats.
+
+- Discover, cleanse, transform, and ingest data into your Data Lake
+
+- Automates many complex manual steps (collecting, cleansing, moving, cataloging data, ...) and de-duplicate (using ML Transforms)
+
+- Out-of-the-box source blueprints: S3, RDS, ...
+
+#### Lake Formation Common Use Cases
+
+- Data Lakes: Simplifies the creation and management of a secure data lake on Amazon S3.
+- Centralized Governance: Provides a single place to manage permissions and access control across the organization’s data.
+- Data Analytics and ML: Prepares data for analysis by services like Amazon Athena, Redshift, and SageMaker.
+
+#### Lake Formation Integration with Other AWS Services
+
+- Amazon S3: Lake Formation uses S3 as the data lake storage layer.
+- AWS Glue: Leverages Glue’s Data Catalog for metadata management.
+- AWS Athena: Query data stored in the data lake using Athena.
+
+#### Lake Formation Exam Focus
+
+- Data Governance: Know how Lake Formation handles fine-grained access control and security for data lakes.
+- Automation: Understand how Lake Formation automates data ingestion and preparation for data lakes.
+- Integration with S3: Be aware of how Lake Formation works with S3 for building data lakes.
+
+#### AWS Kinesis Data Analytics
+
+AWS Kinesis Data Analytics is a fully managed service that allows you to process and analyze real-time streaming data using SQL, Java, and Apache Flink. It’s part of the Kinesis suite, which includes Kinesis Streams, Kinesis Firehose, and Kinesis Data Analytics.
+
+#### Kinesis Data Analytics Key Features
+
+- Real-Time Stream Processing: Analyze streaming data in real-time to generate insights or trigger actions.
+
+- Apache Flink Support: Kinesis Data Analytics offers support for Apache Flink, an open-source framework for processing real-time data streams.
+
+- SQL Queries: You can use SQL queries to perform complex transformations and aggregations on streaming data.
+
+- Built-in Scaling: Automatically scales to accommodate incoming data streams.
+
+- Error Handling: Provides check-pointing and state management to ensure fault tolerance in real-time processing jobs.
+
+#### Kinesis Data Analytics Common Use Cases
+
+- Real-Time Analytics: Used for real-time data processing from IoT devices, web applications, or sensor data.
+- Streaming ETL: Transform, filter, and enrich streaming data before sending it to destinations like S3 or Redshift.
+- Monitoring & Alerting: Analyze application logs or click-stream data in real-time to monitor and trigger alerts.
+
+#### Kinesis Data Analytics Integration with Other AWS Services
+
+- Amazon Kinesis Streams: Kinesis Data Analytics processes data directly from Kinesis Streams.
+- AWS Lambda: Triggers actions in Lambda functions based on real-time analytics.
+- Amazon S3: Stores the output of processed streams in S3 for long-term storage.
+
+#### Kinesis Data Analytics Exam Focus
+
+- Stream Processing: Know how Kinesis Data Analytics fits into the real-time data processing pipeline.
+- SQL Support: Understand how to use SQL queries for analyzing streaming data.
+- Apache Flink: Be familiar with how Apache Flink enables advanced stream processing features in Kinesis Data Analytics.
+
+### AWS MSK (Managed Streaming for Apache Kafka)
+
+AWS MSK is a fully managed service for Apache Kafka, an open-source platform for building real-time streaming applications. MSK simplifies Kafka cluster deployment, scaling, and management. Alternative to Amazon Kinesis.
+
+#### AWS MSK Key Features
+
+- Managed Kafka: Provides fully managed Apache Kafka clusters, handling tasks like provisioning, patching, and scaling.
+
+- Apache Kafka Compatibility: Fully compatible with Apache Kafka, allowing you to migrate existing Kafka applications to MSK without changes.
+
+- Scaling and Monitoring: MSK automatically scales and provides integrated monitoring through Amazon CloudWatch.
+
+- High Availability: Supports multi-AZ deployments (up to 3) for fault tolerance and high availability.
+
+- Security: Integrates with IAM, VPC, and AWS KMS to secure your Kafka data streams.
+
+- Data is stored on EBS volumes for as long as you want
+
+#### MSK Serverless
+
+Run Apache Kafka without managing the capacity
+
+#### AWS MSK Common Use Cases
+
+- Event Streaming: Enables real-time event streaming for microservices architectures, data lakes, and machine learning pipelines.
+- Data Pipelines: Acts as a data pipeline between applications, feeding into other AWS services like S3, Redshift, or Lambda.
+- Log Aggregation: Centralizes and processes log data from distributed systems in real-time.
+
+#### AWS MSK Integration with Other AWS Services
+
+- Amazon CloudWatch: MSK integrates with CloudWatch to provide operational metrics and monitoring.
+- AWS Lambda: You can consume events from Kafka topics and trigger Lambda functions for further processing.
+- Amazon S3: Store processed data from Kafka streams in S3 for long-term storage or analytics.
+
+#### AWS MSK Exam Focus
+
+- Apache Kafka: Be familiar with Apache Kafka use cases and how MSK simplifies its management.
+- Streaming Architectures: Understand how MSK fits into real-time event streaming architectures.
+- Security: Know how MSK secures Kafka data streams with VPCs, IAM, and KMS.
+
+### AWS Data & Analytics Comparison
+
+| Service                        | Use Case                                                                       | Main Characteristics                                                                                               | When to Choose                                                                                                                                 |
+| ------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Amazon Athena**              | Interactive querying of data in S3 data lakes using SQL.                       | Serverless, supports SQL, integrates with Glue Data Catalog, pay-per-query.                                        | Choose Athena for quick, ad-hoc analysis of structured/unstructured data stored in S3 without managing infrastructure.                         |
+| **AWS Redshift**               | Data warehousing for high-performance, complex queries across large datasets.  | Columnar storage, massively parallel processing (MPP), integrates with BI tools, scalable.                         | Choose Redshift for large-scale analytics on structured data, where performance, speed, and scalability are crucial.                           |
+| **AWS OpenSearch**             | Full-text search, log analysis, and real-time monitoring.                      | Managed service for Elasticsearch, near real-time search, integrates with Kibana, supports JSON-based queries.     | Choose OpenSearch for use cases involving real-time log monitoring, search, and analytics on unstructured or semi-structured data.             |
+| **AWS EMR**                    | Big data processing using frameworks like Hadoop, Spark, and Hive.             | Fully managed, scalable, supports various big data frameworks, pay-per-use.                                        | Choose EMR for complex data processing workloads, ETL jobs, or machine learning models that require distributed computing and scalability.     |
+| **AWS QuickSight**             | Business intelligence (BI) tool for data visualization and reporting.          | Managed BI service, interactive dashboards, supports machine learning insights, integrates with Redshift, S3, RDS. | Choose QuickSight for creating dashboards, reports, and visualizations to derive insights from data stored across various AWS services.        |
+| **AWS Glue**                   | ETL (Extract, Transform, Load) service for preparing and transforming data.    | Serverless ETL, supports Python/Scala scripts, Glue Data Catalog for metadata, visual ETL Studio.                  | Choose Glue for building and managing ETL pipelines for transforming and preparing data stored in S3 or other AWS databases.                   |
+| **AWS Lake Formation**         | Centralized management of data lakes with security and governance.             | Fine-grained access control, automates data ingestion and transformation, integrates with Glue Data Catalog.       | Choose Lake Formation for building, managing, and securing a data lake with a unified interface for access and governance.                     |
+| **AWS Kinesis Data Analytics** | Real-time stream processing and analytics using SQL or Apache Flink.           | Managed stream processing, real-time analytics, supports SQL and Apache Flink, integrates with Kinesis and S3.     | Choose Kinesis Data Analytics for real-time data analytics on streaming data from sources like IoT devices, clickstreams, or application logs. |
+| **AWS MSK**                    | Managed service for Apache Kafka for real-time streaming and event processing. | Fully managed Apache Kafka, multi-AZ deployments, high availability, integrated with CloudWatch for monitoring.    | Choose MSK for real-time event streaming, log processing, or messaging pipelines that rely on the Apache Kafka ecosystem.                      |
 
 ## TODO 1
 
