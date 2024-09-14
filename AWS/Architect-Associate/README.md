@@ -187,8 +187,8 @@
       - [Bandwidth Throttling](#bandwidth-throttling)
       - [Filtering and Syncing](#filtering-and-syncing)
       - [DataSync Security](#datasync-security)
-      - [Pricing](#pricing)
-      - [Use Cases](#use-cases)
+      - [DataSync Pricing](#datasync-pricing)
+      - [DataSync Use Cases](#datasync-use-cases)
   - [AWS Messaging](#aws-messaging)
     - [SQS](#sqs)
       - [SQS Queue Types](#sqs-queue-types)
@@ -378,7 +378,61 @@
       - [AWS MSK Integration with Other AWS Services](#aws-msk-integration-with-other-aws-services)
       - [AWS MSK Exam Focus](#aws-msk-exam-focus)
     - [AWS Data \& Analytics Comparison](#aws-data--analytics-comparison)
-  - [TODO 1](#todo-1)
+  - [AWS Machine Learning](#aws-machine-learning)
+    - [AWS Rekognition](#aws-rekognition)
+      - [Rekognition Key Features](#rekognition-key-features)
+      - [Rekognition Common Use Cases](#rekognition-common-use-cases)
+      - [Rekognition \& Amazon Augmented AI (A2I)](#rekognition--amazon-augmented-ai-a2i)
+      - [Rekognition Pricing](#rekognition-pricing)
+    - [AWS Transcribe](#aws-transcribe)
+      - [Transcribe Key Features](#transcribe-key-features)
+      - [Transcribe Common Use Cases](#transcribe-common-use-cases)
+      - [Transcribe Pricing](#transcribe-pricing)
+    - [AWS Polly](#aws-polly)
+      - [Polly Key Features](#polly-key-features)
+      - [Polly Common Use Cases](#polly-common-use-cases)
+      - [Polly Pricing](#polly-pricing)
+    - [AWS Translate](#aws-translate)
+      - [Translate Key Features](#translate-key-features)
+      - [Translate Common Use Cases](#translate-common-use-cases)
+      - [Translate Pricing](#translate-pricing)
+    - [Amazon Lex](#amazon-lex)
+      - [Lex Key Features](#lex-key-features)
+      - [Lex Common Use Cases](#lex-common-use-cases)
+      - [Lex Pricing](#lex-pricing)
+    - [Amazon Connect](#amazon-connect)
+      - [Connect Key Features](#connect-key-features)
+      - [Connect Common Use Cases](#connect-common-use-cases)
+      - [Connect Pricing](#connect-pricing)
+    - [Amazon Comprehend](#amazon-comprehend)
+      - [Comprehend Key Features](#comprehend-key-features)
+      - [Comprehend Common Use Cases](#comprehend-common-use-cases)
+      - [Comprehend Pricing](#comprehend-pricing)
+    - [Amazon Comprehend Medical](#amazon-comprehend-medical)
+      - [Comprehend Medical Key Features](#comprehend-medical-key-features)
+      - [Comprehend Medical Common Use Cases](#comprehend-medical-common-use-cases)
+      - [Comprehend Medical Pricing](#comprehend-medical-pricing)
+    - [Amazon SageMaker](#amazon-sagemaker)
+      - [SageMaker Key Features](#sagemaker-key-features)
+      - [SageMaker Common Use Cases](#sagemaker-common-use-cases)
+      - [SageMaker Pricing](#sagemaker-pricing)
+    - [Amazon Forecast](#amazon-forecast)
+      - [Forecast Key Features](#forecast-key-features)
+      - [Forecast Common Use Cases](#forecast-common-use-cases)
+      - [Forecast Pricing](#forecast-pricing)
+    - [Amazon Kendra](#amazon-kendra)
+      - [Kendra Key Features](#kendra-key-features)
+      - [Kendra Common Use Cases](#kendra-common-use-cases)
+      - [Kendra Pricing](#kendra-pricing)
+    - [Amazon Personalize](#amazon-personalize)
+      - [Personalize Key Features](#personalize-key-features)
+      - [Personalize Common Use Cases](#personalize-common-use-cases)
+      - [Personalize Pricing](#personalize-pricing)
+    - [Amazon Textract](#amazon-textract)
+      - [Textract Key Features](#textract-key-features)
+      - [Textract Common Use Cases](#textract-common-use-cases)
+      - [Textract Pricing](#textract-pricing)
+    - [AWS AI Summary \& Comparison](#aws-ai-summary--comparison)
   - [TODO 2](#todo-2)
   - [TODO 3](#todo-3)
   - [TODO 4](#todo-4)
@@ -387,8 +441,7 @@
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
   - [VPC](#vpc)
   - [AWS SECURITY TABLE](#aws-security-table)
-  - [dbs](#dbs)
-  - [TODO 1](#todo-1-1)
+  - [TODO 11](#todo-11)
 
 ## Aws Infrastructure Intro
 
@@ -2279,11 +2332,11 @@ AWS DataSync is a data transfer service that simplifies, automates, and accelera
 - Integration with AWS Key Management Service (KMS) for encryption at rest
 - Support for VPC endpoints for enhanced network security
 
-#### Pricing
+#### DataSync Pricing
 
 - Based on the amount of data transferred
 
-#### Use Cases
+#### DataSync Use Cases
 
 - Data migration to AWS
 - Disaster recovery and backup
@@ -3496,6 +3549,17 @@ Notes:
 - **Consistency Models**: Some NoSQL databases provide options for eventual or strongly consistent reads. Relational databases typically use strongly consistent reads by default.
 - **Scaling**: Most managed AWS databases automatically scale storage and throughput, with some (like Aurora, DynamoDB) offering auto-scaling and serverless models for cost efficiency.
 
+| AWS Service(s)                                                 | Database Type | Use Cases                                                                                          |
+| -------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------- |
+| Amazon RDS, Aurora,Amazon Redshift                             | Relational    | Traditional applications, ERP, CRM, ecommerce                                                      |
+| DynamoDB                                                       | Key-value     | High-traffic web applications, ecommerce systems, gaming applications                              |
+| Amazon ElastiCache for Memcached, Amazon ElastiCache for Redis | In-memory     | Caching, session management, gaming leaderboards, geospatial applications                          |
+| Amazon DocumentDB                                              | Document      | Content management, catalogs, user profiles                                                        |
+| Amazon Keyspaces                                               | Wide column   | High-scale industrial applications for equipment maintenance, fleet management, route optimization |
+| Neptune                                                        | Graph         | Fraud detection, social networking, recommendation engines                                         |
+| Timestream                                                     | Time series   | IoT applications, Development Operations (DevOps), industrial telemetry                            |
+| Amazon QLDB                                                    | Ledger        | Systems of record, supply chain, registrations, banking transactions                               |
+
 ## AWS Data & Analytics
 
 ### AWS Athena
@@ -3944,7 +4008,335 @@ Run Apache Kafka without managing the capacity
 | **AWS Kinesis Data Analytics** | Real-time stream processing and analytics using SQL or Apache Flink.           | Managed stream processing, real-time analytics, supports SQL and Apache Flink, integrates with Kinesis and S3.     | Choose Kinesis Data Analytics for real-time data analytics on streaming data from sources like IoT devices, clickstreams, or application logs. |
 | **AWS MSK**                    | Managed service for Apache Kafka for real-time streaming and event processing. | Fully managed Apache Kafka, multi-AZ deployments, high availability, integrated with CloudWatch for monitoring.    | Choose MSK for real-time event streaming, log processing, or messaging pipelines that rely on the Apache Kafka ecosystem.                      |
 
-## TODO 1
+## AWS Machine Learning
+
+### AWS Rekognition
+
+AWS Rekognition is a service that provides image and video analysis powered by machine learning. It helps automate tasks such as object detection, facial recognition, and content moderation.
+
+#### Rekognition Key Features
+
+- Object & Scene Detection: Identifies objects, people, text, scenes, and activities in images and videos.
+- Facial Recognition: Detects and matches faces in images and videos, useful for user verification and security systems.
+- Facial Analysis: Analyzes facial attributes such as emotion, gender, and age range.
+- Text in Images: Recognizes and extracts text from images (OCR).
+- Moderation of Images/Videos: Detects inappropriate content, such as nudity or violence, for content moderation.
+- Custom Labels: Allows users to train custom models to identify unique objects.
+
+#### Rekognition Common Use Cases
+
+- Security & surveillance (e.g., identity verification).
+- Content moderation in social media or streaming platforms.
+- Automating media asset management.
+- Building search capabilities based on visual content.
+
+#### Rekognition & Amazon Augmented AI (A2I)
+
+- Allow manual(human) review of the AIs output
+
+#### Rekognition Pricing
+
+Pricing is based on the number of images or minutes of video processed, along with additional charges for storing and training custom labels.
+
+### AWS Transcribe
+
+AWS Transcribe is an automatic speech recognition (ASR) service that converts spoken language into written text. It can process audio from a variety of sources and supports real-time transcription.
+
+#### Transcribe Key Features
+
+- Real-Time Transcription: Converts streaming audio into text in real-time, useful for live applications.
+- Batch Transcription: Processes pre-recorded audio and generates transcripts.
+- Speaker Identification: Differentiates between speakers in an audio file (speaker diarization).
+- Custom Vocabulary: Allows users to add specific words or phrases (e.g., industry terms) to improve transcription accuracy.
+- Automatic Punctuation: Inserts punctuation marks in transcripts automatically.
+- Language Support: Supports multiple languages and dialects.
+- Automatically remove PPI (Personally Identifiable Information)
+- Automatic Multi-lingual support
+
+#### Transcribe Common Use Cases
+
+- Customer service call analysis.
+- Captioning for video content.
+- Transcribing meeting recordings for documentation.
+- Enhancing accessibility by converting spoken content to text.
+
+#### Transcribe Pricing
+
+Pricing is based on the number of audio hours transcribed, with different rates for real-time vs. batch processing.
+
+### AWS Polly
+
+AWS Polly is a text-to-speech (TTS) service that converts written text into lifelike speech using deep learning. It provides a wide range of voice options and languages.
+
+#### Polly Key Features
+
+- Lifelike Speech Generation: Uses advanced neural models to create realistic voices.
+- Multiple Languages and Voices: Supports a variety of languages and accents, offering both male and female voices.
+- SSML Support: Allows Speech Synthesis Markup Language (SSML) tags to control speech attributes (e.g., pauses, intonation).
+- Custom Lexicons: Users can provide specific pronunciations for words or names.
+- Neural Text-to-Speech (NTTS): Delivers more natural and engaging speech than standard voices.
+
+#### Polly Common Use Cases
+
+- Voice assistants and chatbots.
+- Audiobook narration.
+- Real-time speech generation for assistive devices.
+- IVR (Interactive Voice Response) systems for customer service.
+
+#### Polly Pricing
+
+Pricing is based on the number of characters converted into speech. NTTS is priced higher than standard text-to-speech.
+
+### AWS Translate
+
+AWS Translate is a neural machine translation service that provides real-time, high-quality translations in multiple languages.
+
+#### Translate Key Features
+
+- Real-Time Translation: Converts text from one language to another almost instantly.
+- Multiple Languages Supported: AWS Translate supports a wide range of languages and continues to expand.
+- Custom Terminology: Allows users to define specific terms and translations for more accurate results in specific use cases.
+- Batch Translation: Can translate large documents and datasets at once.
+
+#### Translate Common Use Cases
+
+- Localization of websites, applications, and content for global audiences.
+- Real-time chat translation for customer service and support.
+- Processing multilingual datasets for analysis.
+- Translation of user-generated content (e.g., product reviews, comments).
+
+#### Translate Pricing
+
+Pricing is based on the number of characters translated, with separate rates for real-time vs. batch processing.
+
+### Amazon Lex
+
+Amazon Lex is a service for building conversational interfaces (chatbots) that support both text and voice inputs. It uses the same deep learning technologies that power Amazon Alexa.
+
+#### Lex Key Features
+
+- Speech Recognition & Natural Language Understanding (NLU): Recognizes speech and text input to understand intent and manage dialogue.
+- Multi-Modal Conversations: Supports both voice and text chat interactions.
+- Seamless Integration with AWS Services: Can be integrated with AWS Lambda for executing back-end business logic, AWS Connect for customer service bots, and other AWS services.
+- Built-in Support for Speech Synthesis: Integrated with AWS Polly to convert text responses into speech.
+- Slot Filling: Captures specific user inputs (slots) such as dates, locations, or product names to handle queries.
+- Custom Bot Creation: Allows users to design custom bots for various industries and business processes.
+
+#### Lex Common Use Cases
+
+- Creating virtual customer service agents.
+- Building voice-based assistants and interactive applications.
+- Automating FAQ and customer interactions for websites or apps.
+- Developing task automation bots (e.g., booking, ordering).
+
+#### Lex Pricing
+
+Pricing is based on the number of text and speech requests processed by the bot.
+
+### Amazon Connect
+
+Amazon Connect is a cloud-based contact center service that enables businesses to deliver customer service at scale through various channels, including voice and chat.
+
+#### Connect Key Features
+
+- Scalable Contact Center Platform: Enables businesses to set up a contact center quickly and scale it as needed.
+- Multi-Channel Support: Handles both voice and chat interactions with customers.
+- Call Routing & Queuing: Provides intelligent call routing to agents based on customer input.
+- Integration with Other AWS Services: Can be combined with Amazon Lex for intelligent chatbots, AWS Lambda for business logic, and AWS S3 for call recording storage.
+- Built-in Analytics: Provides insights into call metrics, customer satisfaction, and agent performance.
+- Pay-As-You-Go Pricing Model: Users pay only for the time that they use the service.
+
+#### Connect Common Use Cases
+
+- Building contact centers with dynamic call routing.
+- Integrating chatbots to handle customer queries before escalating to a human agent.
+- Automating call recordings and customer service analytics.
+- Creating self-service portals for customer support.
+
+#### Connect Pricing
+
+Pricing is based on the number of minutes of usage for voice calls and other services such as chat messages, contact center interactions, and associated features.
+
+### Amazon Comprehend
+
+Amazon Comprehend is a natural language processing (NLP) service that extracts insights and meaning from text using machine learning.
+
+#### Comprehend Key Features
+
+- Sentiment Analysis: Determines whether the text expresses positive, negative, neutral, or mixed sentiment.
+- Entity Recognition: Extracts key entities (people, organizations, locations, dates) from text.
+- Key Phrase Extraction: Identifies key phrases or important sections of text.
+- Language Detection: Automatically identifies the language used in a text.
+- Topic Modeling: Groups documents by common topics and themes.
+- Custom Classification & Entity Recognition: Users can train models to detect custom entities and classify text for domain-specific use cases.
+
+#### Comprehend Common Use Cases
+
+- Analyzing customer reviews and feedback.
+- Content categorization for large text datasets.
+- Automating sentiment analysis for social media posts.
+- Extracting insights from customer service interactions and emails.
+
+#### Comprehend Pricing
+
+Pricing is based on the number of units of text processed (characters or words) and the specific type of text analysis performed.
+
+### Amazon Comprehend Medical
+
+Amazon Comprehend Medical is a specialized version of Amazon Comprehend designed to extract insights and entities from unstructured medical text, such as doctor’s notes, clinical trial reports, and medical records.
+
+#### Comprehend Medical Key Features
+
+- Entity Recognition for Medical Text: Identifies medical information such as conditions, medications, treatments, procedures, and test results.
+- Protected Health Information (PHI) Detection: Detects and identifies PHI for use in healthcare applications compliant with regulations like HIPAA.
+- RxNorm & ICD-10-CM Support: Maps identified medical concepts to standardized medical ontologies, including RxNorm (for medications) and ICD-10-CM (for conditions and diagnoses).
+- Medical Relationship Extraction: Detects relationships between medical conditions, medications, and treatments.
+
+#### Comprehend Medical Common Use Cases
+
+- Automating medical record analysis and extraction.
+- Enhancing clinical decision support systems.
+- Processing and analyzing clinical trial documentation.
+- Building HIPAA-compliant healthcare applications that process patient data.
+
+#### Comprehend Medical Pricing
+
+Pricing is based on the number of characters processed, with separate costs for general medical text analysis and PHI detection.
+
+### Amazon SageMaker
+
+Amazon SageMaker is a fully managed service that provides tools for building, training, and deploying machine learning models at scale.
+
+#### SageMaker Key Features
+
+- Data Labeling & Preprocessing: Built-in tools for labeling data and preprocessing datasets for machine learning models.
+- Model Training & Tuning: Simplifies the process of training models using optimized infrastructure. Supports automatic hyperparameter tuning.
+- One-Click Deployment: Enables quick deployment of trained models to production for real-time or batch inference.
+- Model Monitoring: Monitors deployed models in production to detect concept drift or anomalies.
+- SageMaker Studio: An integrated development environment (IDE) for data science and machine learning.
+- Pre-Built Algorithms & Framework Support: Supports popular frameworks like TensorFlow, PyTorch, and MXNet, as well as pre-built algorithms for common tasks.
+
+#### SageMaker Common Use Cases
+
+- Building and training machine learning models for real-time inference.
+- Deploying AI applications like image classification, recommendation systems, or fraud detection.
+- Automating end-to-end machine learning workflows.
+- Enabling data scientists and developers to experiment with model training and deployment.
+
+#### SageMaker Pricing
+
+Pricing depends on the usage of SageMaker resources such as instance hours, storage, data labeling, training jobs, and inference.
+
+### Amazon Forecast
+
+Amazon Forecast is a fully managed service that uses machine learning to generate accurate forecasts based on historical data. It is designed to help businesses make informed decisions about resource planning, inventory management, and financial forecasting.
+
+#### Forecast Key Features
+
+- Time Series Forecasting: Uses machine learning models to predict future trends based on historical time series data.
+- Customizable Models: Allows users to bring their own data and train custom models for specific use cases, such as demand planning or resource allocation.
+- Automatic Data Enrichment: Incorporates additional relevant datasets (e.g., weather data, holidays) to improve forecast accuracy.
+- Quantile Forecasting: Provides not only a single-point forecast but also a range of potential outcomes, allowing users to plan for best- and worst-case scenarios.
+- Integration with AWS Services: Works seamlessly with S3 for data storage, and AWS Lambda for automated workflows.
+
+#### Forecast Common Use Cases
+
+- Demand forecasting for retail, supply chain, and inventory management.
+- Predicting resource needs in industries like energy, utilities, or transportation.
+- Financial forecasting, including revenue projections and cost optimization.
+- Capacity planning for cloud infrastructure and services.
+
+#### Forecast Pricing
+
+Pricing is based on the amount of data ingested, the number of forecasts generated, and storage for training and results.
+
+### Amazon Kendra
+
+Amazon Kendra is an AI-powered enterprise search service that enables organizations to search large volumes of unstructured data to retrieve accurate answers.
+
+#### Kendra Key Features
+
+- Natural Language Search: Allows users to search data using natural language queries rather than relying on specific keywords.
+- Connectors for Data Sources: Supports integration with a wide variety of data sources such as SharePoint, S3, RDS, databases, and file systems.
+- Relevance Tuning: Allows fine-tuning of search results based on organizational priorities, such as boosting certain document types or topics.
+- FAQs & Custom Synonyms: Allows administrators to define FAQ questions and answers, and add custom synonyms to improve search accuracy.
+- Document Classification: Automatically indexes and classifies documents to streamline the search process.
+- Real-Time Updates: Continuously updates search indices to include newly added or updated documents.
+
+#### Kendra Common Use Cases
+
+- Building a knowledge management system for customer support.
+- Enabling enterprise-wide search across disparate document repositories.
+- Enhancing e-commerce platforms by allowing users to search for products using natural language queries.
+- Improving legal and compliance searches across large document sets.
+
+#### Kendra Pricing
+
+Pricing is based on the number of documents indexed and the number of queries performed.
+
+### Amazon Personalize
+
+Amazon Personalize is a machine learning service that enables developers to build recommendation systems. It allows businesses to deliver personalized product, content, and marketing recommendations in real-time.
+
+#### Personalize Key Features
+
+- Real-Time Personalization: Provides real-time recommendations based on user interactions, such as clickstream data or purchasing behavior.
+- Custom Models: Trains custom models tailored to specific recommendation use cases, such as product recommendations or content personalization.
+- User Segmentation: Identifies user segments for targeted recommendations or marketing campaigns.
+- Event Tracking: Collects and processes user interaction data in real-time to improve recommendation accuracy.
+- Integration with Existing Applications: Easily integrates with web and mobile apps, using APIs for real-time recommendations.
+
+#### Personalize Common Use Cases
+
+- E-commerce platforms for product recommendations.
+- Video or media streaming services for content recommendations.
+- Personalized email marketing campaigns based on user behavior.
+- Enhancing mobile apps with personalized suggestions.
+
+#### Personalize Pricing
+
+Pricing is based on the amount of data processed, the number of recommendations generated, and the storage required for the models and data.
+
+### Amazon Textract
+
+Amazon Textract is a machine learning service that automatically extracts printed text, handwriting, and data from scanned documents, including tables and forms.
+
+#### Textract Key Features
+
+- Optical Character Recognition (OCR): Extracts text from documents, including handwritten text, making it easy to process scanned images and PDFs.
+- Form & Table Data Extraction: Identifies and extracts data from structured forms and tables, such as invoices, purchase orders, and tax documents.
+- Key-Value Pair Detection: Recognizes and organizes key-value pairs, enabling extraction of relevant information from forms without needing manual intervention.
+- Integration with Other AWS Services: Integrates with AWS services such as Lambda, Comprehend, and S3 to build automated document workflows.
+- Human Review Workflow (A2I): Works with Amazon Augmented AI (A2I) to allow human review of sensitive data or low-confidence predictions for quality control.
+
+#### Textract Common Use Cases
+
+- Automating document processing for industries such as finance, healthcare, and legal.
+- Extracting data from forms like invoices, receipts, and tax documents.
+- Enabling data extraction for document management systems.
+- Processing handwritten forms and scanned documents in archives.
+
+#### Textract Pricing
+
+Pricing is based on the number of pages processed, with separate costs for text extraction and structured data extraction from forms and tables.
+
+### AWS AI Summary & Comparison
+
+| **Service**            | **Purpose**                               | **Key Features**                                                                                         | **Common Use Cases**                                                                      | **Pricing Model**                                     |
+| ---------------------- | ----------------------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------- | ----------------------------------------------------- |
+| **AWS Rekognition**    | Image & Video Analysis                    | Facial recognition, object detection, content moderation, celebrity detection                            | Image moderation, identity verification, video analysis, automated metadata generation    | Based on the number of images or videos analyzed      |
+| **AWS Transcribe**     | Speech-to-Text Conversion                 | Automatic speech recognition (ASR), custom vocabulary, speaker identification                            | Transcribing customer service calls, video subtitles, converting audio notes to text      | Based on the number of seconds of audio processed     |
+| **AWS Polly**          | Text-to-Speech                            | Converts text into lifelike speech, supports various languages and voice styles                          | Creating speech interfaces, generating audio for mobile apps, voiceovers                  | Based on the number of characters processed           |
+| **AWS Translate**      | Text Translation                          | Supports over 75 languages, real-time or batch translations, custom terminology                          | Website localization, multilingual communication, translating documents                   | Based on the number of characters translated          |
+| **Amazon Lex**         | Conversational AI (Chatbots)              | Speech recognition, NLU, slot filling, multi-modal conversations, seamless integration with AWS services | Virtual agents, interactive voice response systems (IVR), customer support bots           | Based on the number of text or speech requests        |
+| **Amazon Connect**     | Cloud Contact Center                      | Scalable contact center, multi-channel support, call routing, analytics                                  | Contact centers, automated customer service, call routing and recording                   | Based on usage (call minutes, chat interactions)      |
+| **Amazon Comprehend**  | Natural Language Processing (NLP)         | Sentiment analysis, entity recognition, key phrase extraction, language detection                        | Analyzing customer feedback, content categorization, social media analysis                | Based on text units processed                         |
+| **Comprehend Medical** | Medical Text Analysis                     | Extracts medical terms (conditions, medications), PHI detection, supports ICD-10-CM and RxNorm           | Analyzing medical records, extracting patient information, clinical trial analysis        | Based on number of characters processed               |
+| **Amazon SageMaker**   | Machine Learning Development & Deployment | Data labeling, model training and tuning, real-time inference, model monitoring                          | Training and deploying ML models, building recommendation systems, fraud detection        | Based on resources used (instance hours, storage)     |
+| **AWS Forecast**       | Time Series Forecasting                   | Machine learning-based forecasting, automatic data enrichment, quantile forecasting                      | Demand forecasting, inventory management, resource planning, financial forecasting        | Based on data ingested and forecasts generated        |
+| **Amazon Kendra**      | Enterprise Search                         | Natural language search, document classification, real-time updates, relevance tuning                    | Knowledge management, enterprise search, content search for websites and apps             | Based on documents indexed and queries performed      |
+| **AWS Personalize**    | Personalized Recommendations              | Real-time recommendations, custom models, user segmentation, event tracking                              | E-commerce product recommendations, content personalization, targeted marketing campaigns | Based on data processed and recommendations generated |
+| **Amazon Textract**    | Document Data Extraction                  | OCR, form and table extraction, key-value pair detection, integration with A2I for human review          | Automated document processing, form extraction, legal document analysis                   | Based on number of pages processed                    |
 
 ## TODO 2
 
@@ -4046,26 +4438,7 @@ Explanation of Each Service
   - Function: Securely stores and retrieves sensitive information like API keys, passwords, and certificates.
   - Use Case: Manages access to secrets, rotating them automatically to enhance security.
 
-
-
-
-## dbs
-
-As we learned in the previous lessons, AWS has a variety of database options for different use cases. The following table provides a quick look at the AWS database portfolio.
-
-| AWS Service(s)                                                 | Database Type | Use Cases                                                                                          |
-| -------------------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------- |
-| Amazon RDS, Aurora,Amazon Redshift                             | Relational    | Traditional applications, ERP, CRM, ecommerce                                                      |
-| DynamoDB                                                       | Key-value     | High-traffic web applications, ecommerce systems, gaming applications                              |
-| Amazon ElastiCache for Memcached, Amazon ElastiCache for Redis | In-memory     | Caching, session management, gaming leaderboards, geospatial applications                          |
-| Amazon DocumentDB                                              | Document      | Content management, catalogs, user profiles                                                        |
-| Amazon Keyspaces                                               | Wide column   | High-scale industrial applications for equipment maintenance, fleet management, route optimization |
-| Neptune                                                        | Graph         | Fraud detection, social networking, recommendation engines                                         |
-| Timestream                                                     | Time series   | IoT applications, Development Operations (DevOps), industrial telemetry                            |
-| Amazon QLDB                                                    | Ledger        | Systems of record, supply chain, registrations, banking transactions                               |
-
-
-## TODO 1
+## TODO 11
 
 AWS Batch
 
