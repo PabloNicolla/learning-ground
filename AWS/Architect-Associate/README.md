@@ -433,7 +433,28 @@
       - [Textract Common Use Cases](#textract-common-use-cases)
       - [Textract Pricing](#textract-pricing)
     - [AWS AI Summary \& Comparison](#aws-ai-summary--comparison)
-  - [TODO 2](#todo-2)
+  - [Amazon CloudWatch](#amazon-cloudwatch)
+    - [CloudWatch Metrics](#cloudwatch-metrics)
+    - [CloudWatch Alarms](#cloudwatch-alarms)
+    - [CloudWatch Logs](#cloudwatch-logs)
+    - [CloudWatch Events (Amazon EventBridge)](#cloudwatch-events-amazon-eventbridge)
+    - [CloudWatch Alarms versus EventBridge](#cloudwatch-alarms-versus-eventbridge)
+    - [CloudWatch Dashboards](#cloudwatch-dashboards)
+    - [CloudWatch Contributor Insights](#cloudwatch-contributor-insights)
+    - [CloudWatch EC2 Monitoring](#cloudwatch-ec2-monitoring)
+    - [CloudWatch Integrations Summary](#cloudwatch-integrations-summary)
+    - [CloudWatch Container Insights](#cloudwatch-container-insights)
+    - [CloudWatch Application Insights](#cloudwatch-application-insights)
+    - [AWS CloudTrail Overview](#aws-cloudtrail-overview)
+    - [Best Practices for CloudWatch in the AWS Architect Exam](#best-practices-for-cloudwatch-in-the-aws-architect-exam)
+    - [CloudWatch Common Exam Scenarios](#cloudwatch-common-exam-scenarios)
+  - [AWS Config](#aws-config)
+    - [Config Key Features](#config-key-features)
+    - [Config Use Cases](#config-use-cases)
+    - [Common AWS Config Rules](#common-aws-config-rules)
+    - [Config Pricing](#config-pricing)
+    - [Config Benefits](#config-benefits)
+  - [AWS Config vs CloudTrail](#aws-config-vs-cloudtrail)
   - [TODO 3](#todo-3)
   - [TODO 4](#todo-4)
   - [TODO 5](#todo-5)
@@ -4338,7 +4359,327 @@ Pricing is based on the number of pages processed, with separate costs for text 
 | **AWS Personalize**    | Personalized Recommendations              | Real-time recommendations, custom models, user segmentation, event tracking                              | E-commerce product recommendations, content personalization, targeted marketing campaigns | Based on data processed and recommendations generated |
 | **Amazon Textract**    | Document Data Extraction                  | OCR, form and table extraction, key-value pair detection, integration with A2I for human review          | Automated document processing, form extraction, legal document analysis                   | Based on number of pages processed                    |
 
-## TODO 2
+## Amazon CloudWatch
+
+Amazon CloudWatch is a monitoring and observability service designed to provide insights into AWS resources, applications, and services. It helps collect, analyze, and act on data from various AWS environments and on-premises servers.
+
+CloudWatch enables real-time monitoring of metrics, custom logs, events, and alarms, ensuring that applications maintain optimal performance and operational health.
+
+### CloudWatch Metrics
+
+CloudWatch Metrics are fundamental units of data. Metrics are time-ordered data points representing system performance over time.
+
+- Predefined Metrics: Automatically provided for AWS services like EC2, RDS, Lambda, S3, and more.
+- Custom Metrics: Users can publish custom metrics for specific applications using the PutMetricData API.
+
+- Metrics belongs to namespaces
+- Dimension is an attribute of a metric (instance ID, environment, etc...)
+- Metrics have timestamps
+
+- Granularity: Metrics can be collected at intervals as frequent as one minute (detailed monitoring) or five minutes (basic monitoring). Some services support up to one-second granularity.
+
+- Output (destination): metrics can be streamed to Kinesis Data Firehose or 3rd parties services.
+
+- Key Exam Focus:
+  - Differences between standard (basic) and detailed monitoring for services like EC2.
+  - Using custom metrics to monitor application-specific data.
+  - Metric retention and data aggregation periods (15 months for aggregated metrics).
+
+### CloudWatch Alarms
+
+CloudWatch Alarms are used to monitor metrics and trigger actions when metrics meet specified conditions.
+
+- Thresholds: Can be set to evaluate metrics against defined thresholds.
+
+- Actions: Alarms can trigger various actions, such as sending notifications via Amazon SNS, executing actions via Amazon EC2 Auto Scaling, or triggering AWS Lambda functions.
+
+- State: Alarms can be in states such as:
+  - OK
+  - ALARM
+  - INSUFFICIENT_DATA
+
+- Period
+  - Length of time in seconds to evaluate the metric
+
+- Composite Alarm
+  - Monitor the state of multiple other alarms
+  - cna reduce alarm noise by creating complex composite alarms
+  - AND and OR conditions
+
+- Key Exam Focus:
+  - Configuring alarms to trigger Auto Scaling policies or SNS notifications.
+  - Understanding the states of alarms and their relationship to actions.
+  - Cross-account alarms, allowing monitoring across different AWS accounts.
+
+### CloudWatch Logs
+
+CloudWatch Logs help users monitor and troubleshoot applications by capturing system and application log data.
+
+- Log Groups and Log Streams: Logs are organized into groups and streams, where each log group represents a group of log streams sharing the same retention, monitoring, and access control settings.
+- Alternatively
+- Log Groups: usually represents an application
+- Log Streams: instances within an application / log files / container
+
+- Log Retention: Users can define the retention period for logs, from 1 day to indefinite.
+
+- Custom Logs: You can publish logs from custom applications or on-premises servers.
+
+- Metric Filters: Convert specific log data into CloudWatch metrics for further monitoring and alarms.
+
+- Logs Insights
+  - Allow querying the logs
+  - Allow visualizing and exporting the query
+  - Not Real Time - Just a query engine for stored logs
+
+- Log subscriptions
+  - Real time log events from CloudWatch logs for processing and analysis
+- Subscription filter
+  - filter which logs are going to be delivered to the destination
+- Subscription Destination
+  - Allows sending/aggregating logs from different accounts into one
+
+- Live Tail
+  - Allows intercepting log in real time for debugging purposes
+
+- Key Exam Focus:
+  - How to send logs from services like EC2 (via the CloudWatch Agent) and Lambda (automatic logging).
+  - Defining log retention policies and understanding costs based on retention.
+  - Using metric filters to generate custom metrics from logs.
+
+### CloudWatch Events (Amazon EventBridge)
+
+CloudWatch Events deliver a near real-time stream of system events from AWS resources. It can be used to automate responses to changes in resources.
+
+- Rules: Define which events trigger which actions.
+
+- Target Services: Actions can invoke AWS Lambda functions, send notifications through SNS, or trigger AWS Step Functions, among other services.
+
+- Event Sources:
+  - Supports native AWS event sources and custom events for applications.
+  - Schedule: Cron Jobs (scheduled scripts)
+- Event sources can be filtered
+
+- Event Bus:
+  - Default
+    - AWS services
+  - Partner
+    - 3rd Parties partners
+  - Custom
+    - client services
+- Events can be archived and replayed
+
+- Schema Registry
+  - Knows how to infer the schema form the event bus
+
+- Key Exam Focus:
+  - Differences between CloudWatch Events and EventBridge (EventBridge is an extension of CloudWatch Events).
+  - Automating workflows based on events (e.g., automatic response to EC2 state changes).
+  - Event-driven architectures and integration with services like Lambda, Step Functions, and ECS.
+
+### CloudWatch Alarms versus EventBridge
+
+| Feature          | CloudWatch Alarms                                 | EventBridge                                      |
+| ---------------- | ------------------------------------------------- | ------------------------------------------------ |
+| Main Purpose     | Monitor metrics and trigger actions on thresholds | React to events from AWS services or custom apps |
+| Trigger          | Based on CloudWatch Metrics                       | Based on events (AWS or custom)                  |
+| Typical Use Case | Auto-scaling based on CPU utilization             | Trigger workflows on resource state changes      |
+| Data Source      | CloudWatch Metrics                                | AWS services, SaaS apps, custom events           |
+| Actions          | SNS, Auto Scaling, Lambda, EC2 actions            | Lambda, Step Functions, SNS, ECS, etc.           |
+| Scope            | Metric-based monitoring                           | Event-driven automation                          |
+| Granularity      | Requires a metric to function                     | Reacts to various event sources                  |
+
+An event is a change in the state of a resource or system. It represents something that has happened in your AWS environment or an external system. Events are typically time-stamped and can trigger workflows or automation when detected.
+
+A metric is a quantitative measure of the performance or behavior of a resource, system, or application over time. Metrics are collected at regular intervals (typically in seconds or minutes) and are used for monitoring, alerting, and performance analysis.
+
+### CloudWatch Dashboards
+
+CloudWatch Dashboards provide a centralized view of the operational health and performance of your AWS resources. Dashboards display customizable widgets such as metrics, alarms, and logs.
+
+- Widgets: Support various types of visualizations, including line graphs, bar charts, and number widgets.
+
+- Cross-Account Dashboards: Dashboards can aggregate data from multiple AWS accounts for unified monitoring.
+
+- Key Exam Focus:
+  - Building dashboards to visualize metrics across regions and accounts.
+  - Understanding dashboard costs (charged per dashboard and metrics displayed).
+  - Using CloudWatch dashboards to monitor and report on multi-account environments.
+
+### CloudWatch Contributor Insights
+
+Contributor Insights helps you identify top contributors to operational issues, high latency, or bottlenecks by analyzing log data and displaying the most frequently occurring log patterns.
+
+- Patterns: Detect top “talkers” or highest contributors to a particular problem or behavior.
+
+- Use Cases: Identifying noisy neighbors in multi-tenant environments, detecting DDOS attack patterns.
+
+- Key Exam Focus:
+  - How Contributor Insights helps analyze and optimize application performance.
+  - Use cases in distributed environments or applications with high traffic.
+
+CloudWatch Integration with AWS Services
+
+### CloudWatch EC2 Monitoring
+
+CloudWatch provides detailed and basic monitoring for EC2 instances:
+
+- By default no logs from EC2 goes to CloudWatch
+  - A agent running in the EC2 is required to push logs
+    - The IAM permissions must be correctly configured
+  - The agent can work on on-premisses machines as well
+
+- Agents
+  - Logs Agent
+    - old version
+  - Unified Agent
+    - can collect more metrics
+    - centralized configuration
+
+- Basic Monitoring: Includes CPU usage, network I/O, and status checks, with data collected every 5 minutes.
+- Detailed Monitoring: Enables 1-minute granularity for EC2 metrics, useful for auto-scaling decisions.
+
+### CloudWatch Integrations Summary
+
+1. Auto Scaling Integration
+   - CloudWatch Alarms can trigger Auto Scaling actions to dynamically adjust the number of EC2 instances based on performance metrics.
+   - Use Case: Auto Scaling policies based on CPU utilization or custom application metrics (e.g., request count).
+2. AWS Lambda
+   - CloudWatch automatically monitors Lambda functions and collects logs, including invocation counts, latency, and error rates.
+3. Elastic Load Balancing (ELB)
+   - CloudWatch collects data for ELBs, such as request counts, healthy/unhealthy host counts, and latency.
+4. RDS Monitoring
+   - CloudWatch provides key metrics for RDS instances such as CPU utilization, disk space, and read/write operations.
+   - Enhanced Monitoring: Offers real-time operating system-level metrics for RDS instances.
+5. ECS and EKS
+   - CloudWatch collects metrics for containerized workloads in ECS and EKS. It monitors tasks, services, and clusters.
+6. Billing Metrics
+   - CloudWatch provides metrics for monitoring your AWS billing data, enabling cost control by setting alarms when billing thresholds are reached.
+
+### CloudWatch Container Insights
+
+Collect, aggregate, summarize metrics and logs from containers
+
+### CloudWatch Application Insights
+
+Automated dashboard that shows potential issues with monitored applications
+
+### AWS CloudTrail Overview
+
+AWS CloudTrail is a service that enables governance, compliance, and operational auditing of AWS account activity. It logs and continuously monitors API calls made across your AWS environment, providing a comprehensive history of actions performed on your AWS resources.
+
+- Event Logging: CloudTrail captures API calls made through the AWS Management Console, SDKs, command-line tools, and other AWS services.
+- Event Types:
+  - Management Events: Capture changes to resources (e.g., EC2, S3, IAM).
+  - Data Events: Record API calls that directly interact with AWS resource data (e.g., object-level actions in S3).
+- Trails: CloudTrail creates trails that capture event history. Events can be delivered to S3 for long-term storage, and optionally sent to CloudWatch Logs for real-time monitoring.
+- Insights: CloudTrail Insights helps detect unusual activity by analyzing historical patterns of API usage.
+- Multi-Region Support: You can enable CloudTrail across multiple regions to ensure global coverage of account activity.
+
+Common Use Cases:
+
+- Security Auditing: Track user activity and detect unauthorized access or configuration changes.
+- Compliance: Maintain an audit trail to meet regulatory requirements.
+- Operational Troubleshooting: Analyze operational issues by reviewing detailed event logs of API actions.
+
+### Best Practices for CloudWatch in the AWS Architect Exam
+
+- Set Detailed Alarms: Make use of alarms tied to Auto Scaling or Lambda to automate infrastructure management.
+- Monitor Custom Metrics: Understand when and how to use custom metrics for non-AWS workloads or application-specific needs.
+- Optimize Log Retention: Control costs by setting appropriate log retention periods for different log groups.
+- Dashboards for Visibility: Leverage CloudWatch Dashboards for a real-time view of multi-region, multi-account AWS environments.
+- Event-Driven Architectures: Use CloudWatch Events (EventBridge) to trigger workflows in response to AWS resource changes, enhancing automation.
+
+### CloudWatch Common Exam Scenarios
+
+- Setting up monitoring and alarms for Auto Scaling an EC2 fleet based on custom metrics.
+- Configuring CloudWatch Logs for Lambda and EC2 applications, including log retention.
+- Creating cross-account dashboards for multi-region monitoring.
+- Triggering Lambda functions using CloudWatch Events when specific resource state changes occur.
+
+## AWS Config
+
+AWS Config is a service that helps you assess, audit, and evaluate the configurations of your AWS resources. It provides continuous monitoring of AWS resources to ensure they comply with internal guidelines, security policies, or best practices. AWS Config also tracks the relationships between resources and how their configurations evolve over time, making it essential for governance, compliance, and operational auditing.
+
+### Config Key Features
+
+- Configuration Recording:
+  - AWS Config records configuration changes to AWS resources in your account. It tracks the configuration history, providing a point-in-time snapshot of the state of resources (like EC2 instances, S3 buckets, RDS databases, etc.).
+
+- Resource Relationships:
+  - It identifies relationships between AWS resources. For example, it can show how an EC2 instance is related to its associated security groups, EBS volumes, and subnets.
+
+- Compliance and Rules Evaluation:
+  - AWS Config allows you to define config rules that check whether your AWS resources comply with best practices, security policies, or other operational guidelines. Config automatically evaluates resources against these rules and flags those that are non-compliant.
+  - AWS Managed Rules: Predefined rules that evaluate resources against common best practices (e.g., checking if S3 buckets are public or if EC2 instances have encryption enabled).
+  - Custom Rules: Custom rules can be created using AWS Lambda to enforce specific compliance checks.
+
+- Historical View of Configurations:
+  - AWS Config provides a historical view of resource configurations, enabling you to review and understand how resources have changed over time.
+  - Example: You can track changes to an EC2 instance’s security group, such as when it was modified or who made the change.
+
+- Change Management and Notifications:
+  - AWS Config can trigger notifications via Amazon SNS when resource configurations change or when resources become non-compliant with defined rules.
+
+- Configuration Snapshots and History:
+  - You can obtain snapshots of the configurations of all your resources at any given point in time. AWS Config maintains a history of these snapshots, allowing for easy audits.
+
+- Integration with Other AWS Services:
+  - AWS CloudTrail: To provide details on the who, what, and when of configuration changes.
+  - AWS Systems Manager: For patch management and operational insights.
+  - AWS Organizations: AWS Config can monitor multiple accounts from a central organization-level account.
+
+- Multi-Region and Multi-Account Support:
+  - AWS Config supports aggregation of data across regions and accounts, allowing for centralized auditing and governance.
+
+- Remediation
+  - Although config rules cannot deny actions, remediation can act on no-compliant resources
+
+### Config Use Cases
+
+- Compliance Auditing:
+  - Ensures your AWS environment adheres to compliance frameworks (e.g., PCI-DSS, HIPAA, GDPR) by continuously monitoring resources and flagging any deviations.
+- Security Monitoring:
+  - Detects security misconfigurations, such as publicly exposed S3 buckets, unencrypted volumes, or security groups with open ports.
+- Change Management:
+  - Tracks configuration changes across your AWS environment and provides a clear audit trail to understand why changes were made.
+- Operational Troubleshooting:
+  - Helps diagnose issues by reviewing the configuration history of resources and identifying changes that might have led to operational problems.
+- Cost Optimization:
+  - By monitoring and enforcing resource configurations, Config can help identify over-provisioned or underutilized resources.
+
+### Common AWS Config Rules
+
+- s3-bucket-public-read-prohibited: Checks whether S3 buckets do not allow public read access.
+- ec2-instance-managed-by-systems-manager: Ensures EC2 instances are managed by AWS Systems Manager.
+- cloudtrail-enabled: Ensures AWS CloudTrail is enabled in the account.
+- rds-instance-public-access-check: Checks that RDS instances are not publicly accessible.
+- required-tags: Ensures that AWS resources have the required tags.
+
+### Config Pricing
+
+AWS Config pricing is based on the number of configuration items recorded and the number of active Config rules in your account. You are billed for:
+
+- Configuration Items: Each time a resource configuration is recorded.
+- Evaluations: Each time AWS Config evaluates a resource against a rule.
+
+### Config Benefits
+
+- Continuous Compliance: Automatically checks resources for compliance, reducing manual efforts.
+- Detailed Resource Configuration Tracking: Maintains an audit trail of configuration changes, which is crucial for operational and security reviews.
+- Customizable Rules: You can define custom rules to meet specific organizational requirements.
+- Integration with AWS Lambda: Allows for dynamic and programmable compliance checks with Lambda functions.
+
+## AWS Config vs CloudTrail
+
+| Feature        | AWS Config                                      | AWS CloudTrail                                       |
+| -------------- | ----------------------------------------------- | ---------------------------------------------------- |
+| Purpose        | Track configuration changes to AWS resources    | Logs API activity (who did what and when)            |
+| Focus          | Configuration and compliance monitoring         | Security and operational auditing                    |
+| Event Types    | Configuration state changes                     | API calls, resource creation, modification, deletion |
+| Data Retention | Configuration history over time                 | API activity logs (90 days by default)               |
+| Integration    | Works with AWS Systems Manager, CloudTrail, SNS | Works with CloudWatch, SNS, Lambda                   |
+
+AWS Config is a crucial tool for AWS Architects looking to ensure compliance, security, and operational governance across their AWS environments.
 
 ## TODO 3
 
