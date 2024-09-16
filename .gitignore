@@ -1,3 +1,4 @@
 .markdownlint.json
 node_modules
 postgres-operator-examples
+node_modules/
