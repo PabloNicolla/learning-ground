@@ -46,6 +46,7 @@ async function runScript() {
 
   if (!answer_python_venv) {
     console.log("Please configure Python venv before running this script");
+    console.log("You must run this script from a terminal where Python virtual environment is active");
     return;
   }
 
@@ -93,10 +94,10 @@ async function runScript() {
   const DjangoCommands = ["echo 'Starting Django...'", "cd backend/"];
 
   if (answer_python_server_migrate) {
-    DjangoCommands.push("python manage.py migrate");
+    DjangoCommands.push(`python manage.py migrate`);
   }
 
-  DjangoCommands.push("python manage.py runserver");
+  DjangoCommands.push(`python manage.py runserver`);
 
   runCommandsDetached(DjangoCommands);
 

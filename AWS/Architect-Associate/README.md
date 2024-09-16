@@ -455,8 +455,21 @@
     - [Config Pricing](#config-pricing)
     - [Config Benefits](#config-benefits)
   - [AWS Config vs CloudTrail](#aws-config-vs-cloudtrail)
-  - [TODO 3](#todo-3)
-  - [TODO 4](#todo-4)
+  - [AWS Organizations](#aws-organizations)
+    - [Key Features of AWS Organizations](#key-features-of-aws-organizations)
+    - [AWS Organizations SCP](#aws-organizations-scp)
+    - [AWS Organizations Common Use Cases](#aws-organizations-common-use-cases)
+    - [AWS Organizations and Other AWS Services](#aws-organizations-and-other-aws-services)
+    - [AWS Organizations Best Practices](#aws-organizations-best-practices)
+    - [AWS Organizations Pricing](#aws-organizations-pricing)
+  - [Advanced IAM](#advanced-iam)
+    - [Advanced IAM Core IAM Concepts](#advanced-iam-core-iam-concepts)
+    - [Resource-Based Policies vs. IAM Roles](#resource-based-policies-vs-iam-roles)
+    - [Advanced IAM Policy Evaluation Logic](#advanced-iam-policy-evaluation-logic)
+    - [IAM Identity Center (formerly AWS SSO)](#iam-identity-center-formerly-aws-sso)
+    - [AWS Directory Service](#aws-directory-service)
+    - [AWS Control Tower](#aws-control-tower)
+    - [Best Practices for Using IAM](#best-practices-for-using-iam)
   - [TODO 5](#todo-5)
   - [Useful AWS Resources](#useful-aws-resources)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
@@ -4681,9 +4694,222 @@ AWS Config pricing is based on the number of configuration items recorded and th
 
 AWS Config is a crucial tool for AWS Architects looking to ensure compliance, security, and operational governance across their AWS environments.
 
-## TODO 3
+## AWS Organizations
 
-## TODO 4
+AWS Organizations allows you to centrally manage multiple AWS accounts under one umbrella. It is designed for enterprises, startups, and institutions that need to manage their cloud environments across multiple accounts, offering centralized billing, resource sharing, and policy control across the accounts.
+
+### Key Features of AWS Organizations
+
+- Centralized Management:
+  - With AWS Organizations, you can manage multiple accounts from a single master account (now called the management account).
+  - You can create, delete, and manage AWS accounts from this centralized interface.
+
+- Consolidated Billing:
+  - AWS Organizations provides consolidated billing, allowing you to combine costs from multiple AWS accounts into a single bill. This helps streamline billing and can provide volume discounts.
+  - You can track each account's usage separately while benefiting from shared billing discounts.
+
+- Service Control Policies (SCPs):
+  - SCPs are one of the most powerful features of AWS Organizations. They allow you to control permissions across all accounts within an organization.
+  - SCPs set guardrails to ensure that accounts cannot exceed their assigned permissions (even if the account’s IAM policies are less restrictive).
+  - SCPs do not grant permissions by themselves but work as an overarching policy framework for accounts.
+
+- Organizational Units (OUs):
+  - AWS Organizations allows you to group accounts into Organizational Units. OUs make it easier to apply specific policies to a subset of accounts.
+  - For instance, you can group accounts based on environments like production, development, or based on team-specific needs, such as finance, marketing, and engineering.
+
+- Account Creation and Management:
+  - The service allows automated creation of new AWS accounts within the organization using the API or AWS Management Console.
+  - You can also invite existing AWS accounts to join the organization.
+
+- Cross-Account Access:
+  - You can share resources between accounts using AWS Resource Access Manager (RAM) and enable cross-account access using IAM roles, making resource sharing more efficient across your organization.
+
+- Tag Policies:
+  - With tag policies, AWS Organizations can enforce consistent tagging across accounts to ensure better cost allocation and management of resources.
+
+- Delegated Administrator:
+  - The management account can delegate administrative roles for various AWS services to other accounts within the organization, reducing the need for central control of every aspect.
+
+- Integration with AWS Security and Compliance:
+  - AWS Organizations integrates with services like AWS Control Tower, AWS Config, and AWS Security Hub to ensure consistent compliance and security posture across all accounts.
+
+### AWS Organizations SCP
+
+- The management account has full permissions no matter the configuration. Denies will never affect the management account.
+- All other accounts under different OU need explicit allow for every resource that is supposed to be used by them.
+  - You can give full AWS access and then apply explicit deny for resources that the OU should not access.
+
+### AWS Organizations Common Use Cases
+
+- Enterprise Governance and Security:
+  - Centralized management of multiple accounts allows enterprises to set security guardrails through SCPs, ensuring all accounts comply with organizational policies.
+
+- Cost Control:
+  - Consolidated billing allows businesses to monitor usage and take advantage of pricing benefits across multiple accounts while maintaining individual reporting for different teams or projects.
+
+- Resource Isolation:
+  - Organizations can isolate workloads into separate accounts, improving security, compliance, and disaster recovery by avoiding “blast radius” impacts if an account is compromised.
+
+- Delegated Administration:
+  - IT teams can manage specific AWS services without giving full administrative privileges to all users across multiple accounts by using delegated administrators.
+
+- Efficient Resource Sharing:
+  - Through Resource Access Manager, organizations can share critical AWS resources (e.g., VPCs, subnets) across multiple accounts without duplicating them.
+
+### AWS Organizations and Other AWS Services
+
+- AWS Control Tower:
+  - AWS Control Tower builds on top of AWS Organizations, providing a multi-account environment following best practices with pre-configured security and compliance guardrails.
+
+- AWS Single Sign-On (SSO):
+  - AWS SSO integrates with Organizations to provide centralized identity and access management across multiple AWS accounts.
+
+- AWS Config:
+  - AWS Config helps monitor compliance by continuously evaluating configurations and settings across accounts managed in AWS Organizations.
+
+### AWS Organizations Best Practices
+
+- Use Organizational Units Wisely:
+  - Organize accounts into OUs based on your business structure, compliance needs, or the purpose of each account. For example, separate accounts into "Prod," "Dev," and "Test" environments.
+
+- Implement SCPs Thoughtfully:
+  - Carefully define SCPs to enforce security controls without overly restricting access, while ensuring compliance with organizational standards.
+
+- Use Consolidated Billing for Cost Efficiency:
+  - Enable consolidated billing to track usage and benefit from volume discounts, ensuring that you get the best price for all services across accounts.
+
+- Enforce Tagging Across All Accounts:
+  - Utilize tag policies to enforce consistent tagging across all AWS accounts, which helps with cost management, compliance, and resource discovery.
+
+### AWS Organizations Pricing
+
+AWS Organizations is free of charge. However, costs may still incur from the AWS resources or services used by accounts under the organization (like S3 storage or EC2 instances).
+
+## Advanced IAM
+
+AWS Identity and Access Management (IAM) is a web service that helps you securely control access to AWS services and resources for users. It enables you to manage permissions, define policies, and control who can access your AWS resources.
+
+### Advanced IAM Core IAM Concepts
+
+- IAM Policies:
+  - Policies are JSON documents that define permissions (allow or deny) for users, groups, and roles to perform specific actions on AWS resources.
+  - Policies include:
+    - Action: The specific operation being allowed or denied (e.g., s3:GetObject).
+    - Resource: The AWS resource to which the policy applies (e.g., an S3 bucket or an EC2 instance).
+    - Effect: Whether the action is allowed or denied (i.e., Allow or Deny).
+    - Condition: (Optional) Additional constraints under which the policy applies (e.g., allowing access only from specific IP ranges).
+
+- Policy Types:
+  - Managed Policies: Predefined and maintained either by AWS (AWS managed policies) or by users (Customer managed policies).
+  - Inline Policies: Policies directly attached to an individual user, group, or role.
+
+- Permissions:
+  - Permissions are granted via policies and define what actions an IAM identity (user, group, or role) can perform on specific resources.
+  - Permissions are inherited by users either directly or via group membership or roles.
+
+- IAM Roles:
+  - Roles are a type of IAM identity that AWS users or services can assume temporarily to perform certain actions. Roles are stateless and can be assigned permissions via policies.
+  - Use Cases for Roles:
+    - Cross-account access: A role can allow users in one AWS account to access resources in another.
+    - Service Roles: AWS services (like Lambda, EC2) can assume roles to perform actions on your behalf.
+    - Federated Access: External users authenticated through third-party identity providers can assume roles using federation (via SAML, OpenID Connect, or AWS SSO).
+
+- IAM Users and Groups:
+  - Users: IAM users represent individual accounts with long-term credentials (username, password, and access keys) for managing AWS services.
+  - Groups: A way to organize users with similar permissions. Users inherit permissions assigned to the group.
+
+- IAM Conditions:
+  - Conditions allow you to add additional restrictions to policies. Condition keys define the context in which the action applies.
+  - Examples:
+    - Restricting access based on the source IP address (e.g., Condition: { "IpAddress": {"aws:SourceIp": "203.0.113.0/24"}}).
+    - Limiting access to specific times of day.
+
+### Resource-Based Policies vs. IAM Roles
+
+- Resource-Based Policies:
+  - These are policies attached directly to AWS resources like S3 buckets, Lambda functions, or SNS topics.
+  - They allow you to grant cross-account access directly without using IAM roles.
+  - Commonly Used With: S3, SNS, SQS, Lambda.
+  - Does not need to give up original permissions
+
+- IAM Roles:
+  - IAM roles are used for cross-account access or for AWS services to assume a set of permissions.
+  - Roles must be explicitly assumed by a principal, and permissions are granted temporarily.
+  - When assuming a role, you give up your original permissions and take the permissions assigned to the role
+
+Key Differences:
+
+- Resource-based policies define what can happen on a specific resource.
+- IAM roles are used to temporarily grant permissions to AWS entities or users to act on resources.
+
+### Advanced IAM Policy Evaluation Logic
+
+IAM policy evaluation determines if a request should be allowed or denied. The logic follows a specific order:
+
+- Explicit Deny: If any policy denies the request, the action is denied immediately.
+- Explicit Allow: If there’s no explicit deny, IAM checks for an explicit allow in attached policies.
+- Implicit Deny: If neither an explicit deny nor an explicit allow is found, the request is denied by default.
+
+Evaluation Steps:
+
+- Identity-based Policies: Checks policies attached to the IAM user or role.
+- Resource-based Policies: Checks policies attached directly to the resource being accessed.
+- Permissions Boundaries: Ensures that policies do not grant permissions outside of the allowed boundary.
+- Service Control Policies (SCPs) (if using AWS Organizations): Ensures policies don’t exceed the limits set at the organizational level.
+
+> [!IMPORTANT]
+> For an action to be allowed, there must be explicit ALLOW along all the evaluation steps.
+
+### IAM Identity Center (formerly AWS SSO)
+
+AWS Identity Center is a centralized identity management service that allows users to access multiple AWS accounts and applications from one place. It supports Single Sign-On (SSO) for AWS and other applications.
+
+- Integrates with AWS Organizations to manage user access across multiple AWS accounts.
+- Supports federation with external identity providers (like Active Directory, Google Workspace, or Okta).
+- Users can log in with a single set of credentials to access all authorized AWS accounts or services.
+
+- Permission Sets can be created in the IAM Identity Center
+  - These permission can allow different levels of access to OU (organization units)
+  - then these permissions can be assigned to groups or users
+
+- Fine-grained permission access control
+
+### AWS Directory Service
+
+AWS Directory Service enables integration with existing on-premises Active Directory (AD) or to run a cloud-based directory for AWS services.
+
+- AD Connector: A proxy that allows AWS applications to use on-premises Active Directory for authentication without replication.
+- AWS Managed Microsoft AD: A fully managed Microsoft Active Directory in the AWS cloud.
+  - Fully Managed By AWS
+    - Integration out of the box
+  - Connected with on-premisses AD
+    - Two-way trust relationship (More control)
+    - Proxy via AD Connector (Easier + more latency)
+- Simple AD: A standalone directory service that is a basic version of Active Directory, suited for simple directory needs.
+
+Common Use Cases:
+
+- Enabling single sign-on for users across AWS and on-premises environments.
+- Managing permissions centrally for applications hosted in AWS.
+
+### AWS Control Tower
+
+AWS Control Tower is a service that simplifies the setup and governance of a secure, multi-account AWS environment. It builds on AWS Organizations, offering pre-configured guardrails (rules for governance), blueprints, and best practices.
+
+- Landing Zones: A best-practice multi-account architecture that Control Tower helps you set up.
+- Guardrails: Pre-configured, high-level rules (like SCPs) that ensure your AWS accounts comply with security and operational guidelines.
+  - Preventive Guardrail - using SCPs (Restrict)
+  - Detective Guardrail - using AWS Config (Identify)
+- Integrates with IAM, SCPs, and other security controls.
+
+### Best Practices for Using IAM
+
+- Use the Principle of Least Privilege: Grant users the minimal set of permissions necessary to perform their tasks.
+- Enable MFA: Use Multi-Factor Authentication (MFA) for all privileged accounts and users.
+- Rotate Credentials: Rotate IAM access keys regularly and avoid embedding credentials in code.
+- Use Roles for Applications: Instead of embedding keys in applications, use IAM roles that applications can assume to get temporary credentials.
+- Monitor with AWS CloudTrail: Enable CloudTrail to track all API calls, allowing you to audit and respond to unauthorized access attempts.
+- Use Permissions Boundaries: For fine-grained control, use permissions boundaries to limit the scope of permissions that can be applied to a role or user.
 
 ## TODO 5
 
