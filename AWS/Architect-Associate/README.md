@@ -470,6 +470,28 @@
     - [AWS Directory Service](#aws-directory-service)
     - [AWS Control Tower](#aws-control-tower)
     - [Best Practices for Using IAM](#best-practices-for-using-iam)
+  - [AWS Security Concepts](#aws-security-concepts)
+    - [Encryption In-Flight (Encryption in Transit)](#encryption-in-flight-encryption-in-transit)
+    - [Server-Side Encryption at Rest](#server-side-encryption-at-rest)
+    - [Client-Side Encryption](#client-side-encryption)
+    - [AWS Key Management Service (KMS)](#aws-key-management-service-kms)
+    - [KMS key types](#kms-key-types)
+    - [KMS key policy](#kms-key-policy)
+    - [KMS Multi-Region Keys](#kms-multi-region-keys)
+    - [S3 Replication Considerations](#s3-replication-considerations)
+    - [Sharing Encrypted AMI](#sharing-encrypted-ami)
+    - [SSM Parameter Store](#ssm-parameter-store)
+    - [AWS Secrets Manager](#aws-secrets-manager)
+    - [AWS Certificate Manager (ACM)](#aws-certificate-manager-acm)
+    - [AWS Web Application Firewall (WAF)](#aws-web-application-firewall-waf)
+      - [WAF with Fixed IP](#waf-with-fixed-ip)
+    - [AWS Shield - DDoS Protection](#aws-shield---ddos-protection)
+    - [AWS Firewall Manager](#aws-firewall-manager)
+    - [AWS WAF versus AWS Firewall Manager versus AWS shield](#aws-waf-versus-aws-firewall-manager-versus-aws-shield)
+    - [DDoS Protection Best Practices](#ddos-protection-best-practices)
+    - [Amazon GuardDuty](#amazon-guardduty)
+    - [Amazon Inspector](#amazon-inspector)
+    - [Amazon Macie](#amazon-macie)
   - [TODO 5](#todo-5)
   - [Useful AWS Resources](#useful-aws-resources)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
@@ -4910,6 +4932,443 @@ AWS Control Tower is a service that simplifies the setup and governance of a sec
 - Use Roles for Applications: Instead of embedding keys in applications, use IAM roles that applications can assume to get temporary credentials.
 - Monitor with AWS CloudTrail: Enable CloudTrail to track all API calls, allowing you to audit and respond to unauthorized access attempts.
 - Use Permissions Boundaries: For fine-grained control, use permissions boundaries to limit the scope of permissions that can be applied to a role or user.
+
+## AWS Security Concepts
+
+### Encryption In-Flight (Encryption in Transit)
+
+Encryption in-flight (or encryption in transit) refers to protecting data as it is transmitted across networks.
+
+- Goal: Ensure data is secure and unreadable by interceptors while it moves between clients, applications, and servers over the internet or internal networks.
+- Common protocols used for encryption in transit include:
+  - TLS/SSL (Transport Layer Security / Secure Sockets Layer): Ensures secure communication over networks, commonly used in HTTPS.
+  - IPsec (Internet Protocol Security): Provides encrypted communication at the network layer.
+- AWS Implementation:
+  - Elastic Load Balancer (ELB), API Gateway, and services like S3 support TLS encryption for data in transit.
+  - Services like RDS, EFS, and Redshift offer options to encrypt data in transit when connected to databases or storage services.
+
+### Server-Side Encryption at Rest
+
+Server-side encryption at rest is used to protect data stored in AWS services by encrypting it before it is written to disk and decrypting it when it is accessed.
+
+- Goal: Secure stored data so it is inaccessible to unauthorized users or systems, even if the storage medium is compromised.
+- Types of Server-Side Encryption (SSE) in AWS:
+  - SSE-S3: Managed by AWS using S3-managed keys. AWS manages both the encryption and decryption.
+    - AES-256 encryption standard is commonly used.
+  - SSE-KMS: Uses AWS KMS (Key Management Service) for key management. You control the encryption keys, and AWS manages their usage.
+  - SSE-C: You provide your own encryption keys (Customer-Provided Keys) for services like S3, where AWS uses the keys you supply to encrypt and decrypt data.
+- AWS Examples:
+  - Amazon S3: Supports all three server-side encryption methods.
+  - RDS, EBS, and DynamoDB: Use KMS for encryption at rest.
+
+### Client-Side Encryption
+
+Client-side encryption refers to encrypting data before sending it to AWS, ensuring that AWS only ever stores encrypted data.
+
+- Goal: The client manages encryption and decryption processes, and AWS never has access to the plaintext data.
+- Use Cases:
+  - Client SDKs: AWS provides SDKs (like the AWS Encryption SDK) to help with client-side encryption.
+  - Client-managed keys: You manage encryption keys, possibly using a third-party key management system.
+- AWS Implementation:
+  - AWS allows client-side encryption for services like Amazon S3 and DynamoDB.
+  - The client handles both key management and encryption operations, while AWS only stores encrypted data.
+
+### AWS Key Management Service (KMS)
+
+AWS KMS is a fully managed service that helps you create, control, and manage encryption keys used to encrypt data across AWS services.
+
+- Customer Master Keys (CMKs):
+  - KMS uses Customer Managed Keys (CMKs) or AWS Managed Keys to perform encryption, decryption, and digital signing operations.
+  - CMKs are either managed by AWS or the customer and stored in FIPS 140-2 compliant hardware security modules (HSMs).
+- Key Features:
+  - Symmetric Keys: Single key used for both encryption and decryption (AES-256). (You never have access to)
+  - Asymmetric Keys: Separate public and private key pairs for encryption and decryption or signing/verification. (Access to public key only)
+    - used to allow encryption outside of AWS (specially by users that does not have AWS access)
+  - Key Policies: Fine-grained access control over who can use keys.
+  - Integration: Direct integration with AWS services like S3, EBS, RDS, Lambda, Secrets Manager, and CloudTrail for managing encryption.
+- Usage:
+  - You can create and manage keys, configure key usage permissions, and track key usage in AWS CloudTrail.
+  - KMS allows you to import your own keys (customer-managed keys) or use keys generated by AWS.
+
+### KMS key types
+
+- AWS Owned Keys (free): SSE-S3, SSE-SQS, SSE-DDB (default-key)
+- AWS Managed Keys (free): aws/service-name
+- Customer Managed Keys created in KMS ($1 / month)
+- Customer Managed Keys imported into KMS ($1 / month)
+- `+` pay for API calls to KMS ($0.03 / 10,000 calls)
+
+- AWS Managed Key
+  - Automatic rotation every 1 year
+- AWS Customer-Managed Created Key
+  - (Must be enabled) Automatic & on-demand rotation
+- AWS Customer-Manged Imported
+  - Rotation can only be performed manually
+
+- Automatic Key rotation for managed Keys
+  - Customer Keys need manual rotation
+- When you enable Automatic Rotation on your AWS KMS (Key Management Service) key, the **backing key is rotated every year**.
+
+### KMS key policy
+
+- Default
+  - allows access to the root user (entire AWS account)
+- Custom KMS key policy:
+  - Defines who manages and who can access the key
+
+### KMS Multi-Region Keys
+
+AWS recently introduced multi-region keys to AWS KMS, making it easier to replicate and use encryption keys across multiple regions.
+
+- Goal: Enable secure encryption and decryption operations across multiple AWS regions using the same key material, while maintaining control and consistency over encryption across geographically distributed applications.
+
+- Key Features:
+  - Primary and Replica Keys: You can create a primary key in one region and replica keys in other regions. Both primary and replica keys share the same key material.
+  - Use Case: Multi-region applications that need consistent encryption/decryption (e.g., global S3 bucket access, DynamoDB Global Tables).
+  - Failover & Redundancy: If one region becomes unavailable, you can switch to the replica key in another region without needing to re-encrypt data.
+  - Automatic Replication: AWS KMS handles automatic replication of key material to other regions.
+
+- Advantages:
+  - Reduces the complexity of managing separate keys in each region for global applications.
+  - Ensures that encrypted data can be decrypted in any region where the replica key exists.
+
+Important Notes:
+
+- Each Multi-region key is managed Independently
+- They are not Global keys, just (Primary + replicas)
+- Not recommend for must use cases except to use with global services such as
+  - Global DynamoDB
+  - Global Aurora
+
+### S3 Replication Considerations
+
+- SSE-S3
+  - Both encrypted and non encrypted objects are replicated
+- SSE-KMS
+  - Encrypted Objects will not be replicated by default
+  - You must explicitly choose to replicate encrypted objects
+  - However, it will cause objects to be decrypted -> copied -> encrypted
+    - resulting in an expensive and not efficient process
+
+### Sharing Encrypted AMI
+
+- Grant target account Launch permissions
+- Share KMS key with target account
+- Grant target account permission to use shared KMS key
+
+### SSM Parameter Store
+
+AWS Systems Manager (SSM) Parameter Store is a secure, scalable, and hierarchical storage service for configuration data management and secrets management. It allows you to store and retrieve parameters like database connection strings, passwords, and license codes.
+
+- Parameter Types:
+  - String: Standard parameters that can store any text or data.
+  - SecureString: Encrypted strings stored securely using AWS KMS encryption.
+  - StringList: Parameters that store comma-separated lists of strings.
+
+- Version Control:
+  - Each parameter can have multiple versions, allowing you to track changes and roll back to previous versions if needed.
+
+- Tagging and Organization:
+  - You can group parameters into a hierarchical structure (e.g., /prod/db/password), making it easier to manage configurations for different environments like production or development.
+
+- Access Control:
+  - Permissions for accessing parameters can be controlled through AWS IAM policies, enabling granular access control.
+
+- Integration:
+  - Integrates seamlessly with AWS services like Lambda, EC2, ECS, and CloudFormation, allowing you to pull parameters into scripts, code, or configuration files.
+
+- Audit and Logging:
+  - Parameter Store integrates with AWS CloudTrail, allowing you to monitor who accessed or modified parameters.
+
+- Advanced Parameter Policies
+  - Allow TTL to a parameter to force updating or deleting sensitive data
+
+Use Cases:
+
+- Managing environment variables, application configurations, and sensitive data like passwords and API keys.
+- Encrypting and securely storing secrets and credentials with KMS.
+
+### AWS Secrets Manager
+
+AWS Secrets Manager is a service that helps you securely manage, retrieve, and rotate secrets like database credentials, API keys, and other sensitive data.
+
+- Secret Rotation:
+  - Secrets Manager enables you to automatically rotate secrets (e.g., database credentials) without disrupting your application.
+  - Integration with services like RDS simplifies rotating database credentials.
+
+- Fine-Grained Access Control:
+  - AWS Identity and Access Management (IAM) policies can be used to control who can access and manage secrets.
+
+- Audit and Monitoring:
+  - AWS CloudTrail logs all access to secrets, providing full auditing and compliance.
+
+- Encryption:
+  - Secrets are encrypted using AWS KMS, ensuring data protection both at rest and in transit.
+
+- Version Control:
+  - Each secret has multiple versions so that updates or rotations of secrets can be tracked, and older versions can be rolled back if needed.
+
+- Multi-Region Secrets
+  - Secrets are kept in Sync
+  - Use Cases:
+    - Multi-Region APPs
+    - Failover to replica region
+
+Use Cases:
+
+- Storing and rotating database credentials, API keys, OAuth tokens, or any sensitive configuration settings.
+- Automating secret rotation for improved security posture without manual intervention.
+
+### AWS Certificate Manager (ACM)
+
+AWS Certificate Manager is a service that helps you easily provision, manage, and deploy SSL/TLS certificates for use with AWS services and your web applications.
+
+- Free SSL/TLS Certificates:
+  - ACM provides free public SSL/TLS certificates for use with AWS resources like Elastic Load Balancers (ELB), API Gateway, and CloudFront.
+- Automatic Renewal:
+  - Certificates issued by ACM are automatically renewed, ensuring your websites and applications are always secure without requiring manual intervention.
+- Managed Private Certificates:
+  - ACM also provides the ability to manage private certificates for internal applications or environments using ACM Private Certificate Authority (PCA).
+- Simple Deployment:
+  - ACM simplifies deploying SSL/TLS certificates on AWS services, eliminating the complexity of obtaining and configuring certificates.
+- Integration:
+  - Integrates seamlessly with services like ELB, CloudFront, and API Gateway to secure your web traffic.
+
+Use Cases:
+
+- Securing websites, API endpoints, and applications hosted on AWS using SSL/TLS encryption.
+- Simplifying management of private certificates for internal infrastructure with ACM PCA.
+
+### AWS Web Application Firewall (WAF)
+
+AWS WAF is a service that helps you protect web applications from common web exploits that can affect availability, compromise security, or consume excessive resources.
+
+- Layer 7 protection
+- Web Access Control List (ACL)
+
+- Customizable Web Protection:
+  - WAF allows you to define custom rules to filter specific traffic patterns or known attack vectors, such as SQL injection, cross-site scripting (XSS), and DDoS attacks.
+- Managed Rule Groups:
+  - AWS offers pre-configured rule groups to protect against common threats. These rule sets are maintained and updated by AWS and security experts.
+- IP Blocklists and Whitelists:
+  - You can define IP blocklists or whitelists to allow or block traffic from specific IP ranges.
+- Rate Limiting:
+  - WAF allows you to configure rate-based rules to limit requests from specific IP addresses, helping prevent DDoS or abuse by limiting high traffic volumes.
+- Real-Time Monitoring:
+  - Integrates with Amazon CloudWatch for real-time visibility and logging of web traffic that passes through the WAF.
+
+- Integration with AWS Services:
+  - CloudFront
+  - Application Load Balancer (ALB)
+  - API Gateway
+  - AppSync GraphQL API
+  - Cognito User Pool
+
+Use Cases:
+
+- Protecting web applications from common OWASP Top 10 security risks.
+- Setting up geofencing rules or restricting access to web applications based on IP addresses or traffic patterns.
+- Limiting the impact of high-traffic events or DDoS attacks by applying rate-based rules.
+
+#### WAF with Fixed IP
+
+user -> Global Accelerator (fixed IP) -> APL (Integrated with WAF) -> EC2 (Or whatever)
+
+### AWS Shield - DDoS Protection
+
+AWS Shield is a managed Distributed Denial of Service (DDoS) protection service that helps safeguard applications hosted on AWS from DDoS attacks.
+
+Types of AWS Shield:
+
+- AWS Shield Standard:
+  - Automatic protection included at no extra cost with AWS services.
+  - Protects against most common and basic network and transport layer DDoS attacks like SYN/ACK floods, reflection attacks, and more.
+  - (Layer 3 and 4)
+- AWS Shield Advanced:
+  - Enhanced DDoS protection for more sophisticated attacks.
+  - Includes additional protection against application layer attacks.
+  - 24/7 access to the AWS DDoS Response Team (DRT).
+  - Cost protection: AWS absorbs the cost of scaling up resources during DDoS events, including increased usage fees for services like CloudFront and Route 53.
+  - Provides detailed attack diagnostics and real-time visibility into attacks via AWS WAF and CloudWatch.
+
+Key Features:
+
+- Automatic Detection and Mitigation:
+  - AWS Shield continuously monitors network traffic to detect and mitigate attacks in real-time.
+
+- Layered Defense:
+  - Shield works in conjunction with other AWS services like WAF to provide a multi-layered defense against different types of attacks.
+
+- Global Edge Network:
+  - AWS Shield leverages the global CloudFront and Route 53 networks to absorb and mitigate large-scale DDoS attacks closer to the source.
+
+- Cost Protection (Shield Advanced):
+  - Protects against unexpected costs caused by scaling due to large DDoS attacks, ensuring minimal business impact.
+
+Use Cases:
+
+- Defending public-facing web applications, APIs, and other services hosted on AWS from DDoS attacks.
+- Adding enhanced DDoS protection for mission-critical applications using Shield Advanced.
+- Integrating with AWS WAF to create a combined defense against a range of web threats, from DDoS to application-layer exploits.
+
+### AWS Firewall Manager
+
+AWS Firewall Manager is a security management service that simplifies the administration of firewall rules across your AWS organization. It provides centralized control for managing AWS WAF, AWS Shield, and security groups.
+
+- Centralized Management:
+  - Firewall Manager allows you to centrally configure firewall policies and enforce them across multiple AWS accounts and resources within an AWS organization.
+
+- WAF Rule Management:
+  - You can use Firewall Manager to deploy AWS WAF rules (for web application protection) across all applications and services.
+
+- Integration with AWS Shield:
+  - Firewall Manager works with AWS Shield Advanced, allowing you to centrally manage DDoS protections and apply them across multiple accounts.
+
+- Security Groups Management:
+  - You can create and enforce security group policies to ensure consistent security posture across your EC2, ELB, and VPC resources.
+
+- Audit and Compliance:
+  - Firewall Manager helps ensure compliance by applying and enforcing security policies across AWS accounts, and identifying resources that are not protected.
+
+Use Cases:
+
+- Simplifying the management of firewall rules across multiple accounts.
+- Centralized enforcement of security policies and ensuring all resources are compliant with security standards.
+- Automatically applying DDoS protections and WAF rules to new applications.
+
+### AWS WAF versus AWS Firewall Manager versus AWS shield
+
+| Feature               | AWS WAF (Web Application Firewall)                                             | AWS Firewall Manager                                                                           | AWS Shield                                                                                                                                    |
+| --------------------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Purpose**           | Protects web applications from common threats such as SQL injection and XSS.   | Centrally manages firewall rules across multiple accounts and resources.                       | Protects against DDoS attacks for AWS resources.                                                                                              |
+| **Key Functionality** | Provides custom rules to filter HTTP(S) requests based on conditions.          | Automates the deployment of AWS WAF, Shield, and VPC security groups across multiple accounts. | AWS Shield Standard provides automatic DDoS protection, while Shield Advanced offers additional features like attack mitigation and response. |
+| **Use Cases**         | Protecting web applications and APIs from specific web threats.                | Simplifies security management across organizations and multi-account environments.            | Mitigating Distributed Denial of Service (DDoS) attacks on AWS infrastructure.                                                                |
+| **Pricing**           | Pay for the number of web ACLs, rules, and requests processed.                 | Additional cost on top of WAF, Shield, and other services managed.                             | Shield Standard is free, Shield Advanced has a monthly fee and additional data transfer costs.                                                |
+| **Integration**       | Integrates with Amazon CloudFront, API Gateway, ALB, and AWS AppSync.          | Works with AWS WAF, Shield, and security groups to streamline security management.             | Integrated with AWS CloudFront, Route 53, and ELB.                                                                                            |
+| **Management Scope**  | Individual resource-level protection.                                          | Organization-wide policy management.                                                           | Focused on DDoS protection at the AWS infrastructure level.                                                                                   |
+| **DDoS Protection**   | Provides basic protections through rate-limiting but not specialized for DDoS. | Manages DDoS protections through Shield policies.                                              | Specialized DDoS protection, with Shield Advanced offering more detailed response and coverage.                                               |
+| **Customization**     | Highly customizable rules for specific threat types.                           | Centralized management and policy enforcement for security tools.                              | Focused on mitigating DDoS with fewer customization options.                                                                                  |
+| **Advanced Features** | Rate-based rules, managed rules, and CAPTCHA.                                  | Automates application of security policies across accounts.                                    | Real-time DDoS attack visibility, cost protection for Shield Advanced.                                                                        |
+
+### DDoS Protection Best Practices
+
+Protecting against Distributed Denial of Service (DDoS) attacks involves implementing both automated and manual protections to safeguard applications from disruptions caused by traffic overloads.
+
+Best Practices for DDoS Protection on AWS:
+
+- Use AWS Shield:
+  - AWS Shield Standard provides automatic protection against the most common network and transport layer DDoS attacks at no additional cost. For advanced protection, AWS Shield Advanced offers enhanced detection, 24/7 support, and cost protection.
+
+- Leverage Amazon CloudFront:
+  - Use Amazon CloudFront as a global CDN to absorb large amounts of DDoS traffic at the edge, minimizing the impact on your origin servers.
+
+- Enable AWS WAF:
+  - Deploy AWS Web Application Firewall (WAF) to filter web traffic and block malicious requests (e.g., SQL injection, cross-site scripting). It also supports rate-based rules to limit excessive traffic from individual IPs.
+
+- Design for Elasticity:
+  - Use Auto Scaling and Elastic Load Balancing (ELB) to scale your application’s infrastructure dynamically in response to traffic surges caused by DDoS attacks.
+
+- VPC Subnet Design:
+  - Segment your application components across different subnets and availability zones to avoid a single point of failure.
+
+- Rate Limiting and Throttling:
+  - Implement rate-limiting mechanisms in APIs and services using tools like AWS WAF to block or throttle suspicious traffic.
+
+- Monitor with CloudWatch:
+  - Set up Amazon CloudWatch alarms to track abnormal traffic patterns and trigger responses to potential DDoS attacks.
+
+- Use VPC Flow Logs:
+  - Enable VPC Flow Logs and CloudTrail to track network traffic and identify unusual behavior. This helps in investigating and mitigating DDoS attacks.
+
+### Amazon GuardDuty
+
+Amazon GuardDuty is a threat detection service that continuously monitors for malicious activity and unauthorized behavior to protect AWS accounts, workloads, and data.
+
+- Continuous Threat Detection:
+  - GuardDuty analyzes AWS CloudTrail, VPC Flow Logs, and DNS logs to detect anomalies, unauthorized access attempts, and malware.
+
+- Machine Learning and Anomaly Detection:
+  - It uses machine learning and integrated threat intelligence (from AWS and external sources) to identify suspicious activity like account compromises, data exfiltration, and unusual API calls.
+
+- Alerts and Findings:
+  - GuardDuty generates detailed findings with severity ratings, helping you prioritize and respond to potential threats.
+
+- No Infrastructure Management:
+  - As a fully managed service, GuardDuty requires no infrastructure setup or management. It automatically scales with your AWS environment.
+
+- Integration with AWS Services:
+  - GuardDuty findings can trigger automated remediation actions by integrating with services like AWS Lambda, AWS Security Hub, and Amazon CloudWatch.
+
+- Multi-Account Monitoring:
+  - Through integration with AWS Organizations, you can enable GuardDuty across all your accounts, ensuring comprehensive threat detection across your AWS environment.
+
+Use Cases:
+
+- Detecting compromised IAM credentials or unusual login patterns.
+- Identifying malicious IP addresses, port scanning attempts, or data exfiltration activities.
+- Automatically remediating security incidents based on GuardDuty alerts using Lambda functions.
+
+### Amazon Inspector
+
+Amazon Inspector is an automated vulnerability management service designed to continuously scan your AWS workloads to help improve the security and compliance of your applications. It identifies potential security vulnerabilities, including software vulnerabilities, unintended network exposure, and deviations from best practices.
+
+- Automated Vulnerability Assessment:
+  - Inspector automatically scans EC2 instances, container workloads (via Amazon ECR), and Lambda functions to identify vulnerabilities, missing patches, and insecure configurations.
+
+- CVE-Based Assessments:
+  - Inspector uses a library of Common Vulnerabilities and Exposures (CVEs) to check for known security issues in your software packages and dependencies.
+
+- Continuous Scanning:
+  - Once enabled, Inspector continuously monitors your resources, ensuring that new instances and containers are immediately scanned for vulnerabilities without manual intervention.
+
+- Container Scanning:
+  - Inspector integrates with Amazon Elastic Container Registry (ECR) to automatically scan container images for vulnerabilities before they are deployed.
+
+- Risk Scores and Prioritization:
+  - Inspector assigns a risk score to each vulnerability based on severity and exposure, helping you prioritize remediation efforts.
+
+- Integration with AWS Security Hub:
+  - Findings from Amazon Inspector can be forwarded to AWS Security Hub, allowing for centralized security management and streamlined incident response.
+
+- IAM-Driven Access Control:
+  - Permissions for managing and accessing Inspector can be controlled using IAM roles and policies, ensuring security professionals have appropriate access.
+
+Use Cases:
+
+- Continuously scan EC2 instances for vulnerabilities and misconfigurations.
+- Assess the security of containerized applications before they are deployed.
+- Automate vulnerability scanning and get prioritized insights into security risks in workloads.
+
+### Amazon Macie
+
+Amazon Macie is a fully managed data security and privacy service that uses machine learning to automatically discover, classify, and protect sensitive data in AWS. It helps you identify and protect sensitive information such as personally identifiable information (PII), financial data, intellectual property, and other confidential information stored in Amazon S3.
+
+- Sensitive Data Discovery:
+  - Macie continuously scans S3 buckets to identify and classify sensitive data such as credit card numbers, social security numbers, API keys, and more.
+
+- Automated Classification:
+  - Using machine learning, Macie automatically classifies data based on predefined patterns (e.g., PII), enabling you to quickly identify where sensitive data resides.
+
+- Data Visibility:
+  - Macie provides a detailed overview of your S3 environment, highlighting publicly accessible buckets, encryption status, and buckets containing sensitive data.
+
+- Alerts and Findings:
+  - Macie generates alerts based on data exposure risks, such as unintended public access to sensitive data or unencrypted data in your S3 buckets.
+
+- Custom Data Identifiers:
+  - Macie allows you to create custom data identifiers for specific types of sensitive information, enabling more fine-grained control over data classification.
+
+- Integration with AWS Security Hub:
+  - Macie findings can be integrated with AWS Security Hub for centralized security monitoring and incident response across your AWS environment.
+
+- Data Protection Compliance:
+  - Helps with compliance frameworks like GDPR, HIPAA, PCI DSS, and others by providing insights into where sensitive data is stored and how it is accessed.
+
+Use Cases:
+
+- Automatically discover and protect PII and other sensitive data in S3.
+- Monitor S3 buckets for unintended public exposure or misconfigured access controls.
+- Support data protection and privacy compliance by monitoring sensitive data storage and access patterns.
 
 ## TODO 5
 
