@@ -527,9 +527,31 @@
     - [Egress-Only Internet Gateway (EIGW)](#egress-only-internet-gateway-eigw)
     - [Networking Costs AWS](#networking-costs-aws)
     - [AWS Network Firewall](#aws-network-firewall)
-  - [TODO 7](#todo-7)
-  - [TODO 8](#todo-8)
-  - [TODO 9](#todo-9)
+  - [AWS Disaster Recovery Overview](#aws-disaster-recovery-overview)
+    - [Disaster Recovery Strategies in AWS](#disaster-recovery-strategies-in-aws)
+    - [AWS Services for Disaster Recovery](#aws-services-for-disaster-recovery)
+    - [Multi-Region and Multi-AZ Architectures](#multi-region-and-multi-az-architectures)
+    - [Best Practices for AWS Disaster Recovery](#best-practices-for-aws-disaster-recovery)
+    - [Database Migration Service (DMS)](#database-migration-service-dms)
+      - [Key Features of AWS DMS](#key-features-of-aws-dms)
+      - [How AWS DMS Works](#how-aws-dms-works)
+      - [AWS DMS Use Cases](#aws-dms-use-cases)
+      - [AWS DMS Architecture](#aws-dms-architecture)
+      - [AWS DMS Pricing](#aws-dms-pricing)
+      - [Best Practices for Using AWS DMS](#best-practices-for-using-aws-dms)
+  - [RDS \& Aurora Migrations](#rds--aurora-migrations)
+    - [AWS On-Premisses Strategies](#aws-on-premisses-strategies)
+    - [AWS Backup](#aws-backup)
+      - [Key Features of AWS Backup](#key-features-of-aws-backup)
+      - [AWS Backup Supported Services](#aws-backup-supported-services)
+      - [How AWS Backup Works](#how-aws-backup-works)
+      - [AWS Backup Use Cases](#aws-backup-use-cases)
+    - [AWS Application Migration Service (MGN) Overview](#aws-application-migration-service-mgn-overview)
+      - [Key Features of AWS Application Migration Service (MGN)](#key-features-of-aws-application-migration-service-mgn)
+      - [How AWS Application Migration Service Works](#how-aws-application-migration-service-works)
+      - [AWS MGN Use Cases](#aws-mgn-use-cases)
+      - [Benefits of AWS Application Migration Service](#benefits-of-aws-application-migration-service)
+    - [VMware Cloud on AWS](#vmware-cloud-on-aws)
   - [TODO 10](#todo-10)
   - [TODO 11](#todo-11)
   - [Useful AWS Resources](#useful-aws-resources)
@@ -5839,9 +5861,324 @@ Best Practices:
 - Use AWS Network Firewall alongside Security Groups and NACLs for a layered defense approach.
 - Monitor logs and traffic analytics to respond to anomalies or suspicious patterns.
 
-## TODO 7
-## TODO 8
-## TODO 9
+## AWS Disaster Recovery Overview
+
+Disaster Recovery (DR) in AWS involves strategies and services that ensure business continuity and data availability in the event of unexpected outages, system failures, or natural disasters. AWS offers a range of DR options based on different recovery time objectives (RTO) and recovery point objectives (RPO). Understanding the key concepts and techniques in DR is essential for passing the AWS Architect Associate exam and for real-world cloud architecture design.
+
+Key Concepts
+
+- Recovery Time Objective (RTO): The maximum acceptable downtime before a service is restored after a disaster. It defines how long the system can be unavailable.
+
+- Recovery Point Objective (RPO): The maximum acceptable amount of data loss measured in time. It defines how much data can be lost without significant impact on the business.
+
+- Business Continuity (BC): The overall process to ensure operations continue during and after a disaster.
+
+### Disaster Recovery Strategies in AWS
+
+AWS offers several disaster recovery strategies, each designed to meet different RTO and RPO needs. These strategies fall on a spectrum from low-cost, low-complexity solutions with longer recovery times to more expensive, high-complexity solutions with minimal downtime.
+
+- **Backup and Restore (Cost-Effective, High RTO/RPO)**
+  - Description: Data is regularly backed up to AWS (e.g., Amazon S3 or Glacier), and in the event of a disaster, you restore the data and rebuild the infrastructure.
+  - RTO/RPO: High (slow recovery, potential data loss depending on backup frequency).
+  - Key AWS Services:
+    - Amazon S3/Glacier: For storage of backup data.
+    - AWS Backup: For centralized backup management.
+    - Amazon RDS/Aurora: Provides automated backups for databases.
+  - Use Case: Low-cost option where long downtimes (hours or days) are acceptable, such as non-critical applications.
+
+- **Pilot Light (Medium RTO/RPO)**
+  - Description: Critical components of an application are always running in AWS (e.g., databases or minimal compute resources), but non-critical parts are turned off. In case of a disaster, you "turn on" the additional infrastructure to scale up.
+  - RTO/RPO: Moderate (minutes to hours to recover and minimal data loss).
+  - Key AWS Services:
+    - EC2 Auto Scaling: Quickly scale up EC2 instances during recovery.
+    - Amazon RDS/Aurora: Databases can run as the pilot light.
+    - Elastic Load Balancer (ELB): For directing traffic to active instances.
+  - Use Case: Applications that can tolerate some downtime but require faster recovery for critical components, like web apps or e-commerce systems.
+
+- **Warm Standby (Low RTO/RPO)**
+  - Description: A scaled-down version of your production environment runs in AWS, ready to scale up to full capacity in case of disaster.
+  - RTO/RPO: Low (minutes to less than an hour to restore service, minimal data loss).
+  - Key AWS Services:
+    - EC2/Elastic Beanstalk: Scaled-down compute instances running continuously.
+    - Amazon RDS/Aurora: Database replicas maintained for immediate failover.
+    - Amazon Route 53: DNS failover to switch traffic to the DR site.
+    - Amazon CloudWatch: Monitoring for health checks and triggering failover.
+  - Use Case: Important business applications where downtime and data loss are minimal but the infrastructure doesn't need to be at full capacity during normal operations.
+
+- **Multi-Site/Hot Standby (Lowest RTO/RPO)**
+  - Description: The most robust option, with a fully redundant environment running simultaneously in multiple regions. Traffic is distributed across both environments, and in the event of a disaster, the failover happens automatically.
+  - RTO/RPO: Near-zero (seconds to minutes recovery and minimal to no data loss).
+  - Key AWS Services:
+    - Amazon Route 53: Global DNS failover for routing traffic between multiple regions.
+    - Amazon RDS/Aurora Multi-AZ: Provides high availability and automatic failover for databases.
+    - Amazon EC2/Elastic Load Balancing: Distributes traffic across instances in different regions.
+    - Amazon CloudFront: Content Delivery Network (CDN) for distributing static and dynamic content globally.
+  - Use Case: Mission-critical applications requiring continuous availability and minimal downtime, like financial services or healthcare systems.
+
+### AWS Services for Disaster Recovery
+
+- Amazon Route 53
+  - Failover Routing: Enables you to route traffic to different endpoints based on health checks, allowing for automatic disaster recovery routing.
+  - Latency-Based Routing: Ensures users are directed to the most responsive endpoints, reducing downtime during regional outages.
+
+- Amazon RDS & Aurora
+  - Multi-AZ Deployments: Automatically replicates data across availability zones for high availability and failover support.
+  - Cross-Region Read Replicas: For disaster recovery, data can be asynchronously replicated across regions.
+
+- Amazon EC2
+  - Elastic Load Balancing (ELB): Ensures application availability by distributing traffic across healthy EC2 instances.
+  - Auto Scaling: Automatically adjusts the number of EC2 instances to meet demand during recovery.
+
+- Amazon S3 & Glacier
+  - Data Backup: S3 provides durable, scalable object storage, while Glacier offers long-term, low-cost storage for archival and backup.
+
+- AWS Elastic Disaster Recovery (AWS DRS)
+  - Automates failover and recovery processes by replicating your on-premises workloads to AWS, allowing you to quickly failover to AWS in the event of a disaster.
+
+- AWS Global Accelerator
+  - Provides low-latency failover by using global static IP addresses to route traffic to healthy endpoints across AWS regions, improving recovery time in multi-site architectures.
+
+- AWS Backup
+  - Centralized backup service for backing up and restoring data across AWS services such as RDS, EFS, DynamoDB, and EC2.
+
+### Multi-Region and Multi-AZ Architectures
+
+- Multi-AZ Deployments: Within a single AWS region, you can deploy your infrastructure across multiple Availability Zones to protect against data center failures. For example, RDS offers Multi-AZ replication, ensuring failover to a standby database in case of an outage.
+
+- Multi-Region Deployments: For extreme DR requirements, deploying across AWS regions ensures resiliency against regional outages. Services like Amazon S3 offer cross-region replication (CRR) to replicate data automatically between regions.
+
+### Best Practices for AWS Disaster Recovery
+
+- Data Replication: Use automated replication techniques such as Multi-AZ or Cross-Region Replication (CRR) for critical data storage systems.
+
+- Regular Testing: Perform regular disaster recovery drills to ensure that your failover mechanisms and backup systems are functioning properly.
+
+- Automate Failover: Leverage services like Amazon Route 53, ELB, and Auto Scaling to automate the failover process, reducing manual intervention and downtime.
+
+- Optimize Costs: Use cost-effective storage like Amazon S3 and Glacier for backups while utilizing on-demand resources for compute and scaling when disaster strikes.
+
+### Database Migration Service (DMS)
+
+AWS Database Migration Service (DMS) is a fully managed service that helps migrate databases to AWS securely and with minimal downtime. It supports migrations between on-premises databases, Amazon RDS, and other AWS database services. DMS ensures that the source database remains fully operational during the migration process, allowing for minimal disruption.
+
+#### Key Features of AWS DMS
+
+- Homogeneous and Heterogeneous Migrations:
+  - Homogeneous Migrations: Migrating between the same database engines (e.g., Oracle to Oracle or MySQL to MySQL).
+  - Heterogeneous Migrations: Migrating between different database engines (e.g., Oracle to Amazon Aurora or SQL Server to PostgreSQL). AWS DMS supports heterogeneous migrations through the use of the AWS Schema Conversion Tool (SCT), which converts the database schema from the source to the target.
+
+- Continuous Data Replication: DMS supports continuous data replication with high availability, keeping the target database synchronized with the source database. This ensures a seamless cutover when migration is completed.
+
+- Minimal Downtime: One of the major benefits of DMS is that it keeps the source database operational during the migration process. This is achieved through real-time data replication, which allows for minimal downtime during the cutover to the new database.
+
+- Migration Types:
+  - Full Load: Transfers the entire source database to the target in one go.
+  - Change Data Capture (CDC): Captures and transfers ongoing changes in the source database to the target after the full load is completed. This keeps the target database updated in near real-time.
+  - Ongoing Replication: Maintains continuous replication between the source and target databases for ongoing database synchronization.
+
+- Supported Database Engines: DMS supports a wide range of databases for both source and target, including:
+  - Amazon RDS: Aurora, MySQL, PostgreSQL, MariaDB, Oracle, and SQL Server.
+  - On-premises Databases: Oracle, SQL Server, MySQL, PostgreSQL, SAP ASE, IBM Db2, MongoDB, and others.
+  - Amazon DynamoDB, Amazon S3, and Amazon Redshift can also be used as targets.
+
+- Schema and Code Conversion with SCT: When migrating between heterogeneous databases, AWS Schema Conversion Tool (SCT) is used to automatically convert the source schema and code (such as stored procedures) to a format compatible with the target database. It also flags any manual conversions that may be necessary.
+
+- Data Validation: DMS provides data validation tools to ensure the data is correctly transferred to the target database. This process verifies that the data in the target database matches the source database both in terms of completeness and correctness.
+
+- Resiliency and High Availability: AWS DMS automatically provisions and manages the replication instance. It supports multi-AZ deployments to provide high availability and automated failover for mission-critical database migrations.
+
+#### How AWS DMS Works
+
+- Source Database: The database you want to migrate (can be on-premises or on AWS).
+- DMS Replication Instance: This is an AWS-managed instance that performs the actual migration. It connects to both the source and target databases and moves the data between them.
+- Target Database: The destination database to which you are migrating (can be on-premises or on AWS).
+- Endpoint Configuration: You define endpoints for both the source and target databases. AWS DMS then uses these endpoints to connect and migrate the data.
+
+The replication instance handles the full load and continuously applies changes (using CDC) until the databases are in sync.
+
+#### AWS DMS Use Cases
+
+- Database Migration to AWS: Migrate from on-premises databases to Amazon RDS or other AWS databases with minimal downtime.
+
+- Development and Testing: Use DMS to replicate production databases into lower environments (e.g., development or staging) to facilitate development, testing, or analytics workloads.
+
+- Consolidation and Modernization: Migrate databases from legacy systems to cloud-native or managed AWS services like Amazon Aurora or Amazon RDS to reduce operational overhead and modernize infrastructure.
+
+- Disaster Recovery (DR): Use DMS for cross-region replication to maintain an up-to-date copy of a production database in another region, improving resilience and enabling disaster recovery strategies.
+
+- Data Warehousing: Migrate transactional data from a relational database (e.g., MySQL or Oracle) into a data warehouse such as Amazon Redshift for analytics and business intelligence workloads.
+
+#### AWS DMS Architecture
+
+- Replication Instance: The DMS service requires a replication instance, which performs the data migration and replication tasks. This instance is fully managed by AWS, and you can scale it depending on the size of your migration.
+
+- Endpoints: Source and target endpoints define the databases you are migrating from and to. These must be configured with details such as database engine, connection information (host, port), and credentials.
+
+- Replication Tasks: These define how the migration is carried out. You can configure tasks for full load, CDC, or ongoing replication.
+
+#### AWS DMS Pricing
+
+AWS DMS pricing is based on several components:
+
+- Replication Instance: Billed per hour based on the instance type and capacity you choose.
+- Storage: Costs for backup storage for the replication instance and any additional storage used during migration.
+- Data Transfer: Charges for data transfer if migrating across regions or from on-premises to AWS.
+
+#### Best Practices for Using AWS DMS
+
+- Pre-Migration Assessment:
+  - Ensure your source database has enough resources to support the migration process.
+  - Use SCT to convert schemas ahead of time if you're performing a heterogeneous migration.
+
+- Test Migrations:
+  - Conduct test migrations in a sandbox environment to ensure that the migration process runs smoothly, particularly for large databases or critical systems.
+
+- Optimize Replication Instances:
+  - Choose the right replication instance type and size to ensure optimal performance for large-scale migrations.
+
+- Use Multi-AZ for High Availability:
+  - For critical migrations, enable multi-AZ deployments to ensure fault tolerance and prevent migration downtime.
+
+- Monitor Migration Progress:
+  - Use Amazon CloudWatch metrics to track the performance of your replication instance and AWS DMS task logs to troubleshoot issues.
+
+## RDS & Aurora Migrations
+
+
+
+### AWS On-Premisses Strategies
+
+- Ability to download Amazon Linux 2 AMI
+
+- VM Import/Export
+
+- AWS Application Discovery Service
+
+- AWS Database Migration Service (DMS)
+
+- AWS Server Migration Service (SMS)
+  - Incremental replication of live servers
+
+### AWS Backup
+
+AWS Backup is a fully managed service that simplifies and automates the process of backing up data across AWS services and on-premises environments. It provides a centralized solution to configure and manage backups, ensuring compliance, security, and retention policies. AWS Backup supports a variety of AWS services like Amazon EC2, Amazon RDS, Amazon EFS, Amazon DynamoDB, and more, allowing for consistent backup and restore processes across your AWS environment.
+
+#### Key Features of AWS Backup
+
+- Centralized Backup Management: AWS Backup provides a single, unified console to manage backup policies and monitor backup activities across AWS services and hybrid workloads.
+
+- Policy-Based Backup: You can define and enforce backup policies using AWS Backup Plans, which allow you to automate backup frequency, retention periods, and lifecycle rules (e.g., transitioning backups to cold storage).
+
+- Cross-Region and Cross-Account Backups: AWS Backup enables cross-region and cross-account backups, helping you implement disaster recovery strategies and meet compliance requirements by storing copies of your backups in separate AWS regions or accounts.
+
+- Automated Backup Scheduling: AWS Backup allows you to automate backup schedules, ensuring that all critical resources are backed up without the need for manual intervention.
+
+- Backup Monitoring and Reporting: You can track and monitor the status of your backups using AWS Backup’s dashboard, which provides visibility into job progress, errors, and compliance with backup policies. Additionally, integration with AWS CloudWatch provides metrics and alerts.
+
+- Compliance and Data Retention: AWS Backup helps you maintain compliance by enforcing backup policies, including retention rules and access controls. You can set policies to automatically delete backups after their retention period or transition them to lower-cost storage.
+
+- Backup Encryption: AWS Backup supports encryption for both in-transit and at-rest data, ensuring that your backups are protected using AWS Key Management Service (KMS) encryption keys.
+
+- Data Lifecycle Management: AWS Backup allows you to define data lifecycle policies to move older backups to cold storage (e.g., AWS Glacier or Glacier Deep Archive) after a specified time, reducing costs while maintaining data availability.
+
+- Application-Consistent Backups: AWS Backup integrates with AWS services like Amazon RDS and Amazon EFS to ensure that backups are application-consistent, meaning they capture the data in a consistent state, minimizing data loss during recovery.
+
+- Target Tags: Tag-based backup
+
+#### AWS Backup Supported Services
+
+AWS Backup supports the following services:
+
+- Amazon EC2 (Elastic Block Store - EBS volumes)
+- Amazon RDS (Relational Database Service)
+- Amazon DynamoDB
+- Amazon EFS (Elastic File System)
+- Amazon FSx for Lustre/Windows File Server
+- Amazon S3 (for backups using AWS Backup Vault Lock)
+
+#### How AWS Backup Works
+
+- Backup Plan: A policy that defines when and how backups are taken, including schedules and retention rules. Backup plans can be applied to multiple AWS resources.
+- Backup Vault: A secure location where backups are stored. Vaults are encrypted and can be replicated across regions for disaster recovery.
+- Backup Jobs: When a backup plan is executed, a backup job is created, which represents the process of copying data from a resource to a backup vault.
+- Restore Jobs: AWS Backup allows you to restore resources (e.g., EBS volumes, RDS databases) to their original state or to a new state in the event of a failure.
+
+#### AWS Backup Use Cases
+
+- Disaster Recovery: Automate backups across regions and accounts to ensure rapid recovery in the event of system failures or natural disasters.
+
+- Compliance and Auditing: Maintain regular backups to meet regulatory requirements for data protection and retention, and demonstrate compliance with automated reports.
+
+- Cost Optimization: Automate data lifecycle policies to move older backups to lower-cost storage tiers like AWS Glacier.
+
+- Hybrid Backup: Use AWS Backup to manage backups across both AWS services and on-premises environments using AWS Storage Gateway.
+
+### AWS Application Migration Service (MGN) Overview
+
+AWS Application Migration Service (MGN) simplifies and automates the migration of applications from physical, virtual, or cloud-based infrastructure to AWS. The service minimizes downtime and helps you move applications quickly without needing to make changes to the source servers, applications, or databases.
+
+#### Key Features of AWS Application Migration Service (MGN)
+
+- Lift-and-Shift Migrations: AWS MGN is designed to help you perform lift-and-shift (rehost) migrations, where applications are moved to AWS without needing to refactor them. This means the application remains unchanged while the underlying infrastructure moves to the cloud.
+
+- Continuous Data Replication: AWS MGN continuously replicates source servers to AWS, ensuring that the target environment remains in sync. This reduces downtime during migration and allows for an easy cutover once the migration is complete.
+
+- Minimal Downtime: Since AWS MGN performs continuous replication, the actual cutover (switching from the old environment to the new) can be done with minimal downtime, which is critical for applications requiring high availability.
+
+- Automated Testing: AWS MGN provides non-disruptive testing of your migrated applications in the target AWS environment. You can perform tests to ensure that your applications function correctly before finalizing the migration.
+
+- Scalable Migration: AWS MGN allows you to scale migrations for large numbers of servers across your environment, automating and orchestrating the process.
+
+- Operational Consistency: The service enables applications to operate in AWS just as they did in their source environments. It maintains the same configuration, system settings, and application dependencies.
+
+- Integrated with AWS Services: After migration, AWS MGN allows you to take advantage of AWS services, such as Amazon EC2 Auto Scaling, Amazon CloudWatch for monitoring, AWS Identity and Access Management (IAM), and AWS Elastic Load Balancing (ELB).
+
+- Types:
+  - Agent-less Discovery - some information gathered
+  - Agent-based Discovery - more information gathered
+
+#### How AWS Application Migration Service Works
+
+- Agent Installation: AWS MGN requires the installation of an agent on the source servers. This agent continuously replicates data to the AWS environment. The agent can be installed on physical or virtual servers, whether on-premises or in the cloud.
+
+- Continuous Replication: Once the agent is installed, it begins to replicate the server’s data to AWS. This replication occurs in near real-time, so the target AWS environment remains synchronized with the source.
+
+- Launch Target Instances: After the replication is complete, AWS MGN creates new Amazon EC2 instances in the target environment based on the replicated data.
+
+- Testing: Before finalizing the migration, you can launch test instances of your applications on AWS to verify that they operate as expected in the target environment.
+
+- Cutover: When ready, the source servers are stopped, and the target instances in AWS are launched as the new production environment. Since AWS MGN replicates the data continuously, the cutover process is quick, minimizing downtime.
+
+- Post-Migration Optimization: After the migration is complete, you can take advantage of AWS's scalability, elasticity, and cost-efficiency by optimizing resources (e.g., right-sizing EC2 instances, utilizing reserved instances).
+
+#### AWS MGN Use Cases
+
+- Data Center Migration: Migrate entire data centers from on-premises to AWS with minimal downtime using AWS MGN’s automated lift-and-shift process.
+
+- Disaster Recovery: Implement disaster recovery strategies by replicating on-premises or cloud servers to AWS and using AWS MGN to perform cutovers to AWS in case of failures in the primary environment.
+
+- Scaling Legacy Applications: Use AWS MGN to migrate legacy applications to AWS, where you can scale them more easily using AWS's infrastructure without needing to refactor the applications.
+
+- Hybrid Cloud Migration: Move parts of your workloads to AWS while keeping others on-premises, allowing for gradual adoption of cloud services.
+
+#### Benefits of AWS Application Migration Service
+
+- Automated Migration: AWS MGN automates most of the migration process, reducing manual intervention and errors.
+- Minimal Downtime: By replicating in real-time, AWS MGN ensures minimal downtime during migration cutover.
+- Scalability: AWS MGN can handle migrations for thousands of servers simultaneously.
+- Testing Capabilities: You can test your applications in AWS before performing the final cutover to ensure everything works as expected.
+
+### VMware Cloud on AWS
+
+VMware Cloud on AWS is a jointly developed service that integrates VMware's software-defined data center (SDDC) technology with the AWS cloud. It allows customers to run their VMware vSphere-based workloads natively on AWS, benefiting from both VMware's virtualization technology and AWS's global infrastructure.
+
+- Seamless Integration: Existing VMware environments can be extended to AWS without needing to refactor applications, allowing for hybrid cloud flexibility.
+- VMware Tools on AWS: Leverages familiar VMware tools such as vSphere, vSAN, and NSX, along with the vCenter management interface.
+- Scalability & Flexibility: Take advantage of AWS’s elastic infrastructure, scaling up or down based on demand.
+- Disaster Recovery & Backup: Use AWS regions for disaster recovery and backup, providing a high-availability solution.
+- Cost Efficiency: Migrate workloads to the cloud with minimal downtime, and use AWS's pay-as-you-go model to optimize costs.
+- Hybrid Cloud Management: Manage both on-premises and AWS-hosted VMware workloads using a single set of tools.
+
 ## TODO 10
 ## TODO 11
 
