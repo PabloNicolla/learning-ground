@@ -1,24 +1,35 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
+import { client } from '@/api/client'
+
 import type { RootState } from '@/app/store'
 
 import { selectCurrentUsername } from '@/features/auth/authSlice'
+import { createAppAsyncThunk } from '@/app/withTypes'
 
 interface User {
   id: string
   name: string
 }
 
-const initialState: User[] = [
-  { id: '0', name: 'Tianna Jenkins' },
-  { id: '1', name: 'Kevin Grant' },
-  { id: '2', name: 'Madison Price' },
-]
+export const fetchUsers = createAppAsyncThunk('users/fetchUsers', async () => {
+  const response = await client.get<User[]>('/fakeApi/users')
+  return response.data
+})
+
+const initialState: User[] = []
 
 const usersSlice = createSlice({
   name: 'users',
   initialState,
   reducers: {},
+  extraReducers(builder) {
+    builder.addCase(fetchUsers.fulfilled, (state, action) => {
+      // Immer lets us update state in two ways: either mutating the existing state value, or returning a new result
+      // BUT NEVER DO BOTH
+      return action.payload
+    })
+  },
 })
 
 export default usersSlice.reducer

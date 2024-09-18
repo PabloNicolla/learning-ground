@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 
 import App from './App'
 import { store } from './app/store'
+import { fetchUsers } from './features/users/usersSlice'
 
 import { worker } from './api/server'
 
@@ -14,6 +15,14 @@ import './index.css'
 async function start() {
   // Start our mock API server
   await worker.start({ onUnhandledRequest: 'bypass' })
+
+  /*
+  Notice that this is a valid way to fetch data on startup.
+  This actually starts the fetching process before we start rendering our React components,
+  so the data should be available sooner.
+  (Note that this principle can be applied by using React Router data loaders as well.)
+  */
+  store.dispatch(fetchUsers())
 
   const root = createRoot(document.getElementById('root')!)
 
