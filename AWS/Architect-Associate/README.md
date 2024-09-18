@@ -560,9 +560,9 @@
       - [EC2 Enhanced Networking](#ec2-enhanced-networking)
   - [AWS Other Services](#aws-other-services)
     - [AWS CloudFormation](#aws-cloudformation)
-    - [AWS SES](#aws-ses)
+    - [AWS Simple Email Service (SES)](#aws-simple-email-service-ses)
     - [AWS Pinpoint](#aws-pinpoint)
-    - [AWS SSM Session Manager](#aws-ssm-session-manager)
+    - [AWS SSM Session Manager (SSM)](#aws-ssm-session-manager-ssm)
     - [AWS Cost Explorer](#aws-cost-explorer)
     - [AWS Cost Anomaly Detection](#aws-cost-anomaly-detection)
     - [AWS Batch](#aws-batch)
@@ -571,9 +571,7 @@
     - [AWS ParallelCluster](#aws-parallelcluster)
   - [Useful AWS Resources](#useful-aws-resources)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
-  - [VPC](#vpc)
   - [AWS SECURITY TABLE](#aws-security-table)
-  - [TODO 11](#todo-11)
 
 ## Aws Infrastructure Intro
 
@@ -6227,15 +6225,181 @@ High Performance Computing (HPC) on AWS provides scalable, cost-effective, and f
 ## AWS Other Services
 
 ### AWS CloudFormation
-### AWS SES
+
+AWS CloudFormation is an Infrastructure-as-Code (IaC) service that enables you to model, provision, and manage AWS resources using templates. With CloudFormation, you can define your infrastructure (servers, databases, networking, etc.) in code, which can then be version-controlled and reused.
+
+Key Features:
+
+- Declarative Templates: Define AWS resources using JSON or YAML templates.
+- Automated Provisioning: Automatically creates and configures AWS resources according to your templates.
+- Drift Detection: Identifies changes to resources outside of CloudFormation.
+- Stack Management: Group related resources into stacks for easy management, update, and deletion.
+
+Use Cases:
+
+- Automate infrastructure deployment.
+- Maintain infrastructure consistency across multiple environments (e.g., dev, staging, production).
+- Simplify updates by modifying and redeploying stacks.
+
+### AWS Simple Email Service (SES)
+
+AWS Simple Email Service (SES) is a scalable, cost-effective, and flexible email service that allows businesses to send and receive emails. It's commonly used for marketing emails, transactional emails (like order confirmations), and notifications.
+
+Key Features:
+
+- Email Sending: Send bulk or transactional emails via SMTP or AWS SDK.
+- Email Receiving: Receive and process inbound emails.
+- High Deliverability: Built-in reputation management, authentication, and feedback loops.
+- Analytics & Reporting: Track email open rates, bounces, and complaints.
+- Security: Integrates with AWS Identity and Access Management (IAM) and supports domain verification.
+
+Use Cases:
+
+- Sending notifications or alerts.
+- Marketing campaigns (newsletters, promotions).
+- Automated customer engagement (account creation, password resets).
+
 ### AWS Pinpoint
-### AWS SSM Session Manager
+
+AWS Pinpoint is a flexible marketing communication service used for sending messages to customers across multiple channels, including email, SMS, push notifications, and voice. It helps businesses engage their users and manage personalized customer outreach campaigns.
+
+Key Features:
+
+- Multi-Channel Communication: Engage customers via email, SMS, push notifications, and voice messages.
+- Targeted Campaigns: Create user segments for personalized campaigns.
+- Analytics: Track customer engagement, including open rates and click-throughs.
+- Event-Driven Messaging: Trigger messages based on user actions or events (e.g., app usage, purchases).
+- A/B Testing: Optimize campaigns through experimentation.
+
+Use Cases:
+
+- Customer engagement (e.g., marketing promotions, onboarding).
+- Sending push notifications for mobile apps.
+- Multi-channel campaigns for product launches or updates.
+
+### AWS SSM Session Manager (SSM)
+
+AWS SSM Session Manager is a fully managed service within AWS Systems Manager that allows you to securely manage and access EC2 instances and on-premises servers without the need to open inbound ports, maintain bastion hosts, or manage SSH keys.
+
+Key Features:
+
+- Secure Access: Provides secure shell (SSH)-like access to instances without requiring open ports or SSH keys.
+- Auditing and Logging: All session activity can be logged to AWS CloudTrail, Amazon S3, or Amazon CloudWatch.
+- IAM Integration: Access controls are managed through IAM policies, allowing fine-grained permissions.
+- Session Manager Plugin: Allows access from the AWS Management Console, AWS CLI, or AWS SDKs.
+
+Use Cases:
+
+- Remote instance management without the need for a bastion host.
+- Troubleshooting and debugging servers securely.
+- Auditing user access and activity on managed instances.
+
 ### AWS Cost Explorer
+
+AWS Cost Explorer is a financial management tool that helps you visualize, understand, and manage your AWS costs and usage over time. It provides detailed insights into how much you're spending on different AWS services, enabling you to optimize costs.
+
+Key Features:
+
+- Cost and Usage Reports: Provides customizable reports for tracking AWS usage and costs over time.
+- Forecasting: Predict future costs based on historical data.
+- Resource Filtering: Filter cost data by service, account, region, tags, and more.
+- Savings Plan Recommendations: Get recommendations on purchasing Savings Plans to reduce costs.
+
+Use Cases:
+
+- Analyzing and understanding monthly AWS spending.
+- Identifying underutilized resources to optimize costs.
+- Budgeting and planning based on historical and forecasted usage.
+
 ### AWS Cost Anomaly Detection
+
+AWS Cost Anomaly Detection is a machine learning-based service that helps you identify and alert on unusual spending patterns in your AWS usage. It automatically detects anomalies in your AWS cost and usage and sends alerts to your team to investigate.
+
+Key Features:
+
+- Automated Anomaly Detection: Uses machine learning to detect unexpected cost spikes or usage patterns.
+- Cost Categories and Service Detection: Analyze cost anomalies by service, region, or cost categories.
+- Customizable Alerts: Configure alerts via email or Amazon SNS to notify you when anomalies are detected.
+- Multi-Account Support: Monitor anomalies across different AWS accounts in an organization.
+
+Use Cases:
+
+- Detecting unexpected cost increases or misconfigured services.
+- Monitoring cost spikes related to resource overprovisioning or misusage.
+- Receiving alerts for sudden increases in spending, helping control costs proactively.
+
 ### AWS Batch
+
+AWS Batch is a fully managed service that allows you to run batch computing jobs at any scale. It dynamically provisions the optimal quantity and type of compute resources (such as EC2 instances or Spot Instances) based on the volume and specific requirements of the batch jobs you submit.
+
+Key Features:
+
+- Automatic Resource Provisioning: Automatically scales compute resources based on job requirements.
+- Job Scheduling: Allows you to schedule and manage jobs in a queue.
+- EC2 Integration: Leverages EC2 and Spot Instances to minimize cost.
+- Multi-Node Support: Supports multi-node parallel jobs that require multiple EC2 instances.
+- Container Support: Works with Docker containers to run jobs in isolated environments.
+
+Use Cases:
+
+- Large-scale scientific computations.
+- Media processing (video transcoding).
+- Financial modeling and simulations.
+- Data transformations and analytics.
+
 ### AWS AppFlow
+
+AWS AppFlow is a fully managed integration service that enables you to automate the flow of data between AWS services and SaaS applications without writing code. It supports bi-directional data transfer between AWS and services like Salesforce, SAP, Google Analytics, and others.
+
+Key Features:
+
+- Data Integration: Easily connect AWS services (like S3, Redshift, and Snowflake) to third-party SaaS applications.
+- No-Code Data Flows: Set up data flows using a simple, no-code interface.
+- Secure Data Transfer: Supports encryption at rest and in transit, ensuring secure data movement.
+- Data Transformation: Allows for data filtering, mapping, and transformation during transfer.
+- Event-Driven Flows: Trigger data flows based on events or schedules.
+
+Use Cases:
+
+- Synchronizing data between CRM systems (e.g., Salesforce) and AWS services.
+- Automating reporting workflows by transferring data from analytics tools to Amazon Redshift or S3.
+- Building integrations between cloud apps and AWS with minimal development effort.
+
 ### AWS Amplify
+
+AWS Amplify is a set of tools and services designed to help developers build, deploy, and scale full-stack web and mobile applications. Amplify makes it easier to integrate AWS backend services (like authentication, storage, and APIs) into your apps while also handling front-end development, hosting, and CI/CD.
+
+Key Features:
+
+- Frontend & Backend Integration: Seamlessly connect web and mobile apps with AWS services (e.g., AppSync, Lambda, S3, Cognito).
+- Authentication: Easily add user sign-up, login, and multi-factor authentication to apps using Amazon Cognito.
+- Data Storage: Leverage S3 and DynamoDB for file and data storage.
+- API Integration: Create REST or GraphQL APIs using AWS AppSync and integrate them with the frontend.
+- Hosting & CI/CD: Full-stack app hosting with continuous integration and deployment for web applications.
+
+Use Cases:
+
+- Building mobile apps with backend services like authentication and data storage.
+- Rapidly deploying static web applications with serverless backends.
+- Integrating real-time data with GraphQL APIs.
+
 ### AWS ParallelCluster
+
+AWS ParallelCluster is an open-source tool that simplifies the deployment and management of High-Performance Computing (HPC) clusters on AWS. It abstracts much of the complexity of configuring an HPC environment, making it easy to deploy clusters with a variety of compute, networking, and storage configurations.
+
+Key Features:
+
+- Cluster Management: Automates the creation, management, and scaling of HPC clusters.
+- HPC Optimization: Supports HPC-specific needs like low-latency networking (Elastic Fabric Adapter), shared file systems (Amazon FSx for Lustre), and custom job schedulers (SLURM, SGE).
+- Flexible Compute: Automatically scales EC2 instances (including Spot Instances) based on workload demands.
+- Customizable: Users can configure their environment with custom AMIs, instance types, and networking configurations.
+- Cost-Effective: Enables users to use Spot Instances and other cost-saving options to minimize operational costs.
+
+Use Cases:
+
+- Computational fluid dynamics, genomics research, and other scientific simulations.
+- Large-scale data analysis and machine learning workloads.
+- Research and education institutions running complex simulations in fields like chemistry and physics.
 
 ## Useful AWS Resources
 
@@ -6261,14 +6425,6 @@ High Performance Computing (HPC) on AWS provides scalable, cost-effective, and f
 |                             | **Networking**                              |
 |                             | **Hardware/AWS Global Infrastructure**      |
 |                             | Regions, Availability Zones, Edge Locations |
-
-## VPC
-
-Internet gateway - To activate internet connectivity for your VPC
-
-Virtual Private Gateway - A virtual private gateway connects your VPC to another private network
-
-AWS Direct Connect - To establish a secure physical connection between your on-premises data center and your Amazon VPC, you can use AWS Direct Connect.
 
 ## AWS SECURITY TABLE
 
@@ -6328,11 +6484,3 @@ Explanation of Each Service
 - AWS Secrets Manager:
   - Function: Securely stores and retrieves sensitive information like API keys, passwords, and certificates.
   - Use Case: Manages access to secrets, rotating them automatically to enhance security.
-
-## TODO 11
-
-AWS Batch
-
-Amazon Lightsail
-
-![alt text](image.png)
