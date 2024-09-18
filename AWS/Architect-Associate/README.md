@@ -539,7 +539,7 @@
       - [AWS DMS Architecture](#aws-dms-architecture)
       - [AWS DMS Pricing](#aws-dms-pricing)
       - [Best Practices for Using AWS DMS](#best-practices-for-using-aws-dms)
-  - [RDS \& Aurora Migrations](#rds--aurora-migrations)
+    - [RDS \& Aurora Migrations](#rds--aurora-migrations)
     - [AWS On-Premisses Strategies](#aws-on-premisses-strategies)
     - [AWS Backup](#aws-backup)
       - [Key Features of AWS Backup](#key-features-of-aws-backup)
@@ -552,13 +552,28 @@
       - [AWS MGN Use Cases](#aws-mgn-use-cases)
       - [Benefits of AWS Application Migration Service](#benefits-of-aws-application-migration-service)
     - [VMware Cloud on AWS](#vmware-cloud-on-aws)
-  - [TODO 10](#todo-10)
-  - [TODO 11](#todo-11)
+  - [AWS Additional Architectures](#aws-additional-architectures)
+    - [Lambda, SNS, SQS](#lambda-sns-sqs)
+    - [S3 Event Notifications](#s3-event-notifications)
+    - [EventBridge](#eventbridge)
+    - [High Performance Computing (HPC)](#high-performance-computing-hpc)
+      - [EC2 Enhanced Networking](#ec2-enhanced-networking)
+  - [AWS Other Services](#aws-other-services)
+    - [AWS CloudFormation](#aws-cloudformation)
+    - [AWS SES](#aws-ses)
+    - [AWS Pinpoint](#aws-pinpoint)
+    - [AWS SSM Session Manager](#aws-ssm-session-manager)
+    - [AWS Cost Explorer](#aws-cost-explorer)
+    - [AWS Cost Anomaly Detection](#aws-cost-anomaly-detection)
+    - [AWS Batch](#aws-batch)
+    - [AWS AppFlow](#aws-appflow)
+    - [AWS Amplify](#aws-amplify)
+    - [AWS ParallelCluster](#aws-parallelcluster)
   - [Useful AWS Resources](#useful-aws-resources)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
   - [VPC](#vpc)
   - [AWS SECURITY TABLE](#aws-security-table)
-  - [TODO 11](#todo-11-1)
+  - [TODO 11](#todo-11)
 
 ## Aws Infrastructure Intro
 
@@ -6042,9 +6057,7 @@ AWS DMS pricing is based on several components:
 - Monitor Migration Progress:
   - Use Amazon CloudWatch metrics to track the performance of your replication instance and AWS DMS task logs to troubleshoot issues.
 
-## RDS & Aurora Migrations
-
-
+### RDS & Aurora Migrations
 
 ### AWS On-Premisses Strategies
 
@@ -6179,8 +6192,50 @@ VMware Cloud on AWS is a jointly developed service that integrates VMware's soft
 - Cost Efficiency: Migrate workloads to the cloud with minimal downtime, and use AWS's pay-as-you-go model to optimize costs.
 - Hybrid Cloud Management: Manage both on-premises and AWS-hosted VMware workloads using a single set of tools.
 
-## TODO 10
-## TODO 11
+## AWS Additional Architectures
+
+### Lambda, SNS, SQS
+
+Send queue items that failed to be processed to a DLQ (Dead letter queue) for later processing/analysis
+
+### S3 Event Notifications
+
+- S3 directly to:
+  - Lambda
+  - SQS
+  - SNS
+  - EvenBridge (more control + all Events)
+
+### EventBridge
+
+Can Intercept any API call inside AWS when combined with CloudTrail
+
+### High Performance Computing (HPC)
+
+High Performance Computing (HPC) on AWS provides scalable, cost-effective, and flexible infrastructure for running compute-intensive workloads. AWS allows organizations to run large-scale simulations, scientific calculations, and data analysis using HPC clusters without the need for significant upfront investment in hardware.
+
+#### EC2 Enhanced Networking
+
+- Higher bandwidth, Higher PPS (packets per second) and lower latency
+  - Option 1: Elastic Network AdapterL - up to 100Gbps
+  - Option 2: Intel 82599VF up to 10Gbps
+
+- Elastic Fabric Adapter (EFA)
+  - Improved ENA for Linux
+  - Bypass OS features allowing for faster communication
+
+## AWS Other Services
+
+### AWS CloudFormation
+### AWS SES
+### AWS Pinpoint
+### AWS SSM Session Manager
+### AWS Cost Explorer
+### AWS Cost Anomaly Detection
+### AWS Batch
+### AWS AppFlow
+### AWS Amplify
+### AWS ParallelCluster
 
 ## Useful AWS Resources
 
