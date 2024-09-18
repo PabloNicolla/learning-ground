@@ -492,12 +492,51 @@
     - [Amazon GuardDuty](#amazon-guardduty)
     - [Amazon Inspector](#amazon-inspector)
     - [Amazon Macie](#amazon-macie)
-  - [TODO 5](#todo-5)
+  - [AWS VPC](#aws-vpc)
+    - [CIDR](#cidr)
+    - [Public IP vs Private IP](#public-ip-vs-private-ip)
+    - [Amazon VPC (Virtual Private Cloud) Overview](#amazon-vpc-virtual-private-cloud-overview)
+    - [Default VPC](#default-vpc)
+    - [Custom VPC](#custom-vpc)
+    - [Subnets](#subnets)
+    - [Route Tables](#route-tables)
+      - [Default Route Table vs Custom Route Table](#default-route-table-vs-custom-route-table)
+      - [Route Tables Best Practices](#route-tables-best-practices)
+    - [Internet Gateway (IGW)](#internet-gateway-igw)
+    - [NAT Gateway/Instance](#nat-gatewayinstance)
+    - [Security Groups and Network ACLs](#security-groups-and-network-acls)
+    - [Ephemeral Ports](#ephemeral-ports)
+    - [Elastic IP (EIP)](#elastic-ip-eip)
+    - [Peering and Transit Gateway](#peering-and-transit-gateway)
+    - [Endpoints](#endpoints)
+      - [Endpoints Deep-Dive](#endpoints-deep-dive)
+        - [Types of VPC Endpoints](#types-of-vpc-endpoints)
+        - [Benefits of VPC Endpoints](#benefits-of-vpc-endpoints)
+    - [Comparison of Default vs. Custom VPC](#comparison-of-default-vs-custom-vpc)
+    - [Additional Features of VPC](#additional-features-of-vpc)
+    - [Best Practices for VPC Design](#best-practices-for-vpc-design)
+    - [AWS Bastion Hosts](#aws-bastion-hosts)
+    - [Site-to-Site VPN, Virtual Private Gateway \& Customer Gateway](#site-to-site-vpn-virtual-private-gateway--customer-gateway)
+      - [AWS VPN CloudHub](#aws-vpn-cloudhub)
+    - [Direct Connect (DX) \& Direct Connect Gateway](#direct-connect-dx--direct-connect-gateway)
+      - [Differences between Dedicated and Hosted connections](#differences-between-dedicated-and-hosted-connections)
+    - [Direct Connect + Site-to-Site VPN](#direct-connect--site-to-site-vpn)
+    - [Transit Gateway (TGW)](#transit-gateway-tgw)
+    - [VPC Traffic Mirroring](#vpc-traffic-mirroring)
+    - [IPv6 for VPC](#ipv6-for-vpc)
+    - [Egress-Only Internet Gateway (EIGW)](#egress-only-internet-gateway-eigw)
+    - [Networking Costs AWS](#networking-costs-aws)
+    - [AWS Network Firewall](#aws-network-firewall)
+  - [TODO 7](#todo-7)
+  - [TODO 8](#todo-8)
+  - [TODO 9](#todo-9)
+  - [TODO 10](#todo-10)
+  - [TODO 11](#todo-11)
   - [Useful AWS Resources](#useful-aws-resources)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
   - [VPC](#vpc)
   - [AWS SECURITY TABLE](#aws-security-table)
-  - [TODO 11](#todo-11)
+  - [TODO 11](#todo-11-1)
 
 ## Aws Infrastructure Intro
 
@@ -1826,7 +1865,7 @@ perform bulk operations in single request.
   - restore from S3 Glacier
   - Invoke Lambda functions with custom actions on each object
 
-```
+```text
 S3 Inventory ==Object List Report==> S3 Select (Filter) ==filtered list==> S3 Batch Operations ====> Processed Objects
                                                                                   /\
                                                                                   ||
@@ -5370,7 +5409,441 @@ Use Cases:
 - Monitor S3 buckets for unintended public exposure or misconfigured access controls.
 - Support data protection and privacy compliance by monitoring sensitive data storage and access patterns.
 
-## TODO 5
+## AWS VPC
+
+### CIDR
+
+[CIDR-README](../../IT/Network/CIDR/README.md)
+
+### Public IP vs Private IP
+
+[Public IP vs Private IP-README](<../../IT/Network/Public vs Private IPs/README.md>)
+
+### Amazon VPC (Virtual Private Cloud) Overview
+
+Amazon VPC (Virtual Private Cloud) is a foundational networking service in AWS that allows you to define your own isolated network within the AWS cloud. A VPC can host your EC2 instances, databases, and other AWS services, providing a secure and scalable environment for your resources.
+
+VPCs allow for customized networking configuration, enabling control over IP addressing, subnets, routing, and security. AWS provides a default VPC for convenience, but users can also create custom VPCs with more granular control.
+
+- MAX VPCs per AWS region = 5 (soft limit)
+- MAX CIDRs per VPC = 5
+  - MIN size /28 (16 IPs)
+  - MAX size /16 (65536 IPs)
+
+> [!IMPORTANT]
+> VPC Peering does not support transitive peering
+
+### Default VPC
+
+When you create an AWS account, AWS automatically provides a default VPC in each region. It’s pre-configured to make it easy for new users to start launching resources without needing to understand deep networking concepts.
+
+- Default VPC Characteristics:
+  - Automatically created in each AWS region.
+  - Has a CIDR block of 172.31.0.0/16, which provides 65,536 IP addresses.
+  - One subnet is automatically created in each Availability Zone (AZ) within the region.
+  - Subnets are public by default, meaning instances within the subnets can access the internet (via an Internet Gateway).
+  - Internet Gateway (IGW) is attached to the VPC by default, allowing instances to communicate with the internet.
+  - All instances launched in the default VPC get both a private IP and a public IP by default, enabling direct internet access.
+  - A default security group is provided, allowing inbound traffic only for SSH, RDP, and ICMP and allowing all outbound traffic.
+  - Route table with an entry for the internet via the Internet Gateway.
+
+The default VPC is simple to use but provides **limited customization**.
+
+### Custom VPC
+
+Creating a custom VPC gives you more control over your network configuration, allowing you to design the network layout and security according to your application requirements. Here are key components and configurations of a custom VPC:
+a. VPC CIDR Block
+
+- The CIDR block defines the IP address range for the VPC. You can choose a block between /16 (65,536 addresses) and /28 (16 addresses).
+  - Example: 10.0.0.0/16 would allow up to 65,536 IPs in your custom VPC.
+- Important Considerations:
+  - Choose a CIDR block that doesn’t overlap with other VPCs or on-premise networks if using a hybrid architecture.
+  - Avoid using ranges that might conflict with local networks (e.g., home or office networks) to avoid connectivity issues.
+
+### Subnets
+
+- Subnets are segments of the VPC where resources are deployed. They divide the IP address range of the VPC into smaller, isolated parts.
+  - Public Subnets: Subnets that are connected to the internet through an Internet Gateway. Instances in these subnets can be accessed from the internet.
+  - Private Subnets: Subnets that do not have direct access to the internet. Instances in these subnets can access the internet via a NAT Gateway or remain entirely isolated.
+  - A VPC typically spans multiple subnets in different Availability Zones for high availability and fault tolerance.
+
+- AWS reserves 5 IP addresses (first 4 and last 1) in each subnet
+- EXAMPLE for CIDR: 10.0.0.0/24:
+  - 10.0.0.0 - Network Address
+  - 10.0.0.1 - Reserved for VPC router
+  - 10.0.0.2 - Reserved for Amazon-provided DNS
+  - 10.0.0.4 - Reserved for Future use
+  - 10.0.255.255 - Network Broadcast Address (Since AWS does not support it)
+
+### Route Tables
+
+- Route tables control the network traffic flow within the VPC. Each subnet is associated with a route table, which contains rules (routes) that determine where network traffic is directed.
+  - Public Route Table: Typically has a route pointing traffic to the Internet Gateway (IGW).
+  - Private Route Table: Routes traffic to a NAT Gateway or keeps it within the VPC for communication between private subnets.
+
+#### Default Route Table vs Custom Route Table
+
+- Default Route Table:
+  - Automatically created with a VPC.
+  - All subnets within the VPC are implicitly associated with it unless explicitly changed.
+  - Typically allows local communication within the VPC but doesn't have routes for external traffic (internet or VPN) unless an Internet Gateway (IGW) or Virtual Private Gateway (VGW) is attached.
+
+- Custom Route Table:
+  - User-defined, offering more granular control over traffic.
+  - Can be associated with specific subnets, allowing different routing rules for different subnets (e.g., public/private).
+  - Necessary for more complex networking setups, such as private subnets with traffic routed through NAT Gateways, VPNs, or specific endpoints.
+
+#### Route Tables Best Practices
+
+- Use Custom Route Tables for private subnets with restricted internet access (via NAT) or for routing to VPC Endpoints.
+- Separate Route Tables for public and private subnets for clearer management.
+- Monitor Route Tables to avoid conflicts or unintended routing behavior (especially when using multiple VPC peering connections or transit gateways).
+
+### Internet Gateway (IGW)
+
+- An Internet Gateway is a VPC component that allows communication between instances in the VPC and the internet. It is used for public subnets.
+  - Only one Internet Gateway can be attached to a VPC.
+  - For instances in a public subnet to have internet access, a route to the Internet Gateway must exist in the route table.
+
+### NAT Gateway/Instance
+
+- NAT Gateway or NAT Instance enables instances in private subnets to access the internet for updates, patches, or external APIs without exposing them to inbound internet traffic.
+  - NAT Gateway is a managed service that offers higher availability and scalability compared to a NAT Instance.
+    - Utilizes one Elastic IP
+    - Pay per hour and bandwidth (up to 100 Gbps)
+    - cannot be used by EC2 instances in the same subnet (only from other subnets)
+      - Requires an IGW (Private Subnet => NATGW -> IGW)
+    - Create multiple NATGW in multiple AZs for HA
+  - NAT Instance is an EC2 instance configured as a NAT but requires manual setup and maintenance.
+
+### Security Groups and Network ACLs
+
+- Security Groups act as virtual firewalls for EC2 instances, controlling both inbound and outbound traffic. By default, they allow all outbound traffic but block all inbound traffic unless explicitly allowed.
+  - **Security groups** are **stateful**, meaning return traffic for allowed connections is automatically permitted.
+- Network Access Control Lists (NACLs) provide another layer of security at the subnet level.
+  - **NACLs** are **stateless**, meaning both inbound and outbound rules must be configured explicitly.
+  - One per Subnet
+  - Default NACL allows everything outbound and inbound
+
+### Ephemeral Ports
+
+Ephemeral Ports are short-lived, temporary ports used by clients when they initiate communication with a server.
+
+- Client: When a client sends a request to a server (which listens on a fixed port, e.g., 80 for HTTP or 443 for HTTPS), the client doesn't use a fixed port. Instead, it picks a random ephemeral port (from a range, typically 1024–65535) for the duration of the communication.
+
+- Server: The server responds to the client using the same ephemeral port the client used to send the request. The client listens on this port to receive the response.
+
+- Purpose: This allows multiple clients to communicate with the same server, as each connection uses a different client-side ephemeral port, even if they all connect to the same server port.
+
+Ephemeral ports are automatically recycled after the connection ends.
+
+- NACLs need to allow inbound in the static/fixed server port
+- NACLs need to allow outbound in the entire range of ephemeral ports since it is random
+
+### Elastic IP (EIP)
+
+- An Elastic IP is a static public IPv4 address that you can allocate to your AWS account and associate with instances, NAT Gateways, or other resources.
+  - Elastic IPs are fixed public IPs, unlike dynamically assigned public IPs, which may change if the instance is stopped and started.
+
+### Peering and Transit Gateway
+
+- VPC Peering: A mechanism to connect two VPCs privately so that resources in each can communicate with each other. VPC peering can be done across regions or accounts.
+- AWS Transit Gateway: A hub-and-spoke model to connect multiple VPCs, on-premise data centers, or other cloud environments. It simplifies complex network architectures where multiple VPCs need to communicate with each other.
+
+### Endpoints
+
+- VPC Endpoints enable secure, private connectivity to AWS services like S3 or DynamoDB without routing traffic over the internet.
+  - Gateway Endpoints: Used for services like S3 and DynamoDB.
+  - Interface Endpoints: For other AWS services and privately hosted APIs.
+
+#### Endpoints Deep-Dive
+
+VPC Endpoints provide a way for resources within a VPC to privately connect to AWS services like S3, DynamoDB, or Lambda without routing traffic through the public internet. This improves security, reduces latency, and can potentially lower costs by avoiding NAT Gateways or Internet Gateways.
+
+- Bypassing the Internet: Normally, if an EC2 instance inside a VPC wants to access services like S3, it would need to send its request to the service’s public endpoint (e.g., s3.amazonaws.com). This traffic would leave the VPC, traverse the internet (via an Internet Gateway or NAT), and return to the AWS service endpoint. This exposes the traffic to potential vulnerabilities and incurs additional costs for NAT Gateway usage.
+
+- Private Connection with VPC Endpoints:
+  - VPC Endpoints provide a private connection between your VPC and other AWS services, using the AWS backbone network instead of the internet.
+  - When an endpoint is created, a special route is added to the VPC’s route table that directs traffic to the specified AWS service via the private connection.
+  - This means that the instances don’t need a public IP, and the traffic never leaves the secure VPC environment.
+
+##### Types of VPC Endpoints
+
+- Gateway Endpoints (for S3 and DynamoDB):
+  - These create a gateway that routes traffic to services like S3 and DynamoDB.
+  - They are configured in the route table, and traffic from the instances is automatically routed to the specified AWS service via this endpoint.
+  - free
+
+- Example:
+  - You create a gateway endpoint for S3.
+  - In the route table, you add an entry like Destination: 0.0.0.0/0 -> Target: Gateway Endpoint.
+  - Any request made to S3 from within the VPC is routed directly through the endpoint without traversing the internet.
+
+- Interface Endpoints (for other AWS services):
+  - For services other than S3 and DynamoDB, Interface Endpoints are used. They create an Elastic Network Interface (ENI) in your VPC, which serves as the entry point for traffic to the AWS service.
+  - Interface Endpoints are essentially private IPs that represent AWS services in your VPC. When instances try to connect to those services, they use this private IP, and the connection remains within the AWS network.
+
+- Example:
+  - You create an interface endpoint for AWS Lambda.
+  - This creates an ENI in your subnet, and your instances connect to this ENI when making requests to Lambda. The traffic does not go out to the public internet.
+
+##### Benefits of VPC Endpoints
+
+- Security: Keeps traffic private and within AWS, eliminating exposure to public internet threats.
+- Cost Efficiency: Reduces or eliminates the need for NAT Gateways, Internet Gateways, and public IP addresses, which can incur additional charges.
+- Performance: Lower latency due to keeping traffic within the AWS network backbone, which is typically faster and more reliable than the internet.
+
+### Comparison of Default vs. Custom VPC
+
+| Feature          | Default VPC                             | Custom VPC                               |
+| ---------------- | --------------------------------------- | ---------------------------------------- |
+| Creation         | Automatically created                   | Manually created by the user             |
+| IP Range (CIDR)  | 172.31.0.0/16                           | User-defined                             |
+| Subnets          | Public subnets in every AZ              | User-defined (public and private)        |
+| Internet Gateway | Automatically attached                  | Manually attached                        |
+| NAT Gateway      | Not included by default                 | Manually created for private subnets     |
+| Security Groups  | Pre-configured                          | Fully customizable                       |
+| Route Tables     | Pre-configured with routes to IGW       | Fully customizable                       |
+| Cost             | Free (until additional resources added) | Depending on usage of subnets, NAT, etc. |
+
+### Additional Features of VPC
+
+- VPC Flow Logs: Enables logging of traffic data going in and out of your VPC, useful for auditing and troubleshooting network connectivity.
+- VPC Sharing: Allows multiple AWS accounts to create resources within the same VPC for cost optimization and centralizing network management.
+- Multi-AZ Deployment: It is common practice to deploy subnets across multiple Availability Zones for high availability and fault tolerance.
+- VPC Migration: The AWS Application Migration Service (AMS) can help you migrate your on-premise network to a VPC setup.
+
+### Best Practices for VPC Design
+
+- Use multiple Availability Zones for high availability.
+- Separate public and private subnets to isolate resources (e.g., web servers in public subnets, databases in private subnets).
+- Limit the CIDR block size to what is needed (e.g., /24 instead of /16) to avoid running out of IP addresses.
+- Use VPC endpoints to keep communication with AWS services private and reduce exposure to the internet.
+- Implement security measures such as NACLs and security groups for fine-grained traffic control.
+
+### AWS Bastion Hosts
+
+A Bastion Host is a special-purpose server designed to provide secure access to instances in private subnets. It acts as a jump box for administrators, allowing them to connect to instances that don't have direct internet access.
+
+- Purpose:
+  - Isolates and secures SSH or RDP access to private instances.
+  - Reduces attack surface by centralizing access through one hardened host.
+- Best Practices:
+  - Place the Bastion Host in a Public Subnet with an elastic IP, allowing internet-based access.
+  - Enable Multi-Factor Authentication (MFA) and use IAM roles for access control.
+  - Limit Security Group rules to allow inbound SSH/RDP only from trusted IPs.
+  - Use Session Manager (via AWS Systems Manager) as an alternative to eliminate the need for a publicly accessible bastion host.
+
+AWS also offers Managed NAT Gateways as an alternative for instances requiring outbound internet access, but not direct inbound access.
+
+- EC2 instances' security group must allow Bastion Connections
+- Bastion must allow SSH (port 22) connection from the internet
+
+### Site-to-Site VPN, Virtual Private Gateway & Customer Gateway
+
+Site-to-Site VPN:
+
+- Purpose: Allows secure communication between an on-premises data center and an AWS VPC using the internet.
+- How it works: Encrypted traffic flows over the internet using IPsec (Internet Protocol Security) to secure the connection. Ideal for connecting remote networks to AWS securely.
+
+Virtual Private Gateway (VGW):
+
+- Role: This is the AWS side of the Site-to-Site VPN connection.
+- How it works: VGW is attached to your VPC and serves as the entry point for encrypted traffic. It routes traffic to and from your on-premises network through the VPN tunnel.
+- Route Propagation (Route Table) must be enabled so connection works
+
+Customer Gateway (CGW):
+
+- Role: Represents the customer’s on-premises device or software that the AWS VPN connects to.
+- How it works: It’s essentially a VPN-capable device (e.g., firewall or router) on your end that communicates with the Virtual Private Gateway on AWS.
+
+Use Case:
+
+- Secure connection between AWS VPC and on-premises environments without the need for a dedicated physical connection.
+
+#### AWS VPN CloudHub
+
+- more than one Customer Gateways
+- one Virtual Private Gateway
+- This allows on-premisses Customer Gateways to communicate with each other through the Virtual Private Gateway.
+
+### Direct Connect (DX) & Direct Connect Gateway
+
+Direct Connect:
+
+- Purpose: Provides a dedicated, high-speed private connection between on-premises infrastructure and AWS.
+- How it works: Uses a private fiber connection bypassing the public internet, leading to lower latency and more reliable performance. Direct Connect connects your on-premises router to an AWS Direct Connect location using 802.1q VLANs.
+
+Direct Connect Gateway (DCGW):
+
+- Role: Allows you to connect one or more VPCs located in different AWS regions to a single Direct Connect connection.
+- How it works: Provides a centralized routing hub, simplifying multi-VPC connectivity. This is ideal for multi-region architectures, as it can route traffic to various AWS regions through a single Direct Connect link.
+
+Use Case:
+
+- High-bandwidth workloads, consistent network performance, or hybrid cloud setups requiring minimal latency between on-premises infrastructure and AWS.
+
+Notes:
+
+- DX takes more than 1 month to establish a new connection
+- private connection (not encrypted buy default)
+- can have more than 1 DX in the same VPC or different VPCs
+
+#### Differences between Dedicated and Hosted connections
+
+- Dedicated Connection:
+  - Provisioning: AWS provisions a physical, dedicated fiber connection between your on-premises network and AWS.
+  - Bandwidth Options: Typically available in 1 Gbps or 10 Gbps capacity.
+  - Process: Requires you to request the connection from AWS, and then work with an AWS Direct Connect partner to establish the physical link.
+  - Use Case: Best for organizations needing very high bandwidth and complete control over their physical connection.
+  - Pricing: You pay AWS for the port and data transfer.
+
+- Hosted Connection:
+  - Provisioning: A Direct Connect Partner provides you a portion of their own connection to AWS. You can request smaller bandwidth options (e.g., 50 Mbps to 500 Mbps).
+  - Bandwidth Options: Flexible options starting from 50 Mbps up to 10 Gbps.
+  - Process: Easier to set up since the Direct Connect Partner manages the physical connection. You only request the bandwidth you need.
+  - Use Case: Ideal for companies that don't need massive bandwidth (e.g., 500 Mbps), or want more flexible/cheaper bandwidth options.
+  - Pricing: You pay the Direct Connect Partner for bandwidth and AWS for data transfer.
+
+### Direct Connect + Site-to-Site VPN
+
+Hybrid Solution:
+
+- Combines Direct Connect (for low-latency, high-bandwidth communication) with Site-to-Site VPN (for encryption).
+- Direct Connect alone doesn't encrypt traffic, so VPN encryption is layered over Direct Connect to ensure secure data transmission.
+
+How it works:
+
+- Traffic flows over the dedicated Direct Connect connection.
+- Site-to-Site VPN provides additional encryption on top of the private connection, securing the data end-to-end.
+
+Use Case:
+
+- When you need both high-speed and secure connections, particularly for compliance reasons or sensitive data transmissions, this hybrid approach is beneficial.
+- Backup connection
+
+### Transit Gateway (TGW)
+
+Purpose:
+
+- Simplifies and centralizes network connectivity by allowing you to connect multiple VPCs, on-premises networks, and even peered VPCs through a single gateway.
+
+How it works:
+
+- Acts as a hub-and-spoke model where the Transit Gateway is the central hub.
+- It enables you to connect multiple VPCs and VPNs together using a single transit point, rather than configuring complex peering connections between each VPC.
+- Route Tables will define the connections that can be established
+
+Key Features:
+
+- Scalability: Transit Gateway can manage large-scale architectures.
+- Cost Efficiency: Reduces complexity and network overhead (fewer peering links).
+- Multi-region: Can work across different AWS regions.
+- supports multi-cast
+
+Use Case:
+
+- Enterprises that manage multiple VPCs or hybrid setups where on-premises networks need to communicate with many VPCs efficiently.
+
+### VPC Traffic Mirroring
+
+Purpose:
+
+- Enables you to capture and inspect network traffic within your VPC. This is useful for monitoring, troubleshooting, and security analytics.
+
+How it works:
+
+- Mirrors network traffic from EC2 instances and sends it to monitoring or analysis tools, such as intrusion detection systems (IDS) or log management tools.
+- You can specify filtering rules to control which traffic is mirrored (e.g., all traffic or only specific traffic).
+
+Key Features:
+
+- Non-intrusive: Doesn’t impact the normal traffic flow.
+- Granular Control: You can define exactly what traffic to mirror.
+- Security: Helps identify network threats or performance bottlenecks by inspecting the traffic in real-time.
+
+Use Case:
+
+- Real-time security analysis, troubleshooting network issues, or regulatory compliance auditing.
+
+### IPv6 for VPC
+
+Purpose:
+
+- Enables the use of IPv6 addresses in your VPC, providing a nearly infinite address space and helping address the growing global need for more IP addresses.
+
+How it works:
+
+- AWS supports dual-stack mode, meaning instances within a VPC can have both IPv4 and IPv6 addresses. This allows seamless communication over IPv6 while still supporting legacy IPv4 traffic.
+
+Key Features:
+
+- Dual-stack mode: Instances can have both IPv4 and IPv6 addresses.
+- Global Addressing: Unlike IPv4, which uses private IPs internally, IPv6 addresses are global and can communicate directly over the internet.
+- Security with SGs/NACLs: Just like IPv4, you can control traffic using security groups and NACLs for IPv6 traffic.
+
+Use Case:
+
+- Organizations transitioning to IPv6 or those that require a larger address space for the growing number of devices and services connected to their AWS environments.
+
+### Egress-Only Internet Gateway (EIGW)
+
+An Egress-Only Internet Gateway (EIGW) is a VPC component that allows outbound-only IPv6 traffic from instances in your VPC to the internet. It blocks any inbound traffic from the internet, ensuring that resources can access the internet without being exposed to unsolicited inbound connections.
+
+- Purpose: Provides outbound internet access for IPv6-enabled resources while preventing external entities from initiating connections to those instances.
+- Use Case: Ideal for scenarios where instances need to download updates or send data to the internet without exposing themselves to potential threats from incoming traffic.
+
+EIGW is the IPv6 equivalent of a NAT Gateway but for outbound-only traffic.
+
+### Networking Costs AWS
+
+- Into VPC - Free
+- Inside VPC - Free
+- Between AZs
+  - Private IP - $0.01 per GB
+  - Public IP - $0.02 per GB
+- Between Regions - $0.02 per GB
+
+### AWS Network Firewall
+
+AWS Network Firewall is a managed network security service designed to protect your Virtual Private Cloud (VPC) environments by allowing you to define and enforce security policies at the network level.
+
+Allows you to protect and control traffic in your VPC from layer 3 to layer 7
+
+Key Features:
+
+- Stateful and Stateless Packet Filtering: Supports both types of firewall rules to inspect and control incoming/outgoing traffic.
+  - Stateful filtering tracks the state of active connections and applies rules based on connection context.
+  - Stateless filtering applies rules per packet, without regard to previous traffic.
+
+- Deep Packet Inspection: Enables advanced filtering capabilities, including inspecting protocols and payloads to detect threats like malware or intrusions.
+
+- Managed Threat Intelligence Feeds: Integrates with AWS threat intelligence to block known bad IP addresses or domains.
+
+- Scalability: Automatically scales to handle traffic without worrying about capacity planning or performance bottlenecks.
+
+How It Works:
+
+- Deployment: AWS Network Firewall is deployed at the VPC level. It operates like a virtual appliance that inspects traffic flows.
+- Policy Management: You create firewall policies that define rules and behavior, such as allowing or blocking specific IP addresses, protocols, or ports.
+- Integration: Integrates with services like AWS CloudWatch for logging and monitoring, making it easier to gain visibility into network traffic and potential security threats.
+
+Use Cases:
+
+- Secure VPC-to-VPC communication within a multi-account setup.
+- Protect Internet-facing VPCs by controlling inbound and outbound traffic at the network level.
+- Compliance: Meet security requirements for regulated environments (e.g., PCI, HIPAA) by enforcing strict network security controls.
+
+Best Practices:
+
+- Use AWS Network Firewall alongside Security Groups and NACLs for a layered defense approach.
+- Monitor logs and traffic analytics to respond to anomalies or suspicious patterns.
+
+## TODO 7
+## TODO 8
+## TODO 9
+## TODO 10
+## TODO 11
 
 ## Useful AWS Resources
 
