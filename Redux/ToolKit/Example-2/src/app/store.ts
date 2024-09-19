@@ -5,13 +5,20 @@ import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit'
 import postsReducer from '@/features/posts/postsSlice'
 import usersReducer from '@/features/users/usersSlice'
 import authReducer from '@/features/auth/authSlice'
+import notificationReducer from '@/features/notifications/notificationsSlice'
+import { listenerMiddleware } from './listenerMiddleware'
 
 export const store = configureStore({
   reducer: {
     posts: postsReducer,
     users: usersReducer,
     auth: authReducer,
+    notifications: notificationReducer,
   },
+  // .concat()  add to array's end
+  // .prepend() add to array's start
+  // middleware order matters m1 -> m2 -> m3 -> store.dispatch()
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 })
 
 // Infer the type of `store`
