@@ -569,6 +569,7 @@
     - [AWS AppFlow](#aws-appflow)
     - [AWS Amplify](#aws-amplify)
     - [AWS ParallelCluster](#aws-parallelcluster)
+    - [AWS Trusted Advisor](#aws-trusted-advisor)
   - [Useful AWS Resources](#useful-aws-resources)
   - [AWS Shared Responsibility Model](#aws-shared-responsibility-model)
   - [AWS SECURITY TABLE](#aws-security-table)
@@ -6400,6 +6401,10 @@ Use Cases:
 - Computational fluid dynamics, genomics research, and other scientific simulations.
 - Large-scale data analysis and machine learning workloads.
 - Research and education institutions running complex simulations in fields like chemistry and physics.
+
+### AWS Trusted Advisor
+
+provides recommendations that help you follow AWS best practices. It evaluates your account by using checks. These checks identify ways to optimize your AWS infrastructure, improve security and performance, reduce costs, and monitor service quotas.
 
 ## Useful AWS Resources
 
