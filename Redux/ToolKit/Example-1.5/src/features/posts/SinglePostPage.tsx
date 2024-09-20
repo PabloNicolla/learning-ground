@@ -7,35 +7,25 @@ import { TimeAgo } from '@/components/TimeAgo'
 import { ReactionButtons } from './ReactionButtons'
 
 import { selectCurrentUsername } from '@/features/auth/authSlice'
-import { useGetPostQuery } from '../api/apiSlice'
-import { Spinner } from '@/components/Spinner'
-
-/*
-RTK Query creates a "cache key" for each unique endpoint + argument combination, and stores the results for each cache key separately. That means that you can use the same query hook multiple times, pass it different query parameters, and each result will be cached separately in the Redux store.
-*/
 
 export const SinglePostPage = () => {
   const { postId } = useParams()
 
+  const post = useAppSelector((state) => selectPostById(state, postId!))
   const currentUsername = useAppSelector(selectCurrentUsername)!
-  const { data: post, isFetching, isSuccess } = useGetPostQuery(postId!)
 
-  // if (!post) {
-  //   return (
-  //     <section>
-  //       <h2>Post not found!</h2>
-  //     </section>
-  //   )
-  // }
+  if (!post) {
+    return (
+      <section>
+        <h2>Post not found!</h2>
+      </section>
+    )
+  }
 
-  let content: React.ReactNode
+  const canEdit = currentUsername === post.user
 
-  const canEdit = currentUsername === post?.user
-
-  if (isFetching) {
-    content = <Spinner text="Loading..." />
-  } else if (isSuccess) {
-    content = (
+  return (
+    <section>
       <article className="post">
         <h2>{post.title}</h2>
         <div>
@@ -50,8 +40,6 @@ export const SinglePostPage = () => {
           </Link>
         )}
       </article>
-    )
-  }
-
-  return <section>{content}</section>
+    </section>
+  )
 }

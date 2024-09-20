@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 
 import { useAppDispatch, useAppSelector } from '@/app/hooks'
@@ -9,16 +9,18 @@ import { TimeAgo } from '@/components/TimeAgo'
 import { PostAuthor } from './PostAuthor'
 import { ReactionButtons } from './ReactionButtons'
 
-import { fetchPosts, selectPostById, selectPostIds, selectPostsStatus, selectPostsError } from './postsSlice'
+import { fetchPosts, selectPostById, selectPostIds, selectPostsStatus, selectPostsError, Post } from './postsSlice'
 import { useSelector } from 'react-redux'
+import { useGetPostsQuery } from '../api/apiSlice'
 
+import classnames from 'classnames'
+
+// Go back to passing a `post` object as a prop
 interface PostExcerptProps {
-  postId: string
+  post: Post
 }
 
-function PostExcerpt({ postId }: PostExcerptProps) {
-  const post = useAppSelector((state) => selectPostById(state, postId))
-
+function PostExcerpt({ post }: PostExcerptProps) {
   return (
     <article className="post-excerpt" key={post.id}>
       <h3>
@@ -35,55 +37,47 @@ function PostExcerpt({ postId }: PostExcerptProps) {
 }
 
 /*
-    // Use the shallowEqual function from React-Redux as the equalityFn argument to useSelector(), like:
-
-import { shallowEqual, useSelector } from 'react-redux'
-
-// Pass it as the second argument directly
-const selectedData = useSelector(selectorReturningObject, shallowEqual)
-
-// or pass it as the `equalityFn` field in the options argument
-const selectedData = useSelector(selectorReturningObject, {
-  equalityFn: shallowEqual,
-})
-
-    // Use a custom equality function as the equalityFn argument to useSelector(), like:
-
-import { useSelector } from 'react-redux'
-
-// equality function
-const customEqual = (oldValue, newValue) => oldValue === newValue
-
-// later
-const selectedData = useSelector(selectorReturningObject, customEqual)
+    data: the actual response contents from the server for the most recent successful cache entry data. This field will be undefined until the response is received.
+    currentData: The response contents for the current query arguments. This can switch to undefined if the query arguments are changed and a request starts because there isn't an existing cache entry.
+    isLoading: a boolean indicating if this hook is currently making the first request to the server because there isn't any data yet. (Note that if the parameters change to request different data, isLoading will remain false.)
+    isFetching: a boolean indicating if the hook is currently making any request to the server
+    isSuccess: a boolean indicating if the hook has made a successful request and has cached data available (ie, data should be defined now)
+    isError: a boolean indicating if the last request had an error
+    error: a serialized error object
 */
 
 export const PostsList = () => {
-  // Select the `state.posts` value from the store into the component
-  const dispatch = useAppDispatch()
-  const orderedPostIds = useAppSelector(selectPostIds)
-  const postStatus = useAppSelector(selectPostsStatus)
-  const postsError = useAppSelector(selectPostsError)
+  // Calling the `useGetPostsQuery()` hook automatically fetches data!
+  const { data: posts = [], isLoading, isFetching, isSuccess, isError, error, refetch } = useGetPostsQuery()
 
-  useEffect(() => {
-    if (postStatus === 'idle') {
-      dispatch(fetchPosts())
-    }
-  }, [postStatus, dispatch])
+  const sortedPosts = useMemo(() => {
+    const sortedPosts = posts.slice()
+    // Sort posts in descending chronological order
+    sortedPosts.sort((a, b) => b.date.localeCompare(a.date))
+    return sortedPosts
+  }, [posts])
 
   let content: React.ReactNode
 
-  if (postStatus === 'pending') {
+  // Show loading states based on the hook status flags
+  if (isLoading) {
     content = <Spinner text="Loading..." />
-  } else if (postStatus === 'succeeded') {
-    content = orderedPostIds.map((postId) => <PostExcerpt key={postId} postId={postId} />)
-  } else if (postStatus === 'rejected') {
-    content = <div>{postsError}</div>
+  } else if (isSuccess) {
+    const renderedPosts = sortedPosts.map((post) => <PostExcerpt key={post.id} post={post} />)
+
+    const containerClassname = classnames('posts-container', {
+      disabled: isFetching,
+    })
+
+    content = <div className={containerClassname}>{renderedPosts}</div>
+  } else if (isError) {
+    content = <div>{error.toString()}</div>
   }
 
   return (
     <section className="posts-list">
       <h2>Posts</h2>
+      <button onClick={refetch}>Refetch Posts</button>
       {content}
     </section>
   )

@@ -7,7 +7,6 @@ import usersReducer from '@/features/users/usersSlice'
 import authReducer from '@/features/auth/authSlice'
 import notificationReducer from '@/features/notifications/notificationsSlice'
 import { listenerMiddleware } from './listenerMiddleware'
-import { apiSlice } from '@/features/api/apiSlice'
 
 export const store = configureStore({
   reducer: {
@@ -15,13 +14,11 @@ export const store = configureStore({
     users: usersReducer,
     auth: authReducer,
     notifications: notificationReducer,
-    [apiSlice.reducerPath]: apiSlice.reducer,
   },
   // .concat()  add to array's end
   // .prepend() add to array's start
   // middleware order matters m1 -> m2 -> m3 -> store.dispatch()
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().prepend(listenerMiddleware.middleware).concat(apiSlice.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().prepend(listenerMiddleware.middleware),
 })
 
 // Infer the type of `store`
