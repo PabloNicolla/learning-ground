@@ -6,7 +6,11 @@ import { selectCurrentUser } from '@/features/users/usersSlice'
 
 import { UserIcon } from './UserIcon'
 import { logout, selectCurrentUsername } from '@/features/auth/authSlice'
-import { fetchNotifications, selectUnreadNotificationsCount } from '@/features/notifications/notificationsSlice'
+import {
+  fetchNotificationsWebsocket,
+  selectUnreadNotificationsCount,
+  useGetNotificationsQuery,
+} from '@/features/notifications/notificationsSlice'
 
 export const Navbar = () => {
   const dispatch = useAppDispatch()
@@ -17,6 +21,9 @@ export const Navbar = () => {
 
   const isLoggedIn = !!user
 
+  // Trigger initial fetch of notifications and keep the websocket open to receive updates
+  useGetNotificationsQuery()
+
   let navContent: React.ReactNode = null
 
   if (isLoggedIn) {
@@ -25,7 +32,7 @@ export const Navbar = () => {
     }
 
     const fetchNewNotifications = () => {
-      dispatch(fetchNotifications())
+      dispatch(fetchNotificationsWebsocket())
     }
 
     let unreadNotificationsBadge: React.ReactNode | undefined

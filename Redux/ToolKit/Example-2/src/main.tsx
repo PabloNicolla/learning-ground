@@ -4,12 +4,12 @@ import { Provider } from 'react-redux'
 
 import App from './App'
 import { store } from './app/store'
-import { fetchUsers } from './features/users/usersSlice'
 
 import { worker } from './api/server'
 
 import './primitiveui.css'
 import './index.css'
+import { apiSliceWithUsers } from './features/users/usersSlice'
 
 // Wrap app rendering so we can wait for the mock API to initialize
 async function start() {
@@ -22,7 +22,8 @@ async function start() {
   so the data should be available sooner.
   (Note that this principle can be applied by using React Router data loaders as well.)
   */
-  store.dispatch(fetchUsers())
+  // RTKQ request thunk will create a subscription entry, but it's then up to you to unsubscribe from that data later
+  store.dispatch(apiSliceWithUsers.endpoints.getUsers.initiate())
 
   const root = createRoot(document.getElementById('root')!)
 

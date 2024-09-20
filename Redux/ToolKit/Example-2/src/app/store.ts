@@ -3,7 +3,6 @@ import { Action, configureStore, ThunkAction } from '@reduxjs/toolkit'
 // Removed the `counterReducer` function, `CounterState` type, and `Action` import
 
 import postsReducer from '@/features/posts/postsSlice'
-import usersReducer from '@/features/users/usersSlice'
 import authReducer from '@/features/auth/authSlice'
 import notificationReducer from '@/features/notifications/notificationsSlice'
 import { listenerMiddleware } from './listenerMiddleware'
@@ -12,7 +11,6 @@ import { apiSlice } from '@/features/api/apiSlice'
 export const store = configureStore({
   reducer: {
     posts: postsReducer,
-    users: usersReducer,
     auth: authReducer,
     notifications: notificationReducer,
     [apiSlice.reducerPath]: apiSlice.reducer,

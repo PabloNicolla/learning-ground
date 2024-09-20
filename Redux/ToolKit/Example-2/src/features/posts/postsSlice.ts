@@ -5,6 +5,7 @@ import { RootState } from '@/app/store'
 import { createAppAsyncThunk } from '@/app/withTypes'
 import { logout } from '../auth/authSlice'
 import { AppStartListening } from '@/app/listenerMiddleware'
+import { apiSlice } from '../api/apiSlice'
 
 /*
 We've already seen that we can pass an argument into a thunk action creator when we dispatch it, like dispatch(addPost(newPost)). For createAsyncThunk specifically, you can only pass in one argument, and whatever we pass in becomes the first argument of the payload creation callback. If we don't actually pass anything in, then that argument becomes undefined.
@@ -253,7 +254,7 @@ export const selectPostsByUser = createSelector(
 
 export const addPostsListeners = (startAppListening: AppStartListening) => {
   startAppListening({
-    actionCreator: addNewPost.fulfilled,
+    matcher: apiSlice.endpoints.addNewPost.matchFulfilled,
     effect: async (action, listenerApi) => {
       const { toast } = await import('react-tiny-toast')
 
