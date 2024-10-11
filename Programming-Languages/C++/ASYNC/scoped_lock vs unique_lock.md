@@ -82,7 +82,7 @@ protected:
   - `cvBlocking.wait(ul);`
     - This releases the lock on muxBlocking and blocks the thread until another thread calls `notify_one()` or `notify_all()`. Once notified, it re-acquires the lock and continues execution.
 
-### Difference Between `std::scoped_lock` and `std::unique_lock`:
+### Difference Between `std::scoped_lock` and `std::unique_lock`
 
 - `std::scoped_lock`:
   - Simpler API: It's a simpler, RAII-style lock, introduced in C++17. It locks the mutexes immediately when constructed and unlocks them when it goes out of scope (at the end of the function or block).
