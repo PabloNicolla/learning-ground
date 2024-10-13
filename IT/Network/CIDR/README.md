@@ -6,6 +6,7 @@
   - [Common CIDR Blocks](#common-cidr-blocks)
   - [Why Different Sizes?](#why-different-sizes)
   - [Usage in VNets](#usage-in-vnets)
+  - [Network Portion versus Host Portion Examples](#network-portion-versus-host-portion-examples)
 
 ## Introduction
 
@@ -46,3 +47,16 @@ In networking, IP ranges and their notation using CIDR (Classless Inter-Domain R
   - /16 VNets might be allocated to an entire virtual network in a cloud environment, with further subnets defined within it.
 
 These CIDR blocks and subnetting concepts are essential for designing and scaling networks effectively, whether on-premises or in the cloud.
+
+## Network Portion versus Host Portion Examples
+
+- Example 1
+
+```
+129.168.11.22/24
+|=========|         => network
+          |==|      => host
+
+11000000 10101000 00001011 00010110   => Address
+11111111 11111111 11111111 00000000   => Subnet Mask
+```
