@@ -52,7 +52,7 @@ These CIDR blocks and subnetting concepts are essential for designing and scalin
 
 - Example 1
 
-```
+```text
 129.168.11.22/24
 |=========|         => network
           |==|      => host

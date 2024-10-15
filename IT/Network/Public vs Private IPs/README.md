@@ -1,5 +1,21 @@
 # Private vs. Public IPs
 
+- [Private vs. Public IPs](#private-vs-public-ips)
+  - [Detailed Overview](#detailed-overview)
+  - [Private IP Addresses](#private-ip-addresses)
+  - [Public IP Addresses](#public-ip-addresses)
+  - [Comparison Table](#comparison-table)
+  - [How They Work Together](#how-they-work-together)
+  - [IP Addressing and NAT in Practice](#ip-addressing-and-nat-in-practice)
+  - [Example](#example)
+    - [Request from your PC (10.1.1.1) to the Router (2.2.2.2)](#request-from-your-pc-10111-to-the-router-2222)
+    - [NAT Process in the Router](#nat-process-in-the-router)
+    - [The Server Response (3.3.3.3) to the Router (2.2.2.2)](#the-server-response-3333-to-the-router-2222)
+    - [NAT Translation Back at the Router](#nat-translation-back-at-the-router)
+    - [Key Point](#key-point)
+  - [Closing](#closing)
+  - [Additional Resources](#additional-resources)
+
 ## Detailed Overview
 
 In networking, IP addresses serve as unique identifiers for devices connected to a network. There are two main types of IP addresses: Private IP addresses and Public IP addresses. Here’s a breakdown of the key differences between them:
@@ -105,3 +121,7 @@ When your PC with the private IP 10.1.1.1 sends a request to the server with pub
 ## Closing
 
 This distinction is fundamental in networking, ensuring efficient use of IP address space and maintaining security within private networks while still enabling devices to communicate over the internet.
+
+## Additional Resources
+
+[wiki - Reserved_IP_addresses](https://en.wikipedia.org/wiki/Reserved_IP_addresses)
