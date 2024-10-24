@@ -18,3 +18,13 @@
 
 > [!IMPORTANT]
 > This is important
+
+---
+
+> [!CAUTION]
+> Caution
+
+---
+
+> [!TIP]
+> This is a tip
