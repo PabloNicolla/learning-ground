@@ -88,6 +88,8 @@
     "memory_resource": "cpp",
     "string_view": "cpp",
     "numbers": "cpp",
-    "text_encoding": "cpp"
+    "text_encoding": "cpp",
+    "bitset": "cpp",
+    "regex": "cpp"
   }
 }

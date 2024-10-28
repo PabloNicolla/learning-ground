@@ -1,25 +1,51 @@
-#include <vector>
+#include <math.h>
 
-class Solution
+class Solution1
 {
 public:
-    std::vector<int> plusOne(std::vector<int> &digits)
+    double myPow(double x, int n)
     {
-        int index = digits.size() - 1;
-        digits[index]++;
-
-        while (digits[index] == 10)
+        if (x == 0)
         {
-            digits[index] = 0;
-            if (index == 0)
-            {
-                digits.insert(digits.begin(), 1);
-                break;
-            }
-            digits[index - 1]++;
-            index--;
+            return 0;
+        }
+        if (n == 0)
+        {
+            return 1;
         }
 
-        return digits;
+        double res = helper(x, std::abs(static_cast<long>(n)));
+        return (n >= 0) ? res : 1 / res;
+    }
+
+private:
+    double helper(double x, long n)
+    {
+        if (n == 0)
+        {
+            return 1;
+        }
+        double half = helper(x, n / 2);
+        return (n % 2 == 0) ? half * half : x * half * half;
+    }
+};
+
+class Solution2
+{
+public:
+    double myPow(double x, int n)
+    {
+        if (n == 0)
+            return 1;
+
+        double ans = x;
+        int abs_n = std::abs(n);
+
+        for (int i{1}; i < abs_n; i++)
+        {
+            ans *= x;
+        }
+
+        return n < 0 ? 1 / ans : ans;
     }
 };
