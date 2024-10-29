@@ -1,3 +1,7 @@
+#include <vector>
+#include <algorithm>
+#include <unordered_map>
+
 std::vector<int> missingNumbers(std::vector<int> arr, std::vector<int> brr)
 {
     std::unordered_map<int, int> count{};
