@@ -13,6 +13,7 @@
   - [Kafka and Other Messaging Systems](#kafka-and-other-messaging-systems)
   - [Managing Kafka](#managing-kafka)
   - [Kafka’s Future](#kafkas-future)
+  - [Useful Tools \& Links](#useful-tools--links)
 
 ## Introduction to Apache Kafka
 
@@ -99,3 +100,9 @@ Kafka continues to evolve, with a strong focus on improving scalability, durabil
 Conclusion
 
 Apache Kafka is a robust, scalable platform for handling high-throughput real-time data streams. Its versatile architecture, fault-tolerant design, and wide array of integrations make it an essential tool for modern data pipelines and event-driven systems.
+
+## Useful Tools & Links
+
+- [Kafka](https://kafka.apache.org/)
+- [offset explorer](https://offsetexplorer.com/)
+- [confluence](https://www.confluent.io/)
