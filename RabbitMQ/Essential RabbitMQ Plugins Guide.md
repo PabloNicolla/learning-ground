@@ -55,7 +55,7 @@ rabbitmq-plugins enable rabbitmq_management
 
 ### Usage
 
-- Access UI: http://localhost:15672 (default)
+- Access UI: `http://localhost:15672` (default)
 - Default credentials: guest/guest
 - Features:
   - Queue/Exchange management
