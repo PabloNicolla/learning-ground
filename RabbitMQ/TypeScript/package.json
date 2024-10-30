@@ -1,0 +1,16 @@
+{
+  "name": "rabbitmq-sd",
+  "module": "index.ts",
+  "type": "module",
+  "scripts": {
+    "publish": "bun run publisher.ts",
+    "consume": "bun run consumer.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/amqplib": "^0.10.5"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4"
+  }
+}
