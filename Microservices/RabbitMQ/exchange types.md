@@ -2,6 +2,7 @@
 
 - [exchange types](#exchange-types)
   - [Introduction](#introduction)
+  - [Exchange-Exchange Routing](#exchange-exchange-routing)
 
 ## Introduction
 
@@ -22,3 +23,7 @@ Each of these types gives flexibility in how messages are directed to specific q
 
 > [!NOTE]
 > Read more about [Topic Exchange](<Comprehensive Guide to RabbitMQ Topic Exchanges.md>)
+
+## Exchange-Exchange Routing
+
+One exchange can send messages to another exchange.
