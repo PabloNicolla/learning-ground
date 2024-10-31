@@ -103,6 +103,9 @@ Apache Kafka is a robust, scalable platform for handling high-throughput real-ti
 
 ## Useful Tools & Links
 
+> [!IMPORTANT]
+> For Windows, download the binary kafka. Source Download will not work.
+
 - [Kafka](https://kafka.apache.org/)
 - [offset explorer](https://offsetexplorer.com/)
 - [confluence](https://www.confluent.io/)
