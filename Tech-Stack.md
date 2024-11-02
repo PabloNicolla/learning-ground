@@ -209,7 +209,7 @@
 - **NSQ**
 - **Istio**
 - **Linkerd**
-- **Consul**
+- **Consul or etcd**
 
 #### Testing
 
@@ -219,6 +219,7 @@
 #### Data Engineering & Big Data
 
 - **Apache Spark**
+- **Apache Airflow**
 - **Snowflake**
 
 #### Observability & Monitoring
@@ -226,7 +227,7 @@
 - **OpenTelemetry**
 - **ELK Stack (Elasticsearch, Logstash, Kibana)**
 - **Datadog**
-- **Jaeger**
+- **Jaeger or Zipkin**
 - **Traefik**
 
 #### Frontend & UI Development
