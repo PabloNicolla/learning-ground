@@ -147,6 +147,7 @@
 
 - **Kafka**
 - **RabbitMQ**
+- **ZeroMQ**
 - **Microservices**
 - **K8s Helm**
 
@@ -221,6 +222,7 @@
 - **Apache Spark**
 - **Apache Airflow**
 - **Snowflake**
+- **Memcached**
 
 #### Observability & Monitoring
 
