@@ -1,5 +1,16 @@
 # In-depth Overview of GitHub Actions
 
+- [In-depth Overview of GitHub Actions](#in-depth-overview-of-github-actions)
+  - [Introduction](#introduction)
+    - [Key Features](#key-features)
+    - [Structure of a Workflow File](#structure-of-a-workflow-file)
+    - [Example 1: Basic CI Workflow](#example-1-basic-ci-workflow)
+    - [Example 2: Deploying to AWS](#example-2-deploying-to-aws)
+    - [Example 3: Scheduled Workflows](#example-3-scheduled-workflows)
+    - [Key Concepts](#key-concepts)
+    - [Debugging Tips](#debugging-tips)
+    - [Advanced Features](#advanced-features)
+
 ## Introduction
 
 GitHub Actions is a CI/CD (Continuous Integration/Continuous Deployment) and automation tool integrated directly into GitHub. It enables you to automate workflows for building, testing, and deploying your code, as well as perform other tasks like managing issues, sending notifications, and more.

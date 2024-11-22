@@ -1,5 +1,14 @@
 # Data Visualization Tools
 
+- [Data Visualization Tools](#data-visualization-tools)
+  - [Introduction](#introduction)
+    - [**1. Python Libraries**](#1-python-libraries)
+    - [**2. R Libraries**](#2-r-libraries)
+    - [**3. JavaScript Libraries**](#3-javascript-libraries)
+    - [**4. Tools for General Use (No Coding Required)**](#4-tools-for-general-use-no-coding-required)
+    - [**5. For Web Framework Integration**](#5-for-web-framework-integration)
+    - [Recommendations](#recommendations)
+
 ## Introduction
 
 Here are some commonly used libraries and tools for creating visualizations in various programming languages:

@@ -1,4 +1,8 @@
-# Data Visulisation Tools
+# Data Visualization Tools
+
+- [Data Visualization Tools](#data-visualization-tools)
+  - [Introduction](#introduction)
+    - [Additional Notes](#additional-notes)
 
 ## Introduction
 

@@ -1,5 +1,15 @@
 # Audio Processing
 
+- [Audio Processing](#audio-processing)
+  - [Introduction](#introduction)
+    - [1. **Preprocessing the Audio**](#1-preprocessing-the-audio)
+    - [2. **Speaker Diarization (Identifying Who is Speaking)**](#2-speaker-diarization-identifying-who-is-speaking)
+    - [3. **Speech-to-Text Transcription**](#3-speech-to-text-transcription)
+    - [4. **Post-Processing**](#4-post-processing)
+    - [5. **End-to-End Pipeline Example**](#5-end-to-end-pipeline-example)
+    - [6. **Additional Enhancements**](#6-additional-enhancements)
+    - [Tools Overview](#tools-overview)
+
 ## Introduction
 
 To transcribe and differentiate between the professor's voice and the students' voices in a noisy classroom, you can use a combination of advanced audio processing techniques, speaker diarization, and transcription tools. Here’s an effective approach:
