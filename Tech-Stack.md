@@ -211,6 +211,7 @@
 - **Istio**
 - **Linkerd**
 - **Consul or etcd**
+- **Hadoop**
 
 #### Testing
 
