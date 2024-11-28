@@ -101,7 +101,3 @@ When designing a data model for a large PostgreSQL database that will be sharded
 
 - Allocate additional shard slots during initial design to simplify future scaling.
 - Use a consistent hashing algorithm to minimize data movement during shard addition.
-
----
-
-Would you like a specific example schema or help implementing any of these practices?
