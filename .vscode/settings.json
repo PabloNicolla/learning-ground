@@ -5,13 +5,15 @@
     "curr",
     "GENEVE",
     "GWLB",
+    "Jaegar",
     "Keycloak",
     "lonelyinteger",
     "NSQD",
     "nums",
     "Proto",
     "subgrid",
-    "subgrids"
+    "subgrids",
+    "Traefik"
   ],
   "files.associations": {
     "xlocale": "cpp",
