@@ -23,20 +23,16 @@
       - [Observability \& Monitoring](#observability--monitoring-1)
       - [Testing](#testing-1)
       - [Programming Paradigms](#programming-paradigms-1)
-    - [**Plan to Learn**](#plan-to-learn)
       - [Security \& API Management](#security--api-management-1)
+    - [**Plan to Learn**](#plan-to-learn)
       - [DevOps \& Automation](#devops--automation-2)
       - [Security \& API Management](#security--api-management-2)
       - [Backend and Systems Programming](#backend-and-systems-programming-2)
-      - [Cloud-Native \& Distributed Systems](#cloud-native--distributed-systems-2)
-      - [Testing](#testing-2)
-      - [Data Engineering \& Big Data](#data-engineering--big-data-2)
-      - [Observability \& Monitoring](#observability--monitoring-2)
       - [Frontend \& UI Development](#frontend--ui-development-1)
       - [Programming Paradigms](#programming-paradigms-2)
       - [CI/CD Pipeline Enhancement](#cicd-pipeline-enhancement)
       - [Database \& SQL/NoSQL](#database--sqlnosql-1)
-      - [Testing](#testing-3)
+      - [Testing](#testing-2)
     - [**No Interest Anymore**](#no-interest-anymore)
       - [Frontend \& UI Development](#frontend--ui-development-2)
 
@@ -46,9 +42,9 @@
 
 #### DevOps & Automation
 
+- **Docker**
 - **Git/GitHub**
 - **Jira**
-- **Docker**
 - **Terraform**
 
 #### Cloud-Native & Distributed Systems
@@ -61,43 +57,43 @@
 #### Backend and Systems Programming
 
 - **Bash**
-- **Node.js**
 - **Bun.js**
+- **C**
+- **C#**
+- **C++**
 - **Deno.js**
 - **Express.js**
 - **Java**
-- **C#**
+- **JavaScript**
+- **Node.js**
 - **Python**
 - **Typescript**
-- **JavaScript**
-- **C**
-- **C++**
 - **Websocket**
 
 #### Frontend & UI Development
 
-- **HTML**
 - **CSS**
-- **TailwindCSS**
-- **React.js**
-- **Next.js**
-- **React Native**
-- **Redux**
-- **Vite**
-- **Tauri**
-- **Tan Stack Query**
-- **React Animations**
 - **Expo (Mobile dev + REACT)**
+- **HTML**
+- **Next.js**
+- **React Animations**
+- **React Native**
+- **React.js**
+- **Redux**
+- **TailwindCSS**
+- **Tan Stack Query**
+- **Tauri**
+- **Vite**
 
 #### Data Engineering & Big Data
 
-- **SQL**
-- **No-SQL**
-- **Postgres**
-- **SQLite**
 - **MongoDB**
+- **No-SQL**
 - **Oracle Database**
+- **Postgres**
 - **Redis**
+- **SQL**
+- **SQLite**
 
 #### Observability & Monitoring
 
@@ -105,8 +101,8 @@
 
 #### Security & API Management
 
-- **REST API**
 - **Ngrok**
+- **REST API**
 
 #### Machine Learning & Data Science
 
@@ -128,12 +124,12 @@
 
 #### Miscellaneous
 
-- **Electronics**
-- **Software documentation**
-- **Nginx**
-- **Debian**
-- **ReGex**
 - **Browser Extension programming**
+- **Debian**
+- **Electronics**
+- **Nginx**
+- **ReGex**
+- **Software documentation**
 
 ---
 
@@ -145,51 +141,68 @@
 
 #### Cloud-Native & Distributed Systems
 
+- **Consul or etcd**
+- **Hadoop**
+- **Istio**
+- **K8s Helm**
 - **Kafka**
+- **Linkerd**
+- **Microservices**
+- **NATS**
+- **NSQ**
 - **RabbitMQ**
 - **ZeroMQ**
-- **Microservices**
-- **K8s Helm**
 
 #### Backend and Systems Programming
 
-- **TCP**
-- **Rust**
-- **Networking**
-- **Concurrent Programming**
 - **CMake**
-- **vcpkg**
+- **Concurrent Programming**
 - **keycloak**
+- **Networking**
+- **Rust**
+- **TCP**
+- **vcpkg**
 
 #### Data Engineering & Big Data
 
+- **Apache Airflow**
+- **Apache Spark**
 - **Cassandra DB**
+- **Memcached**
+- **Snowflake**
 
 #### Observability & Monitoring
 
-- **Prometheus**
+- **Datadog**
+- **ELK Stack (Elasticsearch, Logstash, Kibana)**
 - **Grafana**
+- **Jaeger or Zipkin**
+- **OpenTelemetry**
+- **Prometheus**
+- **Traefik**
 
 #### Testing
 
 - **CyPress**
+- **Jest**
+- **Selenium**
 
 #### Programming Paradigms
 
 - **Kotlin**
 
----
-
-### **Plan to Learn**
-
 #### Security & API Management
 
 - **GraphQL**
 
+---
+
+### **Plan to Learn**
+
 #### DevOps & Automation
 
-- **JMeter**
 - **Ansible**
+- **JMeter**
 - **Spinnaker**
 
 #### Security & API Management
@@ -200,38 +213,9 @@
 #### Backend and Systems Programming
 
 - **Golang**
-- **ZIG**
-- **WebAssembly (WASM)**
 - **gRPC**
-
-#### Cloud-Native & Distributed Systems
-
-- **NATS**
-- **NSQ**
-- **Istio**
-- **Linkerd**
-- **Consul or etcd**
-- **Hadoop**
-
-#### Testing
-
-- **Jest**
-- **Selenium**
-
-#### Data Engineering & Big Data
-
-- **Apache Spark**
-- **Apache Airflow**
-- **Snowflake**
-- **Memcached**
-
-#### Observability & Monitoring
-
-- **OpenTelemetry**
-- **ELK Stack (Elasticsearch, Logstash, Kibana)**
-- **Datadog**
-- **Jaeger or Zipkin**
-- **Traefik**
+- **WebAssembly (WASM)**
+- **ZIG**
 
 #### Frontend & UI Development
 
@@ -247,10 +231,10 @@
 
 #### Database & SQL/NoSQL
 
-- **TimescaleDB**
 - **CockroachDB**
 - **Neo4j**
 - **SurrealDB**
+- **TimescaleDB**
 
 #### Testing
 
