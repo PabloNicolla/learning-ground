@@ -25,8 +25,6 @@
       - [Programming Paradigms](#programming-paradigms-1)
       - [Security \& API Management](#security--api-management-1)
     - [**Plan to Learn**](#plan-to-learn)
-      - [DevOps \& Automation](#devops--automation-2)
-      - [Security \& API Management](#security--api-management-2)
       - [Backend and Systems Programming](#backend-and-systems-programming-2)
       - [Frontend \& UI Development](#frontend--ui-development-1)
       - [Programming Paradigms](#programming-paradigms-2)
@@ -138,6 +136,9 @@
 #### DevOps & Automation
 
 - **Jenkins**
+- **Ansible**
+- **JMeter**
+- **Spinnaker**
 
 #### Cloud-Native & Distributed Systems
 
@@ -194,21 +195,12 @@
 #### Security & API Management
 
 - **GraphQL**
+- **Kong Gateway**
+- **Swagger (API)**
 
 ---
 
 ### **Plan to Learn**
-
-#### DevOps & Automation
-
-- **Ansible**
-- **JMeter**
-- **Spinnaker**
-
-#### Security & API Management
-
-- **Kong Gateway**
-- **Swagger (API)**
 
 #### Backend and Systems Programming
 
